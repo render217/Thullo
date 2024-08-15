@@ -6,8 +6,13 @@ export default function AllBoardsLayout({
   children: React.ReactNode;
 }) {
   return (
-    <main>
-      <div className="">{children}</div>
-    </main>
+    <>
+      <div className="grid h-[56px] items-center shadow-md">
+        <NavHeader />
+      </div>
+      <main className="size-full h-[calc(100vh-58px)] overflow-y-hidden bg-gray-100">
+        <div className="size-full overflow-y-auto">{children}</div>
+      </main>
+    </>
   );
 }
