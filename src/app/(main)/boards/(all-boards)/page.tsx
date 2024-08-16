@@ -1,5 +1,5 @@
-import BoardCreateForm from "@/components/shared/Board/board-create-form";
-import BoardFeed from "@/components/shared/Board/board-feed";
+import BoardCreateForm from "./_components/board/board-create-form";
+import BoardFeed from "./_components/board/board-feed";
 
 export default function page() {
   return (

@@ -12,7 +12,6 @@ import Link from "next/link";
 
 export default function BoardCard({ board }: { board: IBoard }) {
   const totalMembers = board.members.length;
-  console.log({ boardName: board.title, totalMembers: board.members });
   const remainingMembers = totalMembers > 3 ? totalMembers - 3 : 0;
   const displayMembers = board.members.slice(0, 3);
   return (

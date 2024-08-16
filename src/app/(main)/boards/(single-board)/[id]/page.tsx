@@ -1,8 +1,9 @@
 "use client";
-import KanbanBoard from "@/components/shared/Board/kanban-board";
+
 import { IBoard } from "@/types";
 import { useGetBoardById } from "@/utils/hooks/useBoards";
 import { useParams } from "next/navigation";
+import KanbanBoard from "../_components/kanban-board";
 
 export default function page() {
   const params = useParams();

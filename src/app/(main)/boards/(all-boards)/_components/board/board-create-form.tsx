@@ -33,8 +33,8 @@ import { FormProvider, useForm } from "react-hook-form";
 import { createBoardSchema } from "@/lib/schemas";
 import { useEffect, useRef, useState } from "react";
 import BoardImageUpload from "./board-image-upload";
-import BlockScreen from "../loaders/block-screen";
-import Spinner from "../loaders/spinner";
+import BlockScreen from "@/components/shared/loaders/block-screen";
+import Spinner from "@/components/shared/loaders/spinner";
 
 export default function BoardCreateForm() {
   const [isBlocked, setIsBlocked] = useState(false);
