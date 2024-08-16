@@ -12,6 +12,7 @@ export default function NavHeader() {
           {/* nav logo */}
           <div className="w-[160px]">
             <Image
+              className="h-auto w-auto"
               src={"/icons/Logo.svg"}
               height={100}
               width={100}

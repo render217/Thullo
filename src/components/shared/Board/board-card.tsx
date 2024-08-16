@@ -12,6 +12,7 @@ import Link from "next/link";
 
 export default function BoardCard({ board }: { board: IBoard }) {
   const totalMembers = board.members.length;
+  console.log({ boardName: board.title, totalMembers: board.members });
   const remainingMembers = totalMembers > 3 ? totalMembers - 3 : 0;
   const displayMembers = board.members.slice(0, 3);
   return (
@@ -31,11 +32,12 @@ export default function BoardCard({ board }: { board: IBoard }) {
 
         <CardContent className="border-b px-3 py-1.5">
           <CardTitle className="h-12">
-            <h3 className="text-sm font-semibold hover:underline">
-              <Link href={`/boards/${board.id}`} className="hover:underline">
-                {board.title}
-              </Link>
-            </h3>
+            <Link
+              href={`/boards/${board.id}`}
+              className="text-sm font-semibold hover:underline"
+            >
+              {board.title}
+            </Link>
           </CardTitle>
         </CardContent>
         <CardFooter className="h-12 px-3 py-2 pb-3">

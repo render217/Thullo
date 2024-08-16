@@ -1,13 +1,17 @@
 "use client";
-
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import BoardSideBarContent from "./board-sidebar-content";
 import BoardSideBarForm from "./board-sidebar-form";
+import { IBoard } from "@/types";
+import { useParams } from "next/navigation";
 
 export default function BoardSideBar() {
   const [isEdit, setIsEdit] = useState(false);
+  const [boardData, setBoardData] = useState<IBoard | undefined>();
+  const params = useParams();
+  const boardId = params.id as string;
 
   return (
     <>

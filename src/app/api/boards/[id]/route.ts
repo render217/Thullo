@@ -4,7 +4,7 @@ import path from "path";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { boardId: string } },
+  { params }: { params: { id: string } },
 ) {
   try {
     // Construct the path to the boards.json file
@@ -17,8 +17,11 @@ export async function GET(
     const boards = JSON.parse(data);
 
     // Find the board by id
-    const board = boards.find((b: any) => b.id === params.boardId);
+    const board = boards.find(
+      (b: any) => b.id.toString() === params.id.toString(),
+    );
 
+    console.log("board", board);
     // If the board is not found, return a 404 response
     if (!board) {
       return NextResponse.json({ error: "Board not found" }, { status: 404 });

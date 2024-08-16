@@ -1,34 +1,19 @@
+"use client";
 import KanbanBoard from "@/components/shared/Board/kanban-board";
 import { IBoard } from "@/types";
+import { useGetBoardById } from "@/utils/hooks/useBoards";
+import { useParams } from "next/navigation";
 
-type PageProps = {
-  params: {
-    id: string;
-  };
-};
+export default function page() {
+  const params = useParams();
+  const boardId = params.id as string;
+  const { data, status } = useGetBoardById(boardId);
 
-async function getBoard(id: string) {
-  const response = await fetch(`http:/localhost:3000/api/boards/${id}`);
-  const board = await response.json();
-  return board;
-}
+  if (status === "pending") return <p>Loading....</p>;
 
-export default async function page({ params }: PageProps) {
-  const id = params.id;
-
-  const board = (await getBoard(id)) as IBoard;
-
-  if (!board) {
-    return (
-      <div>
-        <div>Board Not Found</div>
-      </div>
-    );
+  if (data?.success) {
+    return <KanbanBoard board={data.data as IBoard} />;
+  } else if (!data?.success) {
+    return <div>Error: {data?.data}</div>;
   }
-
-  return (
-    <>
-      <KanbanBoard />
-    </>
-  );
 }

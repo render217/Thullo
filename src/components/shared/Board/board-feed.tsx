@@ -1,19 +1,14 @@
-import { IBoard } from "@/types";
-import BoardCard from "./board-card";
+"use client";
+
 import BoardList from "./board-list";
+import { useGetBoards } from "@/utils/hooks/useBoards";
 
-async function getBoards() {
-  const response = await fetch("http:/localhost:3000/api/boards");
-  const boards = await response.json();
-  return boards;
-}
-
-export default async function BoardFeed() {
-  const boards = (await getBoards()) as IBoard[];
-
-  return (
-    <div>
-      <BoardList boards={boards} />
-    </div>
-  );
+export default function BoardFeed() {
+  const { data, status } = useGetBoards();
+  if (status === "pending") return <p>Loading....</p>;
+  if (data?.success) {
+    return <BoardList boards={data.data} />;
+  } else if (!data?.success) {
+    return <div>Error: {data?.data}</div>;
+  }
 }
