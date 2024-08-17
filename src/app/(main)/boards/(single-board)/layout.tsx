@@ -17,7 +17,7 @@ export default function SingleBoardLayout({
       </div>
 
       <main className="relative w-full p-[5px]">
-        <div className="-m-[5px] h-[calc(100vh-116px)]">{children}</div>
+        <div className="-m-[5px] h-[calc(100vh-108px)]">{children}</div>
       </main>
     </>
   );

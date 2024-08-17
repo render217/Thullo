@@ -1,6 +1,11 @@
 "use client";
 import { IBoard, ITask, ICard } from "@/types";
-import { GripVertical } from "lucide-react";
+import {
+  Badge,
+  GripVertical,
+  MessageSquareText,
+  Paperclip,
+} from "lucide-react";
 import { act, useState } from "react";
 
 import {
@@ -25,6 +30,9 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { cn } from "@/lib/utils";
 import { Textarea } from "@/components/ui/textarea";
+import BoardCard from "../../../(all-boards)/_components/board/board-card";
+import TaskCard from "../kanban-board/task-card";
+import Image from "next/image";
 
 export default function BoardDndKit({ board }: { board: IBoard }) {
   const [tasks, setTasks] = useState(board.taskLists);
@@ -275,8 +283,8 @@ function SortableTaskItem({ task }: { task: ITask }) {
       {...attributes}
       className={cn("block h-full shrink-0 self-start px-[6px]")}
     >
-      <div className="bg-whitee relative box-border flex max-h-full w-[272px] flex-col justify-between rounded-md pb-[8px] align-top">
-        <div className="relative flex grow-0 items-start justify-between gap-2 rounded-md bg-white py-[8px] pl-[8px] pr-[0]">
+      <div className="relative box-border flex max-h-full w-[272px] flex-col justify-between rounded-md bg-slate-50 pb-[8px] align-top">
+        <div className="relative flex grow-0 items-start justify-between gap-2 rounded-md bg-slate-50 py-[8px] pl-[8px] pr-[0]">
           <div className="relative min-h-[20px] flex-shrink flex-grow">
             <h2 className="m-0 cursor-pointer bg-transparent px-[6px] text-[14px] font-medium">
               {task.title}
@@ -292,7 +300,7 @@ function SortableTaskItem({ task }: { task: ITask }) {
             <GripVertical className="h-4 w-4" />
           </div>
         </div>
-        <div className="-mb-[2px] h-[8px] flex-shrink-0"></div>
+        <div className="-mb-[2px] h-[8px] flex-shrink-0 border-b border-slate-400"></div>
         <div className="scrollbar-stable scrollbar-thin scrollbar-thumb-slate-900 scrollbar-track-transparent my-1 flex flex-shrink flex-grow basis-auto flex-col gap-2 overflow-y-auto overflow-x-hidden py-1 pl-[8px] pr-[4px]">
           <SortableContext
             items={task.cards}
@@ -304,8 +312,10 @@ function SortableTaskItem({ task }: { task: ITask }) {
           </SortableContext>
         </div>
 
-        <div className="ml-[8px] mr-[12px] rounded-md bg-white px-[8px] py-[8px]">
-          <button className="w-full text-xs">Add Card</button>
+        <div className="ml-[8px] mr-[12px] rounded-md bg-white px-[8px]">
+          <button className="w-full rounded-md border border-dashed border-slate-800 py-[8px] text-xs hover:border-solid hover:border-slate-500 hover:bg-slate-200">
+            Add Card
+          </button>
         </div>
       </div>
     </li>
@@ -348,10 +358,10 @@ function SortableCard({ card }: { card: ICard }) {
       {...attributes}
       {...listeners}
       className={cn(
-        "max-h-[200px] min-h-[200px] rounded-md border-2 border-slate-300 bg-white px-2 text-sm hover:cursor-pointer hover:border-gray-600",
+        "h-auto min-h-[200px] rounded-md border border-slate-400 bg-white px-2 py-2 text-sm shadow-md hover:cursor-pointer hover:border-gray-600",
       )}
     >
-      {card.title}
+      <TaskCard card={card} />
     </div>
   );
 }
@@ -429,10 +439,52 @@ function SortableCardOverlay({ card }: { card: ICard }) {
       {...attributes}
       {...listeners}
       className={cn(
-        "h-[200px] w-[300px] rotate-3 rounded-md border-2 border-gray-200 bg-white px-2 text-sm hover:cursor-pointer hover:border-gray-600",
+        "min-h-[200px] rotate-3 rounded-md bg-white px-2 py-2 text-sm shadow-md hover:cursor-pointer hover:border-gray-600",
       )}
     >
-      {card.title}
+      <div className="size-full">
+        <div className="max-h-[100px] w-full overflow-hidden rounded-lg bg-white shadow-lg">
+          <Image
+            className="h-full w-full rounded-md object-cover"
+            src={card?.coverPhoto}
+            layout="responsive"
+            width={100}
+            height={100}
+            alt="cardimage"
+          />
+        </div>
+        <div className="px-3 py-1.5">
+          <h3 className="text-[14px] font-semibold">{card.title}</h3>
+        </div>
+        <div className="flex flex-wrap items-center gap-2 px-3 py-1.5">
+          {card.labels.map((label) => (
+            <span
+              key={label.id}
+              className="grid h-[14px] place-content-center rounded-md border border-slate-400 px-2 py-0 text-[10px]"
+            >
+              {label.tag}
+            </span>
+          ))}
+        </div>
+        <div className="flex justify-end gap-2 py-2">
+          {card.comments.length > 0 && (
+            <div className="flex items-center gap-1 text-slate-500">
+              <MessageSquareText className="size-4" />
+              <span className="block text-xs font-medium">
+                {card.comments.length}
+              </span>
+            </div>
+          )}
+          {card.attachments.length > 0 && (
+            <div className="flex items-center gap-1 text-slate-500">
+              <Paperclip className="size-4" />
+              <span className="block text-xs font-medium">
+                {card.attachments.length}
+              </span>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
