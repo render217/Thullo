@@ -1,4 +1,4 @@
-import NavHeader from "@/components/shared/NavHeader";
+import NavHeader from "@/components/shared/nav-header";
 
 export default function AllBoardsLayout({
   children,

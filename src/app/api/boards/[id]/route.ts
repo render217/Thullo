@@ -21,7 +21,6 @@ export async function GET(
       (b: any) => b.id.toString() === params.id.toString(),
     );
 
-    console.log("board", board);
     // If the board is not found, return a 404 response
     if (!board) {
       return NextResponse.json({ error: "Board not found" }, { status: 404 });

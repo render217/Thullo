@@ -6,12 +6,14 @@ import BoardSideBarContent from "./board-sidebar-content";
 import BoardSideBarForm from "./board-sidebar-form";
 import { IBoard } from "@/types";
 import { useParams } from "next/navigation";
+import { useGetBoardById } from "@/utils/hooks/useBoards";
 
 export default function BoardSideBar() {
-  const [isEdit, setIsEdit] = useState(false);
-  const [boardData, setBoardData] = useState<IBoard | undefined>();
   const params = useParams();
   const boardId = params.id as string;
+  const { data, isPending } = useGetBoardById(boardId);
+
+  const isSuccess = data?.success;
 
   return (
     <>
@@ -29,7 +31,11 @@ export default function BoardSideBar() {
           </Button>
         </SheetTrigger>
         <SheetContent>
-          {isEdit ? <BoardSideBarForm /> : <BoardSideBarContent />}
+          {isPending && <div>Loading...</div>}
+          {!isPending && isSuccess && <BoardSideBarContent board={data.data} />}
+          {/* {!isPending && isSuccess && isEdit && (
+            <BoardSideBarForm board={data.data} toggleEdit={toggleEdit} />
+          )} */}
         </SheetContent>
       </Sheet>
     </>
