@@ -24,8 +24,9 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { cn } from "@/lib/utils";
+import { Textarea } from "@/components/ui/textarea";
 
-export default function Part5Ex({ board }: { board: IBoard }) {
+export default function BoardDndKit({ board }: { board: IBoard }) {
   const [tasks, setTasks] = useState(board.taskLists);
   const [activeTask, setActiveTask] = useState<ITask | null>(null);
   const [activeCard, setActiveCard] = useState<ICard | null>(null);
@@ -56,6 +57,7 @@ export default function Part5Ex({ board }: { board: IBoard }) {
 
     const activeData = active.data.current;
     const overData = over.data.current;
+
     // Handle Card Sorting Within the Same Task or Between Different Tasks
     if (activeData?.type === "card" && overData?.type === "card") {
       const activeTaskIndex = tasks.findIndex((task) =>
@@ -224,17 +226,15 @@ export default function Part5Ex({ board }: { board: IBoard }) {
         onDragMove={handleDragMove}
       >
         <SortableContext items={tasks} strategy={horizontalListSortingStrategy}>
-          <div className="size-full">
-            <ul className="flex size-full gap-2">
-              {tasks.map((task) => (
-                <SortableTaskItem key={task.id} task={task} />
-              ))}
-            </ul>
-          </div>
+          <ul className="scrollbar-width-auto scrollbar-thumb-white scrollbar-track-transparent absolute inset-0 -top-[2px] mb-[8px] flex size-full select-none gap-2 overflow-x-auto overflow-y-hidden px-[10px] pb-[8px] pt-[8px]">
+            {tasks.map((task) => (
+              <SortableTaskItem key={task.id} task={task} />
+            ))}
+          </ul>
         </SortableContext>
         <DragOverlay className="flex" adjustScale={false}>
           {activeCard ? <SortableCardOverlay card={activeCard} /> : null}
-          {activeTask ? <SortableTaskItemOverlay item={activeTask} /> : null}
+          {activeTask ? <SortableTaskItemOverlay task={activeTask} /> : null}
         </DragOverlay>
       </DndContext>
     </>
@@ -261,11 +261,11 @@ function SortableTaskItem({ task }: { task: ITask }) {
 
   if (isDragging) {
     return (
-      <div
+      <li
         ref={setNodeRef}
         style={style}
-        className="flex min-w-[300px] flex-col gap-2 rounded-md border-2 border-dashed border-blue-500 bg-blue-100 p-4 hover:shadow-lg"
-      ></div>
+        className="w-[272px] border-2 border-dashed border-blue-500 bg-blue-100"
+      ></li>
     );
   }
   return (
@@ -273,35 +273,40 @@ function SortableTaskItem({ task }: { task: ITask }) {
       ref={setNodeRef}
       style={style}
       {...attributes}
-      className={cn(
-        "flex min-w-[300px] max-w-[300px] flex-col gap-2 rounded-md bg-white p-4 hover:shadow-lg",
-      )}
+      className={cn("block h-full shrink-0 self-start px-[6px]")}
     >
-      <div className="flex h-fit gap-4 rounded-md border border-slate-400 p-2">
-        <div className="h-fit w-full rounded-md border border-slate-800 p-1">
-          <h1 className="text-sm font-semibold">{task.title}</h1>
-        </div>
-        <div
-          {...listeners}
-          className="flex cursor-grab items-center self-start rounded p-1 hover:bg-gray-100"
-        >
-          <GripVertical className="h-4 w-4" />
-        </div>
-      </div>
+      <div className="bg-whitee relative box-border flex max-h-full w-[272px] flex-col justify-between rounded-md pb-[8px] align-top">
+        <div className="relative flex grow-0 items-start justify-between gap-2 rounded-md bg-white py-[8px] pl-[8px] pr-[0]">
+          <div className="relative min-h-[20px] flex-shrink flex-grow">
+            <h2 className="m-0 cursor-pointer bg-transparent px-[6px] text-[14px] font-medium">
+              {task.title}
+            </h2>
+            {/* <Textarea className="opacity-0d resize- -z-d10 absolute inset-0 m-0 min-h-[20px] overflow-hidden" /> */}
+            {/* <Textarea className="inset-0 m-0 min-h-[10px] w-full resize-none overflow-hidden" /> */}
+          </div>
 
-      <SortableContext
-        items={task.cards}
-        strategy={verticalListSortingStrategy}
-      >
-        <div className="flex size-full flex-1 flex-col gap-2 overflow-y-auto">
-          {task.cards.map((card) => (
-            <SortableCard key={card.id} card={card} />
-          ))}
+          <div
+            {...listeners}
+            className="flex cursor-grab items-center self-start rounded p-1 hover:bg-gray-100"
+          >
+            <GripVertical className="h-4 w-4" />
+          </div>
         </div>
-      </SortableContext>
+        <div className="-mb-[2px] h-[8px] flex-shrink-0"></div>
+        <div className="scrollbar-stable scrollbar-thin scrollbar-thumb-slate-900 scrollbar-track-transparent my-1 flex flex-shrink flex-grow basis-auto flex-col gap-2 overflow-y-auto overflow-x-hidden py-1 pl-[8px] pr-[4px]">
+          <SortableContext
+            items={task.cards}
+            strategy={verticalListSortingStrategy}
+          >
+            {task.cards.map((card) => (
+              <SortableCard key={card.id} card={card} />
+            ))}
+          </SortableContext>
+        </div>
 
-      <div className="border py-1">
-        <p>Add Card</p>
+        <div className="ml-[8px] mr-[12px] rounded-md bg-white px-[8px] py-[8px]">
+          <button className="w-full text-xs">Add Card</button>
+        </div>
       </div>
     </li>
   );
@@ -343,7 +348,7 @@ function SortableCard({ card }: { card: ICard }) {
       {...attributes}
       {...listeners}
       className={cn(
-        "max-h-[200px] min-h-[200px] rounded-md border-2 border-gray-200 bg-white px-2 text-sm hover:cursor-pointer hover:border-gray-600",
+        "max-h-[200px] min-h-[200px] rounded-md border-2 border-slate-300 bg-white px-2 text-sm hover:cursor-pointer hover:border-gray-600",
       )}
     >
       {card.title}
@@ -351,10 +356,10 @@ function SortableCard({ card }: { card: ICard }) {
   );
 }
 
-function SortableTaskItemOverlay({ item }: { item: ITask }) {
+function SortableTaskItemOverlay({ task }: { task: ITask }) {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({
-      id: item.id,
+      id: task.id,
     });
 
   const style = {
@@ -367,32 +372,40 @@ function SortableTaskItemOverlay({ item }: { item: ITask }) {
       ref={setNodeRef}
       style={style}
       {...attributes}
-      className="flex w-[300px] rotate-3 flex-col gap-2 rounded-md bg-white p-4 hover:shadow-lg"
+      className={cn("block h-full shrink-0 self-start px-[6px]")}
     >
-      <div className="flex h-fit gap-4 rounded-md border border-slate-400 p-2">
-        <div className="h-fit w-full rounded-md border border-slate-800 p-1">
-          <h1 className="text-sm font-semibold">{item.title}</h1>
-        </div>
-        <div
-          {...listeners}
-          className="flex cursor-grab items-center self-start rounded p-1 hover:bg-gray-100"
-        >
-          <GripVertical className="h-4 w-4" />
-        </div>
-      </div>
-
-      <div className="scrollbar-width-[2px] scrollbar-track-transparent scrollbar-thumb-slate-500 flex size-full flex-1 flex-col gap-2 overflow-y-auto">
-        {item.cards.map((card) => (
-          <div
-            className="min-h-[200px] rounded-md border-2 border-gray-200 px-2 text-sm hover:cursor-pointer hover:border-gray-600"
-            key={card.id}
-          >
-            {card.title}
+      <div className="relative box-border flex max-h-full w-[272px] rotate-3 flex-col justify-between rounded-md bg-white pb-[8px] align-top">
+        <div className="relative flex grow-0 items-start justify-between gap-2 py-[8px] pl-[8px] pr-[0]">
+          <div className="relative min-h-[20px] flex-shrink flex-grow">
+            <h2 className="m-0 cursor-pointer bg-transparent px-[6px] text-[14px] font-medium">
+              {task.title}
+            </h2>
+            {/* <Textarea className="opacity-0d resize- -z-d10 absolute inset-0 m-0 min-h-[20px] overflow-hidden" /> */}
+            {/* <Textarea className="inset-0 m-0 min-h-[10px] w-full resize-none overflow-hidden" /> */}
           </div>
-        ))}
-      </div>
-      <div className="border py-1">
-        <p>Add Card</p>
+
+          <div
+            {...listeners}
+            className="flex cursor-grab items-center self-start rounded p-1 hover:bg-gray-100"
+          >
+            <GripVertical className="h-4 w-4" />
+          </div>
+        </div>
+        <div className="-mb-[2px] h-[8px] flex-shrink-0"></div>
+        <div className="scrollbar-stable scrollbar-thin scrollbar-thumb-slate-900 scrollbar-track-transparent my-1 flex flex-shrink flex-grow basis-auto flex-col gap-2 overflow-y-auto overflow-x-hidden py-1 pl-[8px] pr-[4px]">
+          <SortableContext
+            items={task.cards}
+            strategy={verticalListSortingStrategy}
+          >
+            {task.cards.map((card) => (
+              <SortableCard key={card.id} card={card} />
+            ))}
+          </SortableContext>
+        </div>
+
+        <div className="px-[8px] py-[8px]">
+          <button className="w-full">Add Card</button>
+        </div>
       </div>
     </li>
   );

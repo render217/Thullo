@@ -1,18 +1,28 @@
 import { IBoard } from "@/types";
-import ExperimentsDndKit from "../experiments";
-import Part2Ex from "../experiments/part2Ex";
-import Part3Ex from "../experiments/part3Ex";
-import Part4Ex from "../experiments/part4Ex";
-import Part5Ex from "../experiments/part5Ex";
+
+import { cn } from "@/lib/utils";
+import Image from "next/image";
+import BoardDndKit from "../experiments/board-dnd-kit";
 
 export default function KanbanBoard({ board }: { board: IBoard }) {
   return (
-    <div className="size-full select-none overflow-x-auto bg-gray-200 p-[10px] px-[20px]">
-      {/* <ExperimentsDndKit board={board} /> */}
-      {/* <Part2Ex board={board} /> */}
-      {/* <Part3Ex board={board} /> */}
-      {/* <Part4Ex board={board} /> */}
-      <Part5Ex board={board} />
+    <div className={cn("relative size-full overflow-x-auto", "")}>
+      <BackgroundImage />
+      <BoardDndKit board={board} />
+    </div>
+  );
+}
+function BackgroundImage() {
+  return (
+    <div className="">
+      <Image
+        className="absolute inset-0 filter"
+        layout="fill"
+        objectFit="cover"
+        src={"/images/kanban.jpg"}
+        alt="background"
+      />
+      <div className="absolute inset-0 bg-black opacity-50"></div>
     </div>
   );
 }

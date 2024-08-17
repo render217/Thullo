@@ -1,5 +1,6 @@
 import NavHeader from "@/components/shared/nav-header";
 import BoardNav from "./_components/board-nav";
+import Image from "next/image";
 
 export default function SingleBoardLayout({
   children,
@@ -14,7 +15,8 @@ export default function SingleBoardLayout({
       <div className="grid h-[50px] items-center bg-gray-50">
         <BoardNav />
       </div>
-      <main className="w-full bg-gray-100 p-[5px]">
+
+      <main className="relative w-full p-[5px]">
         <div className="-m-[5px] h-[calc(100vh-116px)]">{children}</div>
       </main>
     </>
