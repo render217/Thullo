@@ -23,13 +23,13 @@ export default function TaskCardDetail({ card }: { card: ICard }) {
         </div>
         <div className="mt-4 flex h-full max-h-[calc(100vh-200px)] gap-2">
           <ScrollArea className="flex flex-1 pr-5">
-            <TaskCardMeta />
-            <TaskCardDescription />
-            <TaskCardAttachments />
-            <TaskCardComments />
+            <TaskCardMeta card={card} />
+            <TaskCardDescription card={card} />
+            <TaskCardAttachments card={card} />
+            <TaskCardComments card={card} />
           </ScrollArea>
           <div className="w-[200px]">
-            <TaskCardActions />
+            <TaskCardActions card={card} />
           </div>
         </div>
       </div>

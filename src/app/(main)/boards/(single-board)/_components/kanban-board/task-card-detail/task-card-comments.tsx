@@ -1,14 +1,59 @@
-export default function TaskCardComments() {
+import { Avatar } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { ICard } from "@/types";
+
+export default function TaskCardComments({ card }: { card: ICard }) {
   return (
     <div>
-      <div className="mb-3 py-2 text-xs">add comment</div>
-      <div>
-        <p className="text-sm">
-          Ideas are created and share here through a card. Here you Lorem ipsum
-          dolor sit amet consectetur adipisicing elit. Id reiciendis praesentium
-          tenetur quas deserunt, laboriosam distinctio culpa neque ullam
-          explicabo.
-        </p>
+      {/* <div className="py-2 text-xs font-bold">Comments</div> */}
+      <div className="px-0.5">
+        <div className="relative">
+          <div className="absolute left-2 top-2 h-7 w-7 overflow-hidden rounded-md">
+            <img
+              className="size-full object-cover"
+              src={card.coverPhoto}
+              alt=""
+            />
+          </div>
+          <Textarea
+            className="pl-[42px] pt-[10px] text-xs focus-visible:ring-0"
+            placeholder="Write a comment "
+          />
+        </div>
+
+        <div className="flex justify-end py-2">
+          <Button size={"sm"} className="h-fit py-1 text-[10px]">
+            add comment
+          </Button>
+        </div>
+      </div>
+      <div className="flex flex-col gap-2 px-2 py-6">
+        {card.comments.map((comment) => {
+          return (
+            <div
+              key={comment.id}
+              className="mb-4 space-y-2 border-b border-b-slate-300 pb-1"
+            >
+              <div className="flex items-center gap-2">
+                <div className="h-6 w-6 overflow-hidden rounded-md">
+                  <img
+                    className="size-full object-cover"
+                    src={comment.author.profileImage}
+                    alt={comment.author.username}
+                  />
+                </div>
+                <div>
+                  <p className="text-[10px]">{comment.author.username}</p>
+                  <p className="text-[8px]">{comment.createdAt}</p>
+                </div>
+              </div>
+              <div className="">
+                <p className="text-[10px]">{comment.content}</p>
+              </div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );

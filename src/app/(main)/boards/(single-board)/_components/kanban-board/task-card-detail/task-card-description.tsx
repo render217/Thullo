@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
+import { ICard } from "@/types";
 
-export default function TaskCardDescription() {
+export default function TaskCardDescription({ card }: { card: ICard }) {
   return (
     <div>
       <div className="flex items-center gap-3 py-2">
@@ -15,7 +16,7 @@ export default function TaskCardDescription() {
       </div>
       <div className="">
         <p className="text-xs">
-          Ideas are created and share here through a card. Here you can describe
+          {/* Ideas are created and share here through a card. Here you can describe
           what you'd like to accomplish. For example you can follow three simple
           questions to create the card related to your idea: * Why ? (Why do you
           wish to do it ?) * What ? (What it is it, what are the goals, who is
@@ -27,7 +28,8 @@ export default function TaskCardDescription() {
           Quae amet non iure ut repellendus sequi quas, blanditiis, ipsa
           delectus omnis corrupti velit maxime, expedita et nostrum vero sint!
           Veniam magnam consequuntur dicta asperiores modi neque itaque dolorem
-          dolores voluptate culpa!
+          dolores voluptate culpa! */}
+          {card.description}
         </p>
       </div>
     </div>
