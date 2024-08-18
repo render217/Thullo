@@ -5,6 +5,7 @@ import {
   GripVertical,
   MessageSquareText,
   Paperclip,
+  Plus,
 } from "lucide-react";
 import { act, useState } from "react";
 
@@ -33,6 +34,8 @@ import { Textarea } from "@/components/ui/textarea";
 import BoardCard from "../../../(all-boards)/_components/board/board-card";
 import TaskCard from "../kanban-board/task-card";
 import Image from "next/image";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import TaskCardDetail from "../kanban-board/task-card-detail";
 
 export default function BoardDndKit({ board }: { board: IBoard }) {
   const [tasks, setTasks] = useState(board.taskLists);
@@ -152,7 +155,7 @@ export default function BoardDndKit({ board }: { board: IBoard }) {
 
     if (activeData.type === "card" && overData.type === "card") {
       // Card-to-card drag within the same task
-      console.log("1.card-to-card");
+      // console.log("1.card-to-card");
       const sourceTaskIndex = tasks.findIndex((task) =>
         task.cards.some((card) => card.id === active.id),
       );
@@ -163,7 +166,7 @@ export default function BoardDndKit({ board }: { board: IBoard }) {
       //   console.log("2.target-task-index", targetTaskIndex);
 
       if (sourceTaskIndex === targetTaskIndex) {
-        console.log("3.within same task");
+        // console.log("3.within same task");
         const sourceCardIndex = tasks[sourceTaskIndex].cards.findIndex(
           (card) => card.id === active.id,
         );
@@ -190,7 +193,7 @@ export default function BoardDndKit({ board }: { board: IBoard }) {
           //   console.log("5.source or target card index not found");
         }
       } else {
-        console.log("3. with in different task");
+        // console.log("3. with in different task");
         // Moving card to a different task
         const sourceTask = tasks[sourceTaskIndex];
         const targetTask = tasks[targetTaskIndex];
@@ -212,7 +215,7 @@ export default function BoardDndKit({ board }: { board: IBoard }) {
       }
     } else if (activeData.type === "task" && overData.type === "task") {
       // Task-to-task drag
-      console.log("1. task-to-task");
+      // console.log("1. task-to-task");
       const sourceIndex = tasks.findIndex((task) => task.id === active.id);
       const targetIndex = tasks.findIndex((task) => task.id === over.id);
       if (sourceIndex !== -1 && targetIndex !== -1) {
@@ -234,7 +237,7 @@ export default function BoardDndKit({ board }: { board: IBoard }) {
         onDragMove={handleDragMove}
       >
         <SortableContext items={tasks} strategy={horizontalListSortingStrategy}>
-          <ul className="scrollbar-width-auto scrollbar-thumb-white scrollbar-track-transparent absolute inset-0 -top-[2px] mb-[8px] flex size-full select-none gap-2 overflow-x-auto overflow-y-hidden px-[10px] pb-[8px] pt-[8px]">
+          <ul className="absolute inset-0 -top-[2px] mb-[8px] flex size-full select-none gap-2 overflow-x-auto overflow-y-hidden px-[10px] pb-[8px] pt-[8px] scrollbar-width-auto scrollbar-track-transparent scrollbar-thumb-white">
             {tasks.map((task) => (
               <SortableTaskItem key={task.id} task={task} />
             ))}
@@ -272,8 +275,46 @@ function SortableTaskItem({ task }: { task: ITask }) {
       <li
         ref={setNodeRef}
         style={style}
-        className="w-[272px] border-2 border-dashed border-blue-500 bg-blue-100"
-      ></li>
+        className="relative block h-full shrink-0 self-start px-[6px]"
+      >
+        <div className="relative box-border flex max-h-full w-[272px] flex-col justify-between rounded-md border-2 border-dashed border-blue-500 bg-slate-300 pb-[8px] align-top opacity-40">
+          <div className="absolute inset-0 bg-blue-100 opacity-40"></div>
+
+          <div className="relative flex grow-0 items-center justify-between gap-2 rounded-md border-b border-slate-300 bg-slate-50 py-[8px] pl-[8px] pr-[0]">
+            <div className="relative min-h-[20px] flex-shrink flex-grow">
+              <h2 className="m-0 cursor-pointer bg-transparent px-[6px] text-[14px] font-medium">
+                {task.title}
+              </h2>
+            </div>
+            <div
+              {...listeners}
+              className="flex cursor-grab items-center self-start rounded p-1 hover:bg-gray-100"
+            >
+              <GripVertical className="h-4 w-4" />
+            </div>
+          </div>
+
+          <div className="-mb-[2px] h-[8px] flex-shrink-0"></div>
+
+          <div className="my-1 flex flex-shrink flex-grow basis-auto flex-col gap-2 overflow-y-auto overflow-x-hidden py-1 pl-[8px] pr-[4px] scrollbar-stable scrollbar-thin scrollbar-track-transparent scrollbar-thumb-slate-900">
+            <SortableContext
+              items={task.cards}
+              strategy={verticalListSortingStrategy}
+            >
+              {task.cards.map((card) => (
+                <SortableCard key={card.id} card={card} />
+              ))}
+            </SortableContext>
+          </div>
+
+          <div className="rounded-md bg-white px-[8px]">
+            <button className="flex w-full items-center gap-2 rounded-md border border-dashed border-slate-200 px-2 py-[8px] hover:border-solid hover:border-slate-200 hover:bg-slate-200">
+              <Plus className="size-4" />
+              <span className="block text-sm">Add Card</span>
+            </button>
+          </div>
+        </div>
+      </li>
     );
   }
   return (
@@ -281,10 +322,10 @@ function SortableTaskItem({ task }: { task: ITask }) {
       ref={setNodeRef}
       style={style}
       {...attributes}
-      className={cn("block h-full shrink-0 self-start px-[6px]")}
+      className={cn("block h-full shrink-0 cursor-default self-start px-[6px]")}
     >
       <div className="relative box-border flex max-h-full w-[272px] flex-col justify-between rounded-md bg-slate-50 pb-[8px] align-top">
-        <div className="relative flex grow-0 items-start justify-between gap-2 rounded-md bg-slate-50 py-[8px] pl-[8px] pr-[0]">
+        <div className="relative flex grow-0 items-center justify-between gap-2 rounded-md border-b border-slate-300 bg-slate-50 py-[8px] pl-[8px] pr-[0]">
           <div className="relative min-h-[20px] flex-shrink flex-grow">
             <h2 className="m-0 cursor-pointer bg-transparent px-[6px] text-[14px] font-medium">
               {task.title}
@@ -300,8 +341,10 @@ function SortableTaskItem({ task }: { task: ITask }) {
             <GripVertical className="h-4 w-4" />
           </div>
         </div>
-        <div className="-mb-[2px] h-[8px] flex-shrink-0 border-b border-slate-400"></div>
-        <div className="scrollbar-stable scrollbar-thin scrollbar-thumb-slate-900 scrollbar-track-transparent my-1 flex flex-shrink flex-grow basis-auto flex-col gap-2 overflow-y-auto overflow-x-hidden py-1 pl-[8px] pr-[4px]">
+
+        <div className="-mb-[2px] h-[8px] flex-shrink-0"></div>
+
+        <div className="my-1 flex flex-shrink flex-grow basis-auto flex-col gap-2 overflow-y-auto overflow-x-hidden py-1 pl-[8px] pr-[4px] scrollbar-stable scrollbar-thin scrollbar-track-transparent scrollbar-thumb-slate-900">
           <SortableContext
             items={task.cards}
             strategy={verticalListSortingStrategy}
@@ -312,9 +355,10 @@ function SortableTaskItem({ task }: { task: ITask }) {
           </SortableContext>
         </div>
 
-        <div className="ml-[8px] mr-[12px] rounded-md bg-white px-[8px]">
-          <button className="w-full rounded-md border border-dashed border-slate-800 py-[8px] text-xs hover:border-solid hover:border-slate-500 hover:bg-slate-200">
-            Add Card
+        <div className="rounded-md bg-white px-[8px]">
+          <button className="flex w-full items-center gap-2 rounded-md border border-dashed border-slate-200 px-2 py-[8px] hover:border-solid hover:border-slate-200 hover:bg-slate-200">
+            <Plus className="size-4" />
+            <span className="block text-sm">Add Card</span>
           </button>
         </div>
       </div>
@@ -323,12 +367,14 @@ function SortableTaskItem({ task }: { task: ITask }) {
 }
 
 function SortableCard({ card }: { card: ICard }) {
+  const [isCardDragging, setIsCardDragging] = useState(false);
   const {
     attributes,
     listeners,
     setNodeRef,
     transform,
     transition,
+
     isDragging,
   } = useSortable({
     id: card.id,
@@ -342,12 +388,13 @@ function SortableCard({ card }: { card: ICard }) {
     transform: CSS.Transform.toString(transform),
     transition,
   };
+
   if (isDragging) {
     return (
       <div
         ref={setNodeRef}
         style={style}
-        className="max-h-[200px] min-h-[200px] rounded-md border-2 border-dashed border-blue-500 bg-blue-100 px-2 text-sm hover:cursor-pointer hover:border-gray-600 hover:shadow-lg"
+        className="max-h-[200px] min-h-[200px] rounded-md border-2 border-dashed border-blue-500 bg-blue-100 px-2 text-sm hover:border-gray-600 hover:shadow-lg"
       ></div>
     );
   }
@@ -356,12 +403,11 @@ function SortableCard({ card }: { card: ICard }) {
       ref={setNodeRef}
       style={style}
       {...attributes}
-      {...listeners}
       className={cn(
-        "h-auto min-h-[200px] rounded-md border border-slate-400 bg-white px-2 py-2 text-sm shadow-md hover:cursor-pointer hover:border-gray-600",
+        "h-auto rounded-md border border-slate-100 bg-white px-2 py-2 text-sm shadow-md hover:border-blue-500",
       )}
     >
-      <TaskCard card={card} />
+      <TaskCard card={card} listeners={listeners} />
     </div>
   );
 }
@@ -402,7 +448,7 @@ function SortableTaskItemOverlay({ task }: { task: ITask }) {
           </div>
         </div>
         <div className="-mb-[2px] h-[8px] flex-shrink-0"></div>
-        <div className="scrollbar-stable scrollbar-thin scrollbar-thumb-slate-900 scrollbar-track-transparent my-1 flex flex-shrink flex-grow basis-auto flex-col gap-2 overflow-y-auto overflow-x-hidden py-1 pl-[8px] pr-[4px]">
+        <div className="my-1 flex flex-shrink flex-grow basis-auto flex-col gap-2 overflow-y-auto overflow-x-hidden py-1 pl-[8px] pr-[4px] scrollbar-stable scrollbar-thin scrollbar-track-transparent scrollbar-thumb-slate-900">
           <SortableContext
             items={task.cards}
             strategy={verticalListSortingStrategy}
@@ -413,8 +459,11 @@ function SortableTaskItemOverlay({ task }: { task: ITask }) {
           </SortableContext>
         </div>
 
-        <div className="px-[8px] py-[8px]">
-          <button className="w-full">Add Card</button>
+        <div className="rounded-md bg-white px-[8px]">
+          <button className="flex w-full items-center gap-2 rounded-md border border-dashed border-slate-200 px-2 py-[8px] hover:border-solid hover:border-slate-200 hover:bg-slate-200">
+            <Plus className="size-4" />
+            <span className="block text-sm">Add Card</span>
+          </button>
         </div>
       </div>
     </li>
@@ -437,12 +486,12 @@ function SortableCardOverlay({ card }: { card: ICard }) {
       ref={setNodeRef}
       style={style}
       {...attributes}
-      {...listeners}
+      // {...listeners}
       className={cn(
-        "min-h-[200px] rotate-3 rounded-md bg-white px-2 py-2 text-sm shadow-md hover:cursor-pointer hover:border-gray-600",
+        "h-fit w-[272px] rotate-3 cursor-grabbing rounded-md border border-slate-100 bg-white px-2 py-2 text-sm shadow-md hover:border-blue-500",
       )}
     >
-      <div className="size-full">
+      {/* <div className="size-full">
         <div className="max-h-[100px] w-full overflow-hidden rounded-lg bg-white shadow-lg">
           <Image
             className="h-full w-full rounded-md object-cover"
@@ -484,7 +533,8 @@ function SortableCardOverlay({ card }: { card: ICard }) {
             </div>
           )}
         </div>
-      </div>
+      </div> */}
+      <TaskCard card={card} listeners={listeners} />
     </div>
   );
 }

@@ -14,13 +14,14 @@ export default function KanbanBoard({ board }: { board: IBoard }) {
 }
 function BackgroundImage() {
   return (
-    <div className="">
+    <div className="size-full">
       <Image
-        className="absolute inset-0 filter"
-        layout="fill"
-        objectFit="cover"
+        className="absolute inset-0 size-full filter"
+        priority={true}
         src={"/images/kanban.jpg"}
         alt="background"
+        width={500}
+        height={500}
       />
       <div className="absolute inset-0 bg-black opacity-50"></div>
     </div>
