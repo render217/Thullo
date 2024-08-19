@@ -5,6 +5,8 @@ import BoardMemebers from "./board-members";
 import ChangeVisibility from "./change-visibility";
 import InviteUser from "./invite-user";
 import { useParams } from "next/navigation";
+import InviteUser2 from "./invite-user-2";
+import PreviewInvites from "./preview-invites";
 
 export default function BoardNav() {
   const params = useParams();
@@ -17,7 +19,9 @@ export default function BoardNav() {
       <div className="flex items-center gap-4">
         <ChangeVisibility />
         <BoardMemebers members={board.members} />
-        <InviteUser />
+        {/* <InviteUser /> */}
+        <InviteUser2 />
+        <PreviewInvites />
         <div className="ml-auto">
           <BoardSideBar />
         </div>
