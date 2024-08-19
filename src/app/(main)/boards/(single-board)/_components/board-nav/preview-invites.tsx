@@ -8,20 +8,31 @@ import {
   DropdownMenuTrigger,
   DropdownMenuContent,
 } from "@/components/ui/dropdown-menu";
+import { Avatar } from "@/components/ui/avatar";
 export default function PreviewInvites() {
   return (
     <div>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <div className="flex flex-col place-content-center rounded-md px-2">
-            <Eye className="size-5" />
-            <p>preview Invites</p>
-          </div>
+          {/* <div className="flex w-full cursor-pointer flex-row items-center gap-1 rounded-md p-2 text-xs text-slate-500 shadow-sm hover:bg-slate-300">
+            <Eye className="size-4" />
+            <p className="text-[10px]">preview invites</p>
+          </div> */}
+          <Button
+            variant={"outline"}
+            size={"sm"}
+            className="h-7 border-2 text-xs"
+          >
+            <div className="flex items-center gap-2 text-slate-500">
+              <Eye className="size-4" />
+              <span className="text-[10px]">Preview Invites</span>
+            </div>
+          </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-[220px] border p-3 shadow-sm shadow-blue-200">
           <div>
-            <h3 className="text-sm font-semibold">Invite to Board</h3>
-            <p className="text-[10px]"> Search users you want to invite to </p>
+            <h3 className="text-sm font-semibold">Preview Invites</h3>
+            <p className="text-[10px]"> Users invited to this board </p>
           </div>
           {/* break to other component */}
           <div className="relative py-2">
@@ -40,34 +51,34 @@ export default function PreviewInvites() {
               <p className="text-[10px]">searching...</p>
             </div> */}
             <ScrollArea className="flex h-[140px] pr-2">
-              <div className="flex flex-col gap-2 p-1">
+              <div className="flex flex-col gap-1 p-1">
                 {users.map((user) => {
                   return (
                     <div
                       key={user.id}
-                      className="flex cursor-pointer items-center gap-2 rounded-md border p-1 shadow-md hover:bg-slate-200"
+                      className="relative flex cursor-pointer items-center gap-2 rounded-md border p-1 hover:bg-slate-100"
                     >
-                      <div className="h-8 min-w-8 max-w-8 overflow-hidden rounded-sm">
+                      <Avatar className="h-4 w-4">
                         <img
                           className="size-full object-cover"
                           src={user.profileImage}
                           alt={user.username}
                         />
-                      </div>
+                      </Avatar>
+
                       <div className="relative">
-                        <h2 className="text-[10px]">{user.username}</h2>
+                        <h2 className="w-[105px] truncate text-[10px]">
+                          {user.username}
+                        </h2>
                       </div>
+                      <span className="absolute right-1 top-1 block rounded-md border bg-red-500 p-0.5 px-1 text-[8px] text-white">
+                        cancel
+                      </span>
                     </div>
                   );
                 })}
               </div>
             </ScrollArea>
-          </div>
-
-          <div className="mt-2">
-            <Button size={"sm"} className="mx-auto block h-6 text-[10px]">
-              Invite Member
-            </Button>
           </div>
         </DropdownMenuContent>
       </DropdownMenu>

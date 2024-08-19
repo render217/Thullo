@@ -4,6 +4,8 @@ import { SignedIn, UserButton } from "@clerk/nextjs";
 import NavSearchForm from "./nav-search-form";
 import UserProfile from "./user-profile";
 import Link from "next/link";
+import Invites from "./invitation";
+import Invitation from "./invitation";
 export default function NavHeader() {
   return (
     <header>
@@ -51,6 +53,10 @@ export default function NavHeader() {
 
           <div className="ml-auto mr-[20px]">
             <NavSearchForm />
+          </div>
+
+          <div className="mx-5">
+            <Invitation />
           </div>
 
           <div className="">
