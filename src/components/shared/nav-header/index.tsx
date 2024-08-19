@@ -6,6 +6,8 @@ import UserProfile from "./user-profile";
 import Link from "next/link";
 import Invites from "./invitation";
 import Invitation from "./invitation";
+import { LayoutDashboard } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
 export default function NavHeader() {
   return (
     <header>
@@ -23,26 +25,19 @@ export default function NavHeader() {
           </div>
 
           <SignedIn>
-            <div className="mr-[20px] flex items-center gap-6">
-              {/* 
-                
-                    -  all-boards
-                    -  or selected board
-                    
-                */}
-              {/* <h2 className="text-base font-semibold">Devchallanges Board</h2> */}
-              <div className="cursor-pointer rounded-[5px] bg-gray-300 p-2 duration-300 hover:bg-gray-300/80">
-                <div className="flex min-w-[16px] items-center gap-2">
-                  <Image
-                    className="text-gray-700"
-                    src={"/icons/squares.svg"}
-                    height={14}
-                    width={14}
-                    alt="thullo-logo"
-                  />
+            <div className="mr-[20px] flex items-center gap-4">
+              {/* <h2 className="text-sm font-light">Devchallanges Board</h2>
+              <Separator
+                className="h-6 w-[1px] bg-slate-300 p-0"
+                orientation="vertical"
+              /> */}
+
+              <div className="cursor-pointer rounded-[5px] bg-gray-200 p-2 duration-300 hover:bg-gray-300/80">
+                <div className="flex min-w-[16px] items-center gap-1 font-light text-gray-700">
+                  <LayoutDashboard className="size-4 text-gray-500" />
                   <Link
                     href={"/boards"}
-                    className="hidden text-xs font-medium text-gray-700 md:block"
+                    className="hidden text-[12px] font-light md:block"
                   >
                     All Boards
                   </Link>

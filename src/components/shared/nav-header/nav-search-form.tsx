@@ -7,18 +7,14 @@ export default function NavSearchForm() {
   return (
     <>
       <div className="bg-white">
-        <div className="flex rounded-[8px] border border-slate-300 p-1">
+        <div className="relative">
           <Input
-            placeholder="Search"
-            className="h-8 rounded-s-[8px] border-none px-2 py-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+            className="relative h-8 border border-slate-300 py-1 pr-9 text-xs focus-visible:ring-0"
+            placeholder="Search..."
           />
-          <Button
-            variant={"outline"}
-            size={"sm"}
-            className="h-8 w-[50px] border px-1 text-sm font-medium"
-          >
-            <Search className="size-4" />
-          </Button>
+          <span className="absolute right-1 top-1 grid h-6 w-6 cursor-pointer place-content-center rounded-md border bg-blue-500 text-white">
+            <Search className="block size-3" />
+          </span>
         </div>
       </div>
     </>
