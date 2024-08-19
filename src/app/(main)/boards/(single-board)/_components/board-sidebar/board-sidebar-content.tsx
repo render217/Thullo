@@ -2,9 +2,9 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { SheetHeader, SheetTitle, SheetContent } from "@/components/ui/sheet";
 import { IBoard, IUser } from "@/types";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import {
   Dialog,
   DialogClose,
@@ -32,55 +32,61 @@ export default function BoardSideBarContent({ board }: { board: IBoard }) {
   const [isEdit, setIsEdit] = useState(false);
   const toggleEdit = () => setIsEdit(!isEdit);
   return (
-    <>
-      <SheetHeader className="mb-3">
-        <SheetTitle>{board.title}</SheetTitle>
-      </SheetHeader>
-      <Separator className="mb-4 border bg-slate-300" />
-
-      <div>
-        {/* ADMIN */}
-        <div>
-          <Badge className="border-2" variant={"outline"}>
-            <div className="flex w-20 items-end gap-2">
-              <User className="size-4" />
-              <p className="text-xs font-medium">Made By</p>
+    <div className="h-full overflow-hidden">
+      <ScrollArea className="h-full pr-4">
+        <div className="">
+          <h1 className="font-semibol pb-1">{board.title}</h1>
+          <Separator className="" />
+        </div>
+        {/* 
+          ------------------------------------
+            ADMDIN META
+          ------------------------------------
+        */}
+        <div className="mt-3 space-y-2">
+          <div className="w-fit rounded-lg border border-slate-300 px-2 py-0.5">
+            <div className="flex items-center gap-2 text-gray-500">
+              <User className="size-3" />
+              <p className="text-[10px]">MadeBy</p>
             </div>
-          </Badge>
+          </div>
 
-          <div className="mb-3 mt-2 flex items-center gap-3 py-2">
-            <Image
-              className="h-8 w-8 rounded-md"
-              src={board.admin.profileImage}
-              height={200}
-              width={100}
-              alt="person"
-            />
+          <div className="flex items-center gap-3">
+            <div className="h-8 w-8 overflow-hidden rounded-md">
+              <img
+                className="size-full object-cover"
+                src={board.admin.profileImage}
+                alt={board.admin.profileImage}
+              />
+            </div>
             <div className="">
-              <p className="text-sm font-semibold">{board.admin.username}</p>
-              <p className="text-xs text-slate-400">{board.createdAt}</p>
+              <p className="text-xs font-semibold">{board.admin.username}</p>
+              <p className="text-[10px] text-slate-400">{board.createdAt}</p>
             </div>
           </div>
         </div>
-
-        {/* Description */}
-        <div className="">
-          <div className="mb-3 flex items-end justify-between">
-            <Badge className="border-2" variant={"outline"}>
-              <div className="flex w-24 items-center gap-2">
-                <ScrollText className="size-4" />
-                <p className="text-xs font-medium">Description</p>
+        {/* 
+          ------------------------------------
+            DESCRIPTION
+          ------------------------------------
+        */}
+        <div className="mt-3">
+          <div className="flex items-end justify-between">
+            <div className="w-fit rounded-lg border border-slate-300 px-2 py-0.5">
+              <div className="flex items-center gap-2 text-gray-500">
+                <ScrollText className="size-3" />
+                <p className="text-[10px]">Description</p>
               </div>
-            </Badge>
+            </div>
             {!isEdit ? (
               <Button
                 onClick={toggleEdit}
-                className="h-6 border-2"
+                className="rounded-xs h-[22px] px-4 py-1"
                 size={"sm"}
                 variant={"outline"}
               >
-                <div className="flex items-center gap-2">
-                  <Pencil className="size-4" />
+                <div className="flex items-center gap-2 text-gray-500">
+                  <Pencil className="size-3" />
                   <p className="text-xs font-semibold">Edit</p>
                 </div>
               </Button>
@@ -88,7 +94,7 @@ export default function BoardSideBarContent({ board }: { board: IBoard }) {
               <div className="flex items-center gap-3">
                 <Button
                   onClick={toggleEdit}
-                  className="h-6 border-2 border-red-500"
+                  className="rounded-xs h-[22px] border-red-500 px-4 py-1 hover:bg-red-100"
                   size={"sm"}
                   variant={"outline"}
                 >
@@ -99,7 +105,7 @@ export default function BoardSideBarContent({ board }: { board: IBoard }) {
                 </Button>
                 <Button
                   onClick={toggleEdit}
-                  className="h-6 border-2 border-blue-500"
+                  className="rounded-xs h-[22px] border-blue-500 hover:bg-blue-100"
                   size={"sm"}
                   variant={"outline"}
                 >
@@ -113,7 +119,7 @@ export default function BoardSideBarContent({ board }: { board: IBoard }) {
           </div>
           <div>
             {!isEdit ? (
-              <ScrollArea className="h-[18rem] py-3 pl-2 pr-4 text-sm">
+              <ScrollArea className="my-2 p-1 text-xs">
                 <p>Simple board to start on a project.</p>
                 <p>
                   Each list can hold items (cards) that represent ideas or
@@ -128,37 +134,47 @@ export default function BoardSideBarContent({ board }: { board: IBoard }) {
                 members to join. * In Review ⚙️: On-going * Completed 🙌🏽**:
                 Finished You could add other lists like labels holding labels
                 (with colors) in order to tag each card by a label if you wish.
+                members to join. * In Review ⚙️: On-going * Completed 🙌🏽**:
+                Finished You could add other lists like labels holding labels
+                (with colors) in order to tag each card by a label if you wish.
+                members to join. * In Review ⚙️: On-going * Completed 🙌🏽**:
+                Finished You could add other lists like labels holding labels
+                (with colors) in order to tag each card by a label if you wish.
+                members to join. * In Review ⚙️: On-going * Completed 🙌🏽**:
+                Finished You could add other lists like labels holding labels
+                (with colors) in order to tag each card by a label if you wish.
               </ScrollArea>
             ) : (
-              <Textarea
-                className="h-[18rem] py-3 pl-2 pr-4 text-sm"
-                defaultValue={board.description}
-                disabled={!isEdit}
-              />
+              <div className="p-1">
+                <Textarea
+                  className="my-2 py-3 pl-2 pr-4 text-xs focus-visible:ring-0"
+                  defaultValue={board.description}
+                  disabled={!isEdit}
+                />
+              </div>
             )}
           </div>
         </div>
-
-        {/* Members */}
-        <div>
-          <div className="mb-3 flex items-center justify-between">
-            <Badge className="border-2" variant={"outline"}>
-              <div className="flex w-20 items-center gap-2">
-                <Users className="size-4" />
-                <p className="text-xs">Teams</p>
+        {/* 
+          ------------------------------------
+            MEMBERS
+          ------------------------------------
+        */}
+        <div className="mt-2">
+          <div className="flex items-center justify-between">
+            <div className="w-fit rounded-lg border border-slate-300 px-2 py-0.5">
+              <div className="flex items-center gap-2 text-gray-500">
+                <Users className="size-3" />
+                <p className="text-[10px]">Teams</p>
               </div>
-            </Badge>
-            <Button className="h-6 border-2" size={"sm"} variant={"outline"}>
-              <div className="flex items-center gap-2">
-                <CirclePlus className="size-4" />
-                <p className="text-xs font-semibold">New Member</p>
-              </div>
-            </Button>
+            </div>
           </div>
-          <div>
-            <ScrollArea className="h-40 pr-4">
-              <div className="flex flex-col gap-3">
+
+          <div className="mt-2">
+            <ScrollArea className="p-1 pr-4">
+              <div className="flex flex-col gap-2">
                 <TeamMember isAdmin={true} member={board.admin} />
+
                 {board.members.map((member) => (
                   <TeamMember key={member.id} member={member} />
                 ))}
@@ -166,8 +182,9 @@ export default function BoardSideBarContent({ board }: { board: IBoard }) {
             </ScrollArea>
           </div>
         </div>
-      </div>
-    </>
+        <ScrollBar className="block" />
+      </ScrollArea>
+    </div>
   );
 }
 
@@ -179,18 +196,18 @@ function TeamMember({
   isAdmin?: Boolean;
 }) {
   return (
-    <div className="flex items-center gap-3 px-3 py-1">
-      <Image
-        className="h-7 w-7"
-        src={member.profileImage}
-        height={100}
-        width={100}
-        alt="person"
-      />
-      <p className="text-xs font-semibold">{member.username}</p>
+    <div className="flex items-center gap-3 py-1">
+      <div className="h-7 w-7 overflow-hidden rounded-md">
+        <img
+          className="size-full object-cover"
+          src={member.profileImage}
+          alt="person"
+        />
+      </div>
+      <p className="text-[10px] font-medium">{member.username}</p>
       {isAdmin ? (
         <Button
-          className="ml-auto h-6 w-20 border py-2 text-xs transition-all duration-300 ease-in-out hover:cursor-text hover:bg-transparent"
+          className="ml-auto h-6 w-20 border py-2 text-[10px] transition-all duration-300 ease-in-out hover:cursor-text hover:bg-transparent"
           variant={"outline"}
           size={"sm"}
         >
@@ -200,7 +217,7 @@ function TeamMember({
         <Dialog>
           <DialogTrigger asChild>
             <Button
-              className="ml-auto h-6 w-20 border border-red-500 py-2 text-xs text-red-500 transition-all duration-300 ease-in-out hover:bg-red-500 hover:text-white"
+              className="ml-auto h-6 w-20 border border-red-500 py-2 text-[10px] text-red-500 transition-all duration-300 ease-in-out hover:bg-red-500 hover:text-white"
               variant={"outline"}
               size={"sm"}
             >
