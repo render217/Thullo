@@ -14,7 +14,7 @@ export async function createUser(user: CreateUserParams) {
     handleError(error);
   }
 }
-export async function updateUser(clerkId: string, user: CreateUserParams) {
+export async function updateUser(clerkId: string, user: UpdateUserParams) {
   try {
     const existingUser = await db.user.findUnique({
       where: {
@@ -36,6 +36,27 @@ export async function updateUser(clerkId: string, user: CreateUserParams) {
   }
 }
 
+export async function deleteUser(clerkId: string) {
+  try {
+    const existingUser = await db.user.findUnique({
+      where: {
+        clerkId: clerkId,
+      },
+    });
+    if (!existingUser) throw new Error("User not found");
+
+    await db.user.delete({
+      where: {
+        clerkId: existingUser.clerkId,
+      },
+    });
+    console.log("delete user success", clerkId);
+    return JSON.parse(JSON.stringify(existingUser));
+  } catch (error) {
+    handleError(error);
+  }
+}
+
 type CreateUserParams = {
   clerkId: string;
   username: string;
@@ -49,5 +70,5 @@ type UpdateUserParams = {
   firstName: string;
   lastName: string;
   username: string;
-  photo: string;
+  profileImage: string;
 };
