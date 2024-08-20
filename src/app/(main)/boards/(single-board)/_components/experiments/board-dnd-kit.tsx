@@ -1,12 +1,6 @@
 "use client";
 import { IBoard, ITask, ICard } from "@/types";
-import {
-  Badge,
-  GripVertical,
-  MessageSquareText,
-  Paperclip,
-  Plus,
-} from "lucide-react";
+import { GripVertical, Plus, PlusCircle } from "lucide-react";
 import { act, useState } from "react";
 
 import {
@@ -30,12 +24,8 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { cn } from "@/lib/utils";
-import { Textarea } from "@/components/ui/textarea";
-import BoardCard from "../../../(all-boards)/_components/board/board-card";
+
 import TaskCard from "../kanban-board/task-card";
-import Image from "next/image";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import TaskCardDetail from "../kanban-board/task-card-detail";
 
 export default function BoardDndKit({ board }: { board: IBoard }) {
   const [tasks, setTasks] = useState(board.taskLists);
@@ -241,6 +231,7 @@ export default function BoardDndKit({ board }: { board: IBoard }) {
             {tasks.map((task) => (
               <SortableTaskItem key={task.id} task={task} />
             ))}
+            <AddTaskItem />
           </ul>
         </SortableContext>
         <DragOverlay className="flex" adjustScale={false}>
@@ -249,6 +240,31 @@ export default function BoardDndKit({ board }: { board: IBoard }) {
         </DragOverlay>
       </DndContext>
     </>
+  );
+}
+function AddTaskItem() {
+  const [open, setOpen] = useState(false);
+  const handleShowAddTask = () => {
+    setOpen(!open);
+  };
+  return (
+    <li className="block h-full shrink-0 cursor-default self-start px-[6px]">
+      <div className="relative box-border flex max-h-full w-[272px] flex-col justify-between rounded-md bg-transparent pb-[8px] align-top">
+        <div
+          onClick={handleShowAddTask}
+          className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-sm border border-slate-400 bg-transparent/30 py-2 text-white shadow-sm hover:bg-transparent/50"
+        >
+          <PlusCircle className="size-5" />
+          <h2 className="m-0 cursor-pointer bg-transparent px-[6px] text-center text-[14px] font-medium">
+            Add New Task
+          </h2>
+        </div>
+
+        {open && (
+          <div className="pointer-events-auto mt-3 min-h-40 rounded-md bg-white"></div>
+        )}
+      </div>
+    </li>
   );
 }
 
