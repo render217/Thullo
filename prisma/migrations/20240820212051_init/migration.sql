@@ -3,6 +3,8 @@ CREATE TABLE "User" (
     "clerkId" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "username" TEXT NOT NULL,
+    "firstName" TEXT NOT NULL,
+    "lastName" TEXT NOT NULL,
     "profileImage" TEXT NOT NULL,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("clerkId")
