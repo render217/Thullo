@@ -13,6 +13,11 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Visibility {
+  PUBLIC
+  PRIVATE
+}
+
 model User {
   clerkId      String @id @unique @default(cuid())
   email        String @unique
@@ -20,4 +25,42 @@ model User {
   firstName    String
   lastName     String
   profileImage String
+}
+
+model Board {
+  boardId     String @id @unique @default(cuid())
+  title       String
+  description String
+
+  visibility Visibility
+}
+
+model Task {
+  taskId      String @id @unique @default(cuid())
+  title       String
+  description String
+  status      String
+}
+
+model Card {
+  cardId      String @id @unique @default(cuid())
+  title       String
+  description String
+}
+
+model Label {
+  labelId String @id @unique @default(cuid())
+  name    String
+  color   String
+}
+
+model Comment {
+  commentId String @id @unique @default(cuid())
+  content   String
+}
+
+model Attachment {
+  attachmentId String @id @unique @default(cuid())
+  contentType  String
+  url          String
 }

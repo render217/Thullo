@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+import { withUt } from "uploadthing/tw";
 import {
   scrollbarGutter,
   scrollbarWidth,
@@ -86,4 +87,9 @@ const config = {
   ],
 } satisfies Config;
 
-export default config;
+// export default config;
+
+export default withUt({
+  ...config,
+  content: ["./src/**/*.{ts,tsx,mdx}"],
+});

@@ -6,6 +6,7 @@ const isProtetectedRoute = createRouteMatcher([
   "/boards(.*)",
   "/profile(.*)",
   "/settings(.*)",
+  // "/api/uploadthing(.*)",
 ]);
 
 export default clerkMiddleware((auth, request) => {
