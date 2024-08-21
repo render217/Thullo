@@ -23,7 +23,7 @@ export async function GET(
 
     // If the board is not found, return a 404 response
     if (!board) {
-      return NextResponse.json({ error: "Board not found" }, { status: 404 });
+      return NextResponse.json({ message: "Board not found" }, { status: 404 });
     }
 
     // Return the found board as the response

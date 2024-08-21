@@ -22,7 +22,7 @@ export default function BoardCard({ board }: { board: IBoard }) {
             <Image
               className="w-full rounded-md"
               src={board?.coverPhoto}
-              height={200}
+              height={150}
               width={200}
               alt="board"
             />

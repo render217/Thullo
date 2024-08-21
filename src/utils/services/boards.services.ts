@@ -1,6 +1,7 @@
 import { api } from "@/lib/axios";
 import { IBoard } from "@/types";
 import { Response } from "@/types/axios.types";
+import { isAxiosError } from "axios";
 
 class BoardsService {
   async getBoards(): Promise<Response<IBoard[]>> {
@@ -26,9 +27,15 @@ class BoardsService {
         data: res.data,
       };
     } catch (error: any) {
+      if (error.response.status === 404) {
+        return {
+          success: false,
+          data: "Board not found",
+        };
+      }
       return {
         success: false,
-        data: error.message,
+        data: error.message || "Something went wrong",
       };
     }
   }
