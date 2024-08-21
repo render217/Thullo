@@ -11,6 +11,7 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  // url      = env("DATABASE_URL_LOCAL")
 }
 
 enum Visibility {
@@ -18,49 +19,132 @@ enum Visibility {
   PRIVATE
 }
 
+enum InviteStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
 model User {
-  clerkId      String @id @unique @default(cuid())
-  email        String @unique
-  username     String @unique
+  clerkId      String         @id @unique @default(cuid())
+  email        String         @unique
+  username     String         @unique
   firstName    String
   lastName     String
   profileImage String
+  boards       Board[]
+  boardMember  BoardMember[]
+  boardInvites BoardInvites[]
+  cardMember   CardMember[]
+  comments     Comment[]
+  attachments  Attachment[]
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
 }
 
 model Board {
-  boardId     String @id @unique @default(cuid())
-  title       String
-  description String
+  boardId      String         @id @unique @default(cuid())
+  boardName    String
+  boardImage   String // set default image url
+  description  String
+  visibility   Visibility
+  adminId      String
+  admin        User           @relation(fields: [adminId], references: [clerkId], onDelete: Cascade)
+  boardMember  BoardMember[]
+  boardInvites BoardInvites[]
+  tasks        Task[]
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+}
 
-  visibility Visibility
+model BoardMember {
+  boardId   String
+  userId    String
+  board     Board    @relation(fields: [boardId], references: [boardId], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [clerkId], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@id([boardId, userId])
+}
+
+model BoardInvites {
+  inviteId    String       @id @unique @default(cuid())
+  boardId     String
+  board       Board        @relation(fields: [boardId], references: [boardId], onDelete: Cascade)
+  status      InviteStatus
+  recipientId String
+  receipient  User         @relation(fields: [recipientId], references: [clerkId], onDelete: Cascade)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
 }
 
 model Task {
-  taskId      String @id @unique @default(cuid())
-  title       String
-  description String
-  status      String
+  taskId    String   @id @unique @default(cuid())
+  title     String
+  order     Int
+  boardId   String
+  board     Board    @relation(fields: [boardId], references: [boardId], onDelete: Cascade)
+  cards     Card[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Card {
-  cardId      String @id @unique @default(cuid())
+  cardId      String       @id @unique @default(cuid())
+  taskId      String
+  task        Task         @relation(fields: [taskId], references: [taskId], onDelete: Cascade)
+  order       Int
   title       String
   description String
+  coverImage  String
+  labels      Label[]
+  cardMembers CardMember[]
+  comments    Comment[]
+  attachments Attachment[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model CardMember {
+  cardId    String
+  userId    String
+  card      Card     @relation(fields: [cardId], references: [cardId], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [clerkId], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@id([cardId, userId])
 }
 
 model Label {
   labelId String @id @unique @default(cuid())
   name    String
   color   String
+  cardId  String
+  card    Card   @relation(fields: [cardId], references: [cardId], onDelete: Cascade)
 }
 
 model Comment {
-  commentId String @id @unique @default(cuid())
+  commentId String   @id @unique @default(cuid())
   content   String
+  card      Card     @relation(fields: [cardId], references: [cardId])
+  cardId    String
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [clerkId])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Attachment {
-  attachmentId String @id @unique @default(cuid())
+  attachmentId String   @id @unique @default(cuid())
   contentType  String
+  size         Int
   url          String
+  card         Card     @relation(fields: [cardId], references: [cardId])
+  cardId       String
+  authorId     String
+  author       User     @relation(fields: [authorId], references: [clerkId])
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }
