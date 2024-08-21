@@ -2,6 +2,7 @@
 
 import db from "@/db/db";
 import { handleError } from "@/lib/utils";
+import { CreateUserParams, UpdateUserParams } from "./shared.types";
 
 export async function createUser(user: CreateUserParams) {
   try {
@@ -56,19 +57,3 @@ export async function deleteUser(clerkId: string) {
     handleError(error);
   }
 }
-
-type CreateUserParams = {
-  clerkId: string;
-  username: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  profileImage: string;
-};
-
-type UpdateUserParams = {
-  firstName: string;
-  lastName: string;
-  username: string;
-  profileImage: string;
-};

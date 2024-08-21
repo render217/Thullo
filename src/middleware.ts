@@ -6,6 +6,7 @@ const isProtetectedRoute = createRouteMatcher([
   "/boards(.*)",
   "/profile(.*)",
   "/settings(.*)",
+  "/experiments(.*)",
   // "/api/uploadthing(.*)",
 ]);
 

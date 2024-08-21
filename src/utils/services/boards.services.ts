@@ -17,6 +17,7 @@ class BoardsService {
       };
     }
   }
+
   async getBoard(id: string): Promise<Response<IBoard>> {
     try {
       const res = await api.get(`/boards/${id}`);

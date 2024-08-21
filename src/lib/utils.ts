@@ -1,3 +1,4 @@
+import { ErrorResponse } from "@/types/axios.types";
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -12,7 +13,14 @@ export function truncateString(str: string, maxLength: number): string {
   return str;
 }
 
-export const handleError = (error: unknown) => {
+export const handleError = (error: unknown): ErrorResponse => {
   console.error(error);
-  throw new Error(typeof error === "string" ? error : JSON.stringify(error));
+  const err = typeof error === "string" ? error : JSON.stringify(error);
+  return {
+    success: false,
+    data: err || "Something went wrong",
+  };
 };
+
+export const sleep = (ms: number) =>
+  new Promise((resolve) => setTimeout(resolve, ms));
