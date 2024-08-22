@@ -1,7 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { ICard } from "@/types";
+import { TBoardTask, TBoardTaskCard } from "@/types/t";
 
-export default function TaskCardDescription({ card }: { card: ICard }) {
+export default function TaskCardDescription({
+  card,
+}: {
+  card: TBoardTaskCard;
+}) {
   return (
     <div>
       <div className="flex items-center gap-3 py-2">

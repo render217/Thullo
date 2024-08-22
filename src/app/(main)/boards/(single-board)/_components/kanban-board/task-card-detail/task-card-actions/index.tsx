@@ -6,6 +6,7 @@ import CardLabelForm from "./card-label-form";
 import CardMembersForm from "./card-members-form";
 import { useGetUnsplashImage } from "@/utils/hooks/useUnsplash";
 import React, { useReducer, useState } from "react";
+import { TBoardTaskCard } from "@/types/t";
 
 const intialData = {
   labelSelected: false,
@@ -81,7 +82,7 @@ export const useActionSelector = () => {
   return context;
 };
 
-export default function TaskCardActions({ card }: { card: ICard }) {
+export default function TaskCardActions({ card }: { card: TBoardTaskCard }) {
   const _ = useGetUnsplashImage("random");
 
   return (

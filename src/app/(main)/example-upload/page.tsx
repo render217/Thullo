@@ -20,7 +20,7 @@ export default function page() {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      {/* <UploadButton
+      <UploadButton
         endpoint="imageUploader"
         onClientUploadComplete={(res) => {
           // Do something with the response
@@ -31,7 +31,7 @@ export default function page() {
           // Do something with the error.
           alert(`ERROR! ${error.message}`);
         }}
-      /> */}
+      />
       <div>
         <h1>try deleting</h1>
         <Input

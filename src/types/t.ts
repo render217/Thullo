@@ -43,6 +43,22 @@ export type TBoard = {
   updatedAt: string;
 };
 
+export type TBoardDetail = {
+  boardId: string;
+  boardName: string;
+  boardImage: string;
+  description: string;
+  visibility: TVisibility;
+  admin: TAdmin;
+  boardMember: TBoardMember[];
+  boardInvites: TBoardInvite[];
+  tasks: TBoardTask[];
+  // boardInvites: Omit<TBoardInvite, "board">[];
+  // tasks: Omit<TBoardTask, "board">[];
+  createdAt: string;
+  updatedAt: string;
+};
+
 export type TBoardInvite = {
   inviteId: string;
   board: TBoard;
@@ -65,9 +81,10 @@ export type TBoardTask = {
 export type TBoardTaskCard = {
   cardId: string;
   task: Pick<TBoardTask, "taskId" | "title">;
+  board: Pick<TBoard, "boardId">;
   title: string;
-  description: string;
-  coverImage: string;
+  description: string | null;
+  coverImage: string | null;
   order: number;
   labels: TLabel[];
   cardMembers: TCardMember[];
@@ -79,11 +96,9 @@ export type TBoardTaskCard = {
 
 export type TLabel = {
   labelId: string;
-  tag: string;
-  cardId: string;
+  name: string;
   color: string;
-  createdAt: string;
-  updatedAt: string;
+  cardId: string;
 };
 
 export type TComment = {

@@ -15,7 +15,7 @@ export default function page() {
   if (status === "pending") return <BoardDetailSkeleton />;
 
   if (data?.success) {
-    return <KanbanBoard board={data.data as IBoard} />;
+    return <KanbanBoard board={data.data} />;
   } else if (!data?.success) {
     return <BoardDetailError message={data?.data || ""} />;
   }

@@ -29,8 +29,13 @@ import { useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { RichTextEditor } from "@/components/shared/rich-text-editor";
 import { cn } from "@/lib/utils";
+import { TBoardDetail, TBoardMember, TBoardTaskCard } from "@/types/t";
 
-export default function BoardSideBarContent({ board }: { board: IBoard }) {
+export default function BoardSideBarContent({
+  board,
+}: {
+  board: TBoardDetail;
+}) {
   const [isEdit, setIsEdit] = useState(false);
 
   const openEditMode = () => setIsEdit(true);
@@ -45,7 +50,7 @@ export default function BoardSideBarContent({ board }: { board: IBoard }) {
     <div className="h-full overflow-hidden">
       <ScrollArea className="h-full pr-4">
         <div className="">
-          <h1 className="pb-1 text-lg font-semibold">{board.title}</h1>
+          <h1 className="pb-1 text-lg font-semibold">{board.boardName}</h1>
           <Separator className="" />
         </div>
         {/* 
@@ -71,7 +76,7 @@ export default function BoardSideBarContent({ board }: { board: IBoard }) {
             </div>
             <div className="">
               <p className="text-xs font-semibold">{board.admin.username}</p>
-              <p className="text-[10px] text-slate-400">{board.createdAt}</p>
+              {/* <p className="text-[10px] text-slate-400">{board.createdAt}</p> */}
             </div>
           </div>
         </div>
@@ -165,9 +170,17 @@ export default function BoardSideBarContent({ board }: { board: IBoard }) {
             <ScrollArea className="p-1 pr-4">
               <div className="flex flex-col gap-2">
                 <TeamMember isAdmin={true} member={board.admin} />
-                {board.members.map((member) => (
-                  <TeamMember key={member.id} member={member} />
-                ))}
+                {board.boardMember.length > 0 ? (
+                  <>
+                    {board.boardMember.map((member) => (
+                      <TeamMember key={member.id} member={member} />
+                    ))}
+                  </>
+                ) : (
+                  <>
+                    <p className="text-center text-xs">No members</p>
+                  </>
+                )}
               </div>
             </ScrollArea>
           </div>
@@ -182,7 +195,7 @@ function TeamMember({
   member,
   isAdmin = false,
 }: {
-  member: IUser;
+  member: TBoardMember;
   isAdmin?: Boolean;
 }) {
   return (

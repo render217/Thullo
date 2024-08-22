@@ -19,3 +19,17 @@ export type CreateBoardParams = {
   visibility: string;
   image: string | undefined;
 };
+
+export type CreateBoardTaskParams = {
+  boardId: string;
+  title: string;
+};
+
+export type DeleteBoardTaskParams = {
+  taskId: string;
+};
+
+export type CreateBoardTaskCardParams = {
+  taskId: string;
+  title: string;
+};

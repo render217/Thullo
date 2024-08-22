@@ -31,70 +31,72 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FormProvider, useForm } from "react-hook-form";
 import { createBoardSchema } from "@/lib/schemas";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import BoardImageUpload from "./board-image-upload";
 import BlockScreen from "@/components/shared/loaders/block-screen";
 import Spinner from "@/components/shared/loaders/spinner";
 import { createBoard } from "@/utils/actions/board.actions";
 import { useAuth } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
+import { useCreateBoard } from "@/utils/hooks/useBoards";
 
 export default function BoardCreateForm() {
   const { userId } = useAuth();
-
-  const [isBlocked, setIsBlocked] = useState(false);
+  const [open, setOpen] = useState(false);
   const [previewImageUrl, setPreviewImageUrl] = useState<string>("");
+
+  const { mutateAsync: createBoardAsync, isPending: isSubmitting } =
+    useCreateBoard();
 
   const form = useForm<z.infer<typeof createBoardSchema>>({
     resolver: zodResolver(createBoardSchema),
     defaultValues: {
       title: "",
-
-      // image: undefined,
     },
   });
 
-  useEffect(() => {
-    setTimeout(() => {
-      if (isBlocked) {
-        setIsBlocked(false);
-      }
-    }, 4000);
-  }, [isBlocked]);
-
   async function onSubmit(values: z.infer<typeof createBoardSchema>) {
     console.log(values);
-    setIsBlocked(true);
+
     const payload = {
       title: values.title,
       visibility: values.visibility,
       image: "",
     };
 
-    const res = await createBoard(userId!, payload);
+    const res = await createBoardAsync({ userId: userId!, payload });
     if (res.success) {
       console.log("Board created successfully", res.data);
     } else {
       console.log("Error creating board:", res.data);
     }
+
+    if (!isSubmitting && open) {
+      setOpen(false);
+      form.reset();
+      setPreviewImageUrl("");
+    }
   }
 
   return (
     <>
-      {isBlocked && (
+      {isSubmitting && (
         <BlockScreen>
           <Spinner size={50} />
         </BlockScreen>
       )}
-      <div className={isBlocked ? "pointer-events-none" : ""}>
+      <div className={isSubmitting ? "pointer-events-none" : ""}>
         <Dialog
+          open={open}
           onOpenChange={(open) => {
+            if (isSubmitting) return;
+            setOpen(open);
             form.reset();
             setPreviewImageUrl("");
           }}
         >
           <DialogTrigger asChild>
-            <Button className="" size={"sm"}>
+            <Button disabled={isSubmitting} className="" size={"sm"}>
               + create
             </Button>
           </DialogTrigger>
@@ -186,6 +188,7 @@ export default function BoardCreateForm() {
                 <div className="flex justify-end gap-2">
                   <DialogClose asChild>
                     <Button
+                      disabled={isSubmitting}
                       onClick={() => {
                         form.reset();
                         setPreviewImageUrl("");
@@ -196,7 +199,9 @@ export default function BoardCreateForm() {
                       Close
                     </Button>
                   </DialogClose>
-                  <Button type="submit">Submit</Button>
+                  <Button disabled={isSubmitting} type="submit">
+                    {isSubmitting ? "Submitting..." : "Submit"}
+                  </Button>
                 </div>
               </form>
             </FormProvider>

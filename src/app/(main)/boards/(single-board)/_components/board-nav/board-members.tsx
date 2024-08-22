@@ -1,9 +1,14 @@
 "use client";
 
 import { IUser } from "@/types";
+import { TBoardMember } from "@/types/t";
 import Image from "next/image";
 
-export default function BoardMemebers({ members }: { members: IUser[] }) {
+export default function BoardMemebers({
+  members,
+}: {
+  members: TBoardMember[];
+}) {
   const totalMembers = members.length;
   const remainingMembers = totalMembers > 3 ? totalMembers - 3 : 0;
   const displayMembers = members.slice(0, 3);

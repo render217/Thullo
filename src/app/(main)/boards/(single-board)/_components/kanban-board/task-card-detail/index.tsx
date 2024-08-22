@@ -9,8 +9,9 @@ import TaskCardDescription from "./task-card-description";
 import TaskCardMeta from "./task-card-meta";
 import TaskCardCoverImage from "./task-card-coverImage";
 import TaskCardActions from "./task-card-actions";
+import { TBoardTaskCard } from "@/types/t";
 
-export default function TaskCardDetail({ card }: { card: ICard }) {
+export default function TaskCardDetail({ card }: { card: TBoardTaskCard }) {
   return (
     <DialogContent
       aria-describedby={"card detail"}

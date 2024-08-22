@@ -24,3 +24,22 @@ export const handleError = (error: unknown): ErrorResponse => {
 
 export const sleep = (ms: number) =>
   new Promise((resolve) => setTimeout(resolve, ms));
+
+export async function checkImageUrl(
+  url: string,
+  defaultUrl: string,
+): Promise<string> {
+  try {
+    const response = await fetch(url, { method: "HEAD" });
+    if (
+      response.ok &&
+      response.headers.get("content-type")?.includes("image")
+    ) {
+      return url;
+    } else {
+      return defaultUrl;
+    }
+  } catch (error) {
+    return defaultUrl;
+  }
+}

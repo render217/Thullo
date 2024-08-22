@@ -50,3 +50,19 @@ export const createBoardSchema = z.object({
   }),
   image: imageOnlyFileSchema,
 });
+
+// Define the task schema
+export const createBoardTaskSchema = z.object({
+  title: z
+    .string()
+    .min(2, { message: "Task name is required" })
+    .max(30, { message: "Task name must be between 2 and 30 characters" }),
+});
+
+// Define the task schema
+export const createBoardTaskCardSchema = z.object({
+  title: z
+    .string()
+    .min(2, { message: "Card name is required" })
+    .max(30, { message: "Card name must be between 2 and 30 characters" }),
+});

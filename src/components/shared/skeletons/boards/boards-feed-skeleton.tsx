@@ -27,9 +27,9 @@ export default function BoardsFeedSkeleton() {
 function SingleBoard() {
   return (
     <Card className="w-[16rem] max-w-[16rem] border transition-all duration-300 ease-in-out hover:shadow-md">
-      <CardHeader className="p-4">
-        <div className="grid h-[150px] w-full animate-pulse rounded-md bg-gray-200 p-4">
-          {/* <Skeleton className="size-full h-[150px] w-full rounded-md bg-gray-200" /> */}
+      <CardHeader className="p-0">
+        <div className="h-[200px] overflow-hidden p-4">
+          <div className="size-full animate-pulse rounded-md bg-gray-200 object-cover"></div>
         </div>
       </CardHeader>
 

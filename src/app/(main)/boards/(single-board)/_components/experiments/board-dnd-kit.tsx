@@ -1,8 +1,28 @@
 "use client";
 import { IBoard, ITask, ICard } from "@/types";
-import { GripVertical, Plus, PlusCircle } from "lucide-react";
-import { act, useState } from "react";
-
+import {
+  ChevronDown,
+  GripVertical,
+  NotebookPen,
+  Plus,
+  PlusCircle,
+} from "lucide-react";
+import { act, useEffect, useRef, useState } from "react";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+} from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogClose,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import {
   DndContext,
   useSensors,
@@ -26,11 +46,30 @@ import { CSS } from "@dnd-kit/utilities";
 import { cn } from "@/lib/utils";
 
 import TaskCard from "../kanban-board/task-card";
+import { TBoard, TBoardDetail, TBoardTask, TBoardTaskCard } from "@/types/t";
+import { useForm } from "react-hook-form";
+import AddTaskItem from "./add-task-item";
+import { DropdownMenuItem } from "@radix-ui/react-dropdown-menu";
+import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
+import { useDeleteBoardTask } from "@/utils/hooks/useBoards";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  AutosizeTextarea,
+  AutosizeTextAreaRef,
+} from "@/components/ui/autosize-textarea";
 
-export default function BoardDndKit({ board }: { board: IBoard }) {
-  const [tasks, setTasks] = useState(board.taskLists);
-  const [activeTask, setActiveTask] = useState<ITask | null>(null);
-  const [activeCard, setActiveCard] = useState<ICard | null>(null);
+export default function BoardDndKit({ board }: { board: TBoardDetail }) {
+  const [tasks, setTasks] = useState(board.tasks);
+  const [activeTask, setActiveTask] = useState<TBoardTask | null>(null);
+  const [activeCard, setActiveCard] = useState<TBoardTaskCard | null>(null);
+  const handleAddTaskCallback = () => {
+    setTasks(board.tasks);
+  };
+
+  useEffect(() => {
+    setTasks(board.tasks);
+  }, [board]);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -42,10 +81,10 @@ export default function BoardDndKit({ board }: { board: IBoard }) {
   function handleDragStart(event: DragStartEvent) {
     const { active } = event;
 
-    const foundTask = tasks.find((task) => task.id === active.id);
+    const foundTask = tasks.find((task) => task.taskId === active.id);
     const foundCard = tasks
       .flatMap((task) => task.cards)
-      .find((card) => card.id === active.id);
+      .find((card) => card.cardId === active.id);
 
     if (foundCard) setActiveCard(foundCard);
     if (foundTask) setActiveTask(foundTask);
@@ -62,18 +101,18 @@ export default function BoardDndKit({ board }: { board: IBoard }) {
     // Handle Card Sorting Within the Same Task or Between Different Tasks
     if (activeData?.type === "card" && overData?.type === "card") {
       const activeTaskIndex = tasks.findIndex((task) =>
-        task.cards.some((card) => card.id === activeData?.card?.id),
+        task.cards.some((card) => card.cardId === activeData?.card?.cardId),
       );
       const overTaskIndex = tasks.findIndex((task) =>
-        task.cards.some((card) => card.id === overData?.card?.id),
+        task.cards.some((card) => card.cardId === overData?.card?.cardId),
       );
 
       if (activeTaskIndex !== -1 && overTaskIndex !== -1) {
         const activeCardIndex = tasks[activeTaskIndex].cards.findIndex(
-          (card) => card.id === active.id,
+          (card) => card.cardId === active.id,
         );
         const overCardIndex = tasks[overTaskIndex].cards.findIndex(
-          (card) => card.id === over.id,
+          (card) => card.cardId === over.id,
         );
 
         if (activeTaskIndex === overTaskIndex) {
@@ -107,13 +146,13 @@ export default function BoardDndKit({ board }: { board: IBoard }) {
     // Handle Dragging a Card Into a Different Task
     if (activeData?.type === "card" && overData?.type === "task") {
       const activeTaskIndex = tasks.findIndex((task) =>
-        task.cards.some((card) => card.id === active.id),
+        task.cards.some((card) => card.cardId === active.id),
       );
-      const overTaskIndex = tasks.findIndex((task) => task.id === over.id);
+      const overTaskIndex = tasks.findIndex((task) => task.taskId === over.id);
 
       if (activeTaskIndex !== -1 && overTaskIndex !== -1) {
         const activeCardIndex = tasks[activeTaskIndex].cards.findIndex(
-          (card) => card.id === active.id,
+          (card) => card.cardId === active.id,
         );
 
         // Remove the card from the active task and add it to the over task
@@ -147,10 +186,10 @@ export default function BoardDndKit({ board }: { board: IBoard }) {
       // Card-to-card drag within the same task
       // console.log("1.card-to-card");
       const sourceTaskIndex = tasks.findIndex((task) =>
-        task.cards.some((card) => card.id === active.id),
+        task.cards.some((card) => card.cardId === active.id),
       );
       const targetTaskIndex = tasks.findIndex((task) =>
-        task.cards.some((card) => card.id === over.id),
+        task.cards.some((card) => card.cardId === over.id),
       );
       //   console.log("2.source-task-index", sourceTaskIndex);
       //   console.log("2.target-task-index", targetTaskIndex);
@@ -158,10 +197,10 @@ export default function BoardDndKit({ board }: { board: IBoard }) {
       if (sourceTaskIndex === targetTaskIndex) {
         // console.log("3.within same task");
         const sourceCardIndex = tasks[sourceTaskIndex].cards.findIndex(
-          (card) => card.id === active.id,
+          (card) => card.cardId === active.id,
         );
         const targetCardIndex = tasks[sourceTaskIndex].cards.findIndex(
-          (card) => card.id === over.id,
+          (card) => card.cardId === over.id,
         );
         // console.log("4.source-card-index", sourceCardIndex);
         // console.log("4.target-card-index", targetCardIndex);
@@ -188,11 +227,11 @@ export default function BoardDndKit({ board }: { board: IBoard }) {
         const sourceTask = tasks[sourceTaskIndex];
         const targetTask = tasks[targetTaskIndex];
         const [movedCard] = sourceTask.cards.splice(
-          sourceTask.cards.findIndex((card) => card.id === active.id),
+          sourceTask.cards.findIndex((card) => card.cardId === active.id),
           1,
         );
         targetTask.cards.splice(
-          targetTask.cards.findIndex((card) => card.id === over.id) + 1,
+          targetTask.cards.findIndex((card) => card.cardId === over.id) + 1,
           0,
           movedCard,
         );
@@ -206,8 +245,8 @@ export default function BoardDndKit({ board }: { board: IBoard }) {
     } else if (activeData.type === "task" && overData.type === "task") {
       // Task-to-task drag
       // console.log("1. task-to-task");
-      const sourceIndex = tasks.findIndex((task) => task.id === active.id);
-      const targetIndex = tasks.findIndex((task) => task.id === over.id);
+      const sourceIndex = tasks.findIndex((task) => task.taskId === active.id);
+      const targetIndex = tasks.findIndex((task) => task.taskId === over.id);
       if (sourceIndex !== -1 && targetIndex !== -1) {
         const updatedTasks = arrayMove(tasks, sourceIndex, targetIndex);
         setTasks(updatedTasks);
@@ -217,7 +256,7 @@ export default function BoardDndKit({ board }: { board: IBoard }) {
     setActiveTask(null);
     setActiveCard(null);
   }
-
+  console.log({ board });
   return (
     <>
       <DndContext
@@ -226,12 +265,45 @@ export default function BoardDndKit({ board }: { board: IBoard }) {
         onDragStart={handleDragStart}
         onDragMove={handleDragMove}
       >
-        <SortableContext items={tasks} strategy={horizontalListSortingStrategy}>
+        <SortableContext
+          items={tasks.map((t) => ({ ...t, id: t.taskId }))}
+          strategy={horizontalListSortingStrategy}
+        >
           <ul className="absolute inset-0 -top-[2px] mb-[8px] flex size-full select-none gap-2 overflow-x-auto overflow-y-hidden px-[10px] pb-[8px] pt-[8px] scrollbar-width-auto scrollbar-track-transparent scrollbar-thumb-white">
-            {tasks.map((task) => (
-              <SortableTaskItem key={task.id} task={task} />
-            ))}
-            <AddTaskItem />
+            {tasks.length > 0 ? (
+              <>
+                {tasks.map((task) => (
+                  <SortableTaskItem
+                    key={task.taskId}
+                    task={task}
+                    allowGrab={tasks.length > 1}
+                  />
+                ))}
+                <AddTaskItem
+                  boardId={board.boardId}
+                  onAddCallback={handleAddTaskCallback}
+                />
+              </>
+            ) : (
+              <>
+                <div className="size-full">
+                  <div className="mx-auto mt-20 min-h-[400px] w-[400px] space-y-4">
+                    <div className="space-y-2">
+                      <NotebookPen className="mx-auto size-32 text-white" />
+                      <h1 className="text-center text-2xl text-white">
+                        No Tasks Avaliable yet
+                      </h1>
+                    </div>
+                    <div className="grid place-content-center">
+                      <AddTaskItem
+                        boardId={board.boardId}
+                        onAddCallback={handleAddTaskCallback}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
           </ul>
         </SortableContext>
         <DragOverlay className="flex" adjustScale={false}>
@@ -242,33 +314,14 @@ export default function BoardDndKit({ board }: { board: IBoard }) {
     </>
   );
 }
-function AddTaskItem() {
-  const [open, setOpen] = useState(false);
-  const handleShowAddTask = () => {
-    setOpen(!open);
-  };
-  return (
-    <li className="block h-full shrink-0 cursor-default self-start px-[6px]">
-      <div className="relative box-border flex max-h-full w-[272px] flex-col justify-between rounded-md bg-transparent pb-[8px] align-top">
-        <div
-          onClick={handleShowAddTask}
-          className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-sm border border-slate-400 bg-transparent/30 py-2 text-white shadow-sm hover:bg-transparent/50"
-        >
-          <PlusCircle className="size-5" />
-          <h2 className="m-0 cursor-pointer bg-transparent px-[6px] text-center text-[14px] font-medium">
-            Add New Task
-          </h2>
-        </div>
 
-        {open && (
-          <div className="pointer-events-auto mt-3 min-h-40 rounded-md bg-white"></div>
-        )}
-      </div>
-    </li>
-  );
-}
-
-function SortableTaskItem({ task }: { task: ITask }) {
+function SortableTaskItem({
+  task,
+  allowGrab = true,
+}: {
+  task: TBoardTask;
+  allowGrab?: boolean;
+}) {
   const {
     attributes,
     listeners,
@@ -277,13 +330,54 @@ function SortableTaskItem({ task }: { task: ITask }) {
     transition,
     isDragging,
   } = useSortable({
-    id: task.id,
+    id: task.taskId,
     data: { type: "task", task },
   });
 
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
+  };
+  const [rename, setRename] = useState(false);
+  const [taskTitle, setTaskTitle] = useState(task.title);
+  const [openOption, setOpenOption] = useState(false);
+  const textAreaRef = useRef<AutosizeTextAreaRef | null>(null);
+  useEffect(() => {
+    console.log({ rename, textRef: textAreaRef?.current });
+    if (rename && textAreaRef?.current) {
+      const textAreaElement = textAreaRef.current.textArea;
+      textAreaElement.focus();
+      // Move the cursor to the end of the text
+      textAreaElement.setSelectionRange(
+        textAreaElement.value.length,
+        textAreaElement.value.length,
+      );
+    }
+  }, [rename]);
+  const handleTitleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setTaskTitle(e.target.value);
+  };
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault(); // Prevents the default action of the Enter key
+      setRename(false);
+    }
+  };
+  const handleBlur = () => {
+    setRename(false); // Set rename to false when losing focus
+  };
+  const { mutateAsync: deleteBoardTaskAsync, isPending } = useDeleteBoardTask();
+
+  const handleDeleteBoardTask = async () => {
+    const payload = { taskId: task.taskId };
+    const res = await deleteBoardTaskAsync(payload);
+    if (res.success) {
+      alert("Task Deleted Successfully");
+      console.log(res.data);
+    } else {
+      alert("Task Deletion Failed");
+      console.log(res.data);
+    }
   };
 
   if (isDragging) {
@@ -314,11 +408,11 @@ function SortableTaskItem({ task }: { task: ITask }) {
 
           <div className="my-1 flex flex-shrink flex-grow basis-auto flex-col gap-2 overflow-y-auto overflow-x-hidden py-1 pl-[8px] pr-[4px] scrollbar-stable scrollbar-thin scrollbar-track-transparent scrollbar-thumb-slate-900">
             <SortableContext
-              items={task.cards}
+              items={task.cards.map((c) => ({ ...c, id: c.cardId }))}
               strategy={verticalListSortingStrategy}
             >
               {task.cards.map((card) => (
-                <SortableCard key={card.id} card={card} />
+                <SortableCard key={card.cardId} card={card} />
               ))}
             </SortableContext>
           </div>
@@ -333,6 +427,7 @@ function SortableTaskItem({ task }: { task: ITask }) {
       </li>
     );
   }
+
   return (
     <li
       ref={setNodeRef}
@@ -341,20 +436,110 @@ function SortableTaskItem({ task }: { task: ITask }) {
       className={cn("block h-full shrink-0 cursor-default self-start px-[6px]")}
     >
       <div className="relative box-border flex max-h-full w-[272px] flex-col justify-between rounded-md bg-slate-50 pb-[8px] align-top">
-        <div className="relative flex grow-0 items-center justify-between gap-2 rounded-md border-b border-slate-300 bg-slate-50 py-[8px] pl-[8px] pr-[0]">
-          <div className="relative min-h-[20px] flex-shrink flex-grow">
-            <h2 className="m-0 cursor-pointer bg-transparent px-[6px] text-[14px] font-medium">
-              {task.title}
-            </h2>
-            {/* <Textarea className="opacity-0d resize- -z-d10 absolute inset-0 m-0 min-h-[20px] overflow-hidden" /> */}
-            {/* <Textarea className="inset-0 m-0 min-h-[10px] w-full resize-none overflow-hidden" /> */}
+        <div className="relative flex items-center justify-between gap-2 rounded-md border-b border-slate-300 bg-slate-50 py-[8px] pl-[8px] pr-[8px]">
+          <div className="h-fit w-[200px]">
+            {!rename ? (
+              <div
+                onClick={() => {
+                  setOpenOption(false);
+                  setRename(true);
+                }}
+                className="w-full"
+              >
+                <h2 className="m-0 w-full cursor-pointer break-words bg-transparent px-[6px] py-1 text-[14px] font-medium">
+                  {taskTitle}
+                </h2>
+              </div>
+            ) : (
+              <div className="h-fit w-full">
+                <AutosizeTextarea
+                  rows={1}
+                  ref={textAreaRef}
+                  onChange={(e) => handleTitleChange(e)}
+                  onKeyDown={handleKeyDown}
+                  onBlur={handleBlur}
+                  value={taskTitle}
+                  className="m-0 resize-none rounded-sm border border-slate-300 px-[6px] py-[3px] text-[14px] font-medium outline-0 outline-slate-800 focus-visible:ring-0 focus-visible:ring-offset-0"
+                />
+              </div>
+            )}
           </div>
-
-          <div
-            {...listeners}
-            className="flex cursor-grab items-center self-start rounded p-1 hover:bg-gray-100"
-          >
-            <GripVertical className="h-4 w-4" />
+          <div className="flex min-w-[56px] gap-1 self-start">
+            <div className="self-start">
+              <DropdownMenu
+                open={openOption}
+                onOpenChange={(val) => setOpenOption(val)}
+              >
+                <DropdownMenuTrigger asChild>
+                  <div className="grid cursor-pointer place-content-center rounded-md p-1 hover:bg-gray-200">
+                    <ChevronDown className="h-4 w-4" />
+                  </div>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="shadow-xs w-[100px] space-y-1 border p-1 shadow-slate-200">
+                  <span
+                    onClick={() => {
+                      setOpenOption(false);
+                      setRename(true);
+                    }}
+                    className="block cursor-pointer items-center rounded-sm p-2 text-[10px] hover:bg-slate-200"
+                  >
+                    Rename
+                  </span>
+                  <Separator />
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <span className="block cursor-pointer items-center rounded-sm p-2 text-[10px] text-red-500 hover:bg-slate-200">
+                        Delete this list
+                      </span>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-[400px] gap-2">
+                      <DialogTitle className="text-center text-xl">
+                        Are you sure to delete ?
+                      </DialogTitle>
+                      <div>
+                        <DialogDescription className="flex justify-center">
+                          <div className="cursor-pointer text-xs font-semibold">
+                            <p className="w-fit bg-blue-200 p-2 text-blue-500">
+                              {task.title}
+                            </p>
+                          </div>
+                        </DialogDescription>
+                      </div>
+                      <DialogFooter>
+                        <div className="mt-3 flex w-full justify-center gap-2">
+                          <DialogClose asChild>
+                            <Button
+                              disabled={isPending}
+                              className="block h-7 w-20 border border-slate-300 text-xs hover:border-slate-800"
+                              size={"sm"}
+                              variant={"outline"}
+                            >
+                              Cancel
+                            </Button>
+                          </DialogClose>
+                          <Button
+                            disabled={isPending}
+                            onClick={handleDeleteBoardTask}
+                            className="block h-7 w-20 text-xs"
+                            size={"sm"}
+                            variant={"destructive"}
+                          >
+                            {isPending ? "Deleting.." : "Delete"}
+                          </Button>
+                        </div>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+            <div
+              // {...(allowGrab ? listeners : {})}
+              {...listeners}
+              className="flex cursor-grab items-center self-start rounded p-1 hover:bg-gray-200"
+            >
+              <GripVertical className="h-4 w-4" />
+            </div>
           </div>
         </div>
 
@@ -362,11 +547,11 @@ function SortableTaskItem({ task }: { task: ITask }) {
 
         <div className="my-1 flex flex-shrink flex-grow basis-auto flex-col gap-2 overflow-y-auto overflow-x-hidden py-1 pl-[8px] pr-[4px] scrollbar-stable scrollbar-thin scrollbar-track-transparent scrollbar-thumb-slate-900">
           <SortableContext
-            items={task.cards}
+            items={task.cards.map((c) => ({ ...c, id: c.cardId }))}
             strategy={verticalListSortingStrategy}
           >
             {task.cards.map((card) => (
-              <SortableCard key={card.id} card={card} />
+              <SortableCard key={card.cardId} card={card} />
             ))}
           </SortableContext>
         </div>
@@ -382,7 +567,7 @@ function SortableTaskItem({ task }: { task: ITask }) {
   );
 }
 
-function SortableCard({ card }: { card: ICard }) {
+function SortableCard({ card }: { card: TBoardTaskCard }) {
   const [isCardDragging, setIsCardDragging] = useState(false);
   const {
     attributes,
@@ -393,7 +578,7 @@ function SortableCard({ card }: { card: ICard }) {
 
     isDragging,
   } = useSortable({
-    id: card.id,
+    id: card.cardId,
     data: {
       type: "card",
       card,
@@ -428,10 +613,10 @@ function SortableCard({ card }: { card: ICard }) {
   );
 }
 
-function SortableTaskItemOverlay({ task }: { task: ITask }) {
+function SortableTaskItemOverlay({ task }: { task: TBoardTask }) {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({
-      id: task.id,
+      id: task.taskId,
     });
 
   const style = {
@@ -466,11 +651,11 @@ function SortableTaskItemOverlay({ task }: { task: ITask }) {
         <div className="-mb-[2px] h-[8px] flex-shrink-0"></div>
         <div className="my-1 flex flex-shrink flex-grow basis-auto flex-col gap-2 overflow-y-auto overflow-x-hidden py-1 pl-[8px] pr-[4px] scrollbar-stable scrollbar-thin scrollbar-track-transparent scrollbar-thumb-slate-900">
           <SortableContext
-            items={task.cards}
+            items={task.cards.map((c) => ({ ...c, id: c.cardId }))}
             strategy={verticalListSortingStrategy}
           >
             {task.cards.map((card) => (
-              <SortableCard key={card.id} card={card} />
+              <SortableCard key={card.cardId} card={card} />
             ))}
           </SortableContext>
         </div>
@@ -486,10 +671,10 @@ function SortableTaskItemOverlay({ task }: { task: ITask }) {
   );
 }
 
-function SortableCardOverlay({ card }: { card: ICard }) {
+function SortableCardOverlay({ card }: { card: TBoardTaskCard }) {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({
-      id: card.id,
+      id: card.cardId,
     });
 
   const style = {

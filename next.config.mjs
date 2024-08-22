@@ -20,9 +20,17 @@ const nextConfig = {
         port: "",
         pathname: "/ipfs/**",
       },
+      {
+        protocol: "https",
+        hostname: "utfs.io",
+        pathname: "/f/**",
+      },
     ],
   },
 };
 //https:cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/441.jpg
+
+// upload-thing..pattern.
+//https:utfs.io/f/b855ad0f-c8b6-4180-8837-467f7076a020-hut5o2.jpg
 
 export default nextConfig;

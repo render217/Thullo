@@ -19,7 +19,7 @@ export default function BoardNav() {
     <div className="px-[2%]">
       <div className="flex items-center gap-4">
         <ChangeVisibility />
-        <BoardMemebers members={board.members} />
+        <BoardMemebers members={board.boardMember} />
         <InviteUser />
         <PreviewInvites />
         <div className="ml-auto">
