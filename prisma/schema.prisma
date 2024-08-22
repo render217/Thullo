@@ -10,8 +10,8 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  // url      = env("DATABASE_URL")
-  url      = env("DATABASE_URL_LOCAL")
+  url      = env("DATABASE_URL")
+  // url      = env("DATABASE_URL_LOCAL")
 }
 
 enum Visibility {
@@ -47,7 +47,7 @@ model Board {
   boardName    String
   boardImage   String // set default image url
   description  String
-  visibility   Visibility
+  visibility   Visibility     @default(PUBLIC)
   adminId      String
   admin        User           @relation(fields: [adminId], references: [clerkId], onDelete: Cascade)
   boardMember  BoardMember[]

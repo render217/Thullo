@@ -35,8 +35,13 @@ import { useEffect, useRef, useState } from "react";
 import BoardImageUpload from "./board-image-upload";
 import BlockScreen from "@/components/shared/loaders/block-screen";
 import Spinner from "@/components/shared/loaders/spinner";
+import { createBoard } from "@/utils/actions/board.actions";
+import { useAuth } from "@clerk/nextjs";
+import { redirect } from "next/navigation";
 
 export default function BoardCreateForm() {
+  const { userId } = useAuth();
+
   const [isBlocked, setIsBlocked] = useState(false);
   const [previewImageUrl, setPreviewImageUrl] = useState<string>("");
 
@@ -44,6 +49,7 @@ export default function BoardCreateForm() {
     resolver: zodResolver(createBoardSchema),
     defaultValues: {
       title: "",
+
       // image: undefined,
     },
   });
@@ -56,9 +62,21 @@ export default function BoardCreateForm() {
     }, 4000);
   }, [isBlocked]);
 
-  function onSubmit(values: z.infer<typeof createBoardSchema>) {
+  async function onSubmit(values: z.infer<typeof createBoardSchema>) {
     console.log(values);
     setIsBlocked(true);
+    const payload = {
+      title: values.title,
+      visibility: values.visibility,
+      image: "",
+    };
+
+    const res = await createBoard(userId!, payload);
+    if (res.success) {
+      console.log("Board created successfully", res.data);
+    } else {
+      console.log("Error creating board:", res.data);
+    }
   }
 
   return (

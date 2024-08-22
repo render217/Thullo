@@ -57,3 +57,21 @@ export async function deleteUser(clerkId: string) {
     handleError(error);
   }
 }
+
+export async function getUserById(clerkId: string) {
+  console.log("user-id payload: ", clerkId);
+  try {
+    const user = await db.user.findUnique({
+      where: {
+        clerkId: clerkId,
+      },
+    });
+    console.log("user: ", user);
+    if (!user) return null;
+    return user;
+  } catch (error) {
+    // handleError(error);
+    console.log("getUserByIdError", error);
+    return null;
+  }
+}

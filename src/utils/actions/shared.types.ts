@@ -13,3 +13,9 @@ export type UpdateUserParams = {
   username: string;
   profileImage: string;
 };
+
+export type CreateBoardParams = {
+  title: string;
+  visibility: string;
+  image: string | undefined;
+};

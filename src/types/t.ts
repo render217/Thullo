@@ -13,12 +13,12 @@ export type TCommonUser = Pick<
   TUser,
   "id" | "username" | "email" | "profileImage" | "createdAt"
 >;
-export enum Visibility {
+export enum TVisibility {
   PUBLIC,
   PRIVATE,
 }
 
-export enum InviteStatus {
+export enum TInviteStatus {
   PENDING,
   ACCEPTED,
   REJECTED,
@@ -36,7 +36,7 @@ export type TBoard = {
   boardName: string;
   boardImage: string;
   description: string;
-  visibility: Visibility;
+  visibility: TVisibility;
   admin: TAdmin;
   boardMember: TBoardMember[];
   createdAt: string;
@@ -46,7 +46,7 @@ export type TBoard = {
 export type TBoardInvite = {
   inviteId: string;
   board: TBoard;
-  status: InviteStatus;
+  status: TInviteStatus;
   recipient: TRecipient;
   createdAt: string;
   updatedAt: string;

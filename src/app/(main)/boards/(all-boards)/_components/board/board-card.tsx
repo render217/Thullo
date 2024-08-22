@@ -9,19 +9,20 @@ import {
 } from "@/components/ui/card";
 import Image from "next/image";
 import Link from "next/link";
+import { TBoard } from "@/types/t";
 
-export default function BoardCard({ board }: { board: IBoard }) {
-  const totalMembers = board.members.length;
+export default function BoardCard({ board }: { board: TBoard }) {
+  const totalMembers = board.boardMember.length;
   const remainingMembers = totalMembers > 3 ? totalMembers - 3 : 0;
-  const displayMembers = board.members.slice(0, 3);
+  const displayMembers = board.boardMember.slice(0, 3);
   return (
     <>
       <Card className="w-[16rem] max-w-[16rem] border transition-all duration-300 ease-in-out hover:shadow-md">
         <CardHeader className="p-4">
-          <Link href={`/boards/${board.id}`}>
+          <Link href={`/boards/${board.boardId}`}>
             <Image
               className="w-full rounded-md"
-              src={board?.coverPhoto}
+              src={board?.boardImage}
               height={150}
               width={200}
               alt="board"
@@ -32,10 +33,10 @@ export default function BoardCard({ board }: { board: IBoard }) {
         <CardContent className="border-b px-3 py-1.5">
           <CardTitle className="h-12">
             <Link
-              href={`/boards/${board.id}`}
+              href={`/boards/${board.boardId}`}
               className="text-sm font-semibold hover:underline"
             >
-              {board.title}
+              {board.boardName}
             </Link>
           </CardTitle>
         </CardContent>

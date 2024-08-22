@@ -5,8 +5,8 @@ import { getBoards } from "../actions/board.actions";
 export function useGetBoards() {
   return useQuery({
     queryKey: ["boards"],
-    queryFn: () => boardsServices.getBoards(),
-    // queryFn: async () => await getBoards(),
+    // queryFn: () => boardsServices.getBoards(),
+    queryFn: async () => await getBoards(),
   });
 }
 
