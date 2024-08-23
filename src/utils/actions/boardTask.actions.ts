@@ -1,6 +1,10 @@
 "use server";
 import { Response } from "@/types/axios.types";
-import { CreateBoardTaskParams, DeleteBoardTaskParams } from "./shared.types";
+import {
+  CreateBoardTaskParams,
+  DeleteBoardTaskParams,
+  EditBoardTaskParams,
+} from "./shared.types";
 import { TBoardTask } from "@/types/t";
 import db from "@/db/db";
 import { boardTaskDto } from "./mappers";
@@ -73,6 +77,58 @@ export async function deleteBoardTask(
     return {
       success: false,
       data: "Error deleting task",
+    };
+  }
+}
+
+export async function editBoardTask(
+  payload: EditBoardTaskParams,
+): Promise<Response<TBoardTask>> {
+  if (payload.taskId.trim() === "") {
+    return {
+      success: false,
+      data: "Task ID is required",
+    };
+  }
+  try {
+    const targetTask = await db.task.findUnique({
+      where: {
+        taskId: payload.taskId,
+      },
+      include: {
+        board: true,
+        cards: true,
+      },
+    });
+
+    if (!targetTask) {
+      return {
+        success: false,
+        data: "Task not found",
+      };
+    }
+    const updatedTask = await db.task.update({
+      where: {
+        taskId: payload.taskId,
+      },
+      data: {
+        title: payload.title || targetTask.title,
+      },
+      include: {
+        board: true,
+        cards: true,
+      },
+    });
+    const mappedUpdatedTask = boardTaskDto(updatedTask);
+    return {
+      success: true,
+      data: mappedUpdatedTask,
+    };
+  } catch (error) {
+    console.log("editBoardTaskError:", error);
+    return {
+      success: false,
+      data: "Error updating task",
     };
   }
 }

@@ -48,6 +48,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
 
   React.useEffect(() => {
     if (quill) {
+      quill.root.innerHTML = value;
       quill.on("text-change", () => {
         onChange(quill.root.innerHTML);
       });

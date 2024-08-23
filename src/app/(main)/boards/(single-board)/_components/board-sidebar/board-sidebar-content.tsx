@@ -30,29 +30,22 @@ import { Textarea } from "@/components/ui/textarea";
 import { RichTextEditor } from "@/components/shared/rich-text-editor";
 import { cn } from "@/lib/utils";
 import { TBoardDetail, TBoardMember, TBoardTaskCard } from "@/types/t";
+import BoardDescription from "./board-description";
+import BoardTitle from "./board-title";
 
 export default function BoardSideBarContent({
   board,
 }: {
   board: TBoardDetail;
 }) {
-  const [isEdit, setIsEdit] = useState(false);
-
-  const openEditMode = () => setIsEdit(true);
-  const closeEditMode = () => setIsEdit(false);
-  const saveAndCloseEditMode = () => {
-    setIsEdit(false);
-    // Save the changes
-  };
-  const [message, setMessage] = useState("");
-  console.log(message);
   return (
     <div className="h-full overflow-hidden">
       <ScrollArea className="h-full pr-4">
-        <div className="">
+        {/* <div className="">
           <h1 className="pb-1 text-lg font-semibold">{board.boardName}</h1>
           <Separator className="" />
-        </div>
+        </div> */}
+        <BoardTitle board={board} />
         {/* 
           ------------------------------------
             ADMDIN META
@@ -85,71 +78,9 @@ export default function BoardSideBarContent({
             DESCRIPTION
           ------------------------------------
         */}
+
         <div className="mt-3">
-          <div className="flex items-end justify-between">
-            <div className="w-fit rounded-lg border border-slate-300 px-2 py-0.5">
-              <div className="flex items-center gap-2 text-gray-500">
-                <ScrollText className="size-3" />
-                <p className="text-[10px]">Description</p>
-              </div>
-            </div>
-            {!isEdit ? (
-              <Button
-                onClick={openEditMode}
-                className="rounded-xs h-[22px] px-4 py-1"
-                size={"sm"}
-                variant={"outline"}
-              >
-                <div className="flex items-center gap-2 text-gray-500">
-                  <Pencil className="size-3" />
-                  <p className="text-xs font-semibold">Edit</p>
-                </div>
-              </Button>
-            ) : (
-              <div className="flex items-center gap-3">
-                <Button
-                  onClick={closeEditMode}
-                  className="rounded-xs h-[22px] border-red-500 px-4 py-1 hover:bg-red-100"
-                  size={"sm"}
-                  variant={"outline"}
-                >
-                  <div className="flex items-center gap-2 text-red-500">
-                    <CircleX className="size-4" />
-                    <p className="text-xs font-semibold">Cancel</p>
-                  </div>
-                </Button>
-                <Button
-                  onClick={saveAndCloseEditMode}
-                  className="rounded-xs h-[22px] border-blue-500 hover:bg-blue-100"
-                  size={"sm"}
-                  variant={"outline"}
-                >
-                  <div className="flex items-center gap-2 text-blue-500">
-                    <CircleCheck className="size-4" />
-                    <p className="text-xs font-semibold">Save</p>
-                  </div>
-                </Button>
-              </div>
-            )}
-          </div>
-          <div>
-            {!isEdit ? (
-              <div className="my-2 min-h-[300px]">
-                <div className={cn("ql-container ql-snow")}>
-                  <div
-                    className="ql-editor preview-content"
-                    dangerouslySetInnerHTML={{
-                      __html: message || "......",
-                    }}
-                  ></div>
-                </div>
-              </div>
-            ) : (
-              <div className="my-2 min-h-[300px] border border-slate-300">
-                <RichTextEditor value={message} onChange={setMessage} />
-              </div>
-            )}
-          </div>
+          <BoardDescription board={board} />
         </div>
         {/* 
           ------------------------------------

@@ -23,7 +23,7 @@ import {
 import { ChevronDown } from "lucide-react";
 import { Separator } from "@radix-ui/react-dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { useDeleteBoardTask } from "@/utils/hooks/useBoards";
+import { useDeleteBoardTask, useEditBoardTask } from "@/utils/hooks/useBoards";
 
 export default function TaskHeader({ task }: { task: TBoardTask }) {
   const [taskTitle, setTaskTitle] = useState(task.title);
@@ -32,6 +32,27 @@ export default function TaskHeader({ task }: { task: TBoardTask }) {
   const [openOption, setOpenOption] = useState(false);
 
   const textAreaRef = useRef<AutosizeTextAreaRef | null>(null);
+
+  const { mutateAsync: editBoardTaskAsync, isPending: isEditPending } =
+    useEditBoardTask();
+
+  const { mutateAsync: deleteBoardTaskAsync, isPending } = useDeleteBoardTask();
+
+  const saveEditChanges = async () => {
+    const payload = {
+      taskId: task.taskId,
+      title: taskTitle,
+    };
+    const res = await editBoardTaskAsync(payload);
+    if (res.success) {
+      console.log("Task Updated Successfully", res.data);
+    } else {
+      console.log("Task Update Failed", res.data);
+    }
+  };
+  useEffect(() => {
+    setTaskTitle(task.title);
+  }, [task.title]);
 
   useEffect(() => {
     console.log({ isEditing, textRef: textAreaRef?.current });
@@ -51,14 +72,14 @@ export default function TaskHeader({ task }: { task: TBoardTask }) {
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter") {
       e.preventDefault(); // Prevents the default action of the Enter key
+      saveEditChanges();
       setIsEditing(false);
     }
   };
   const handleBlur = () => {
+    saveEditChanges();
     setIsEditing(false); // Set rename to false when losing focus
   };
-
-  const { mutateAsync: deleteBoardTaskAsync, isPending } = useDeleteBoardTask();
 
   const handleDeleteBoardTask = async () => {
     const payload = { taskId: task.taskId };
@@ -78,6 +99,7 @@ export default function TaskHeader({ task }: { task: TBoardTask }) {
         {!isEditing ? (
           <div
             onClick={() => {
+              if (isEditPending) return;
               setOpenOption(false);
               setIsEditing(true);
             }}
@@ -91,6 +113,7 @@ export default function TaskHeader({ task }: { task: TBoardTask }) {
           <div className="h-fit w-full">
             <AutosizeTextarea
               rows={1}
+              disabled={isEditPending}
               ref={textAreaRef}
               onChange={(e) => handleTitleChange(e)}
               onKeyDown={handleKeyDown}

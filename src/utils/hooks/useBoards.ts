@@ -1,13 +1,29 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import boardsServices from "../services/boards.services";
-import { createBoard, getBoard, getBoards } from "../actions/board.actions";
+import {
+  createBoard,
+  getBoard,
+  getBoards,
+  updateBoard,
+} from "../actions/board.actions";
 import {
   CreateBoardParams,
   CreateBoardTaskCardParams,
   CreateBoardTaskParams,
+  EditBoardTaskParams,
+  UpdateBoardParams,
+  UpdateBoardTaskCardParams,
 } from "../actions/shared.types";
-import { createBoardTask, deleteBoardTask } from "../actions/boardTask.actions";
-import { createBoardTaskCard } from "../actions/boardTaskCard.actions";
+import {
+  createBoardTask,
+  deleteBoardTask,
+  editBoardTask,
+} from "../actions/boardTask.actions";
+import {
+  createBoardTaskCard,
+  getBoardTaskCard,
+  updateBoardTaskCard,
+} from "../actions/boardTaskCard.actions";
 
 export function useGetBoards() {
   return useQuery({
@@ -42,6 +58,26 @@ export function useCreateBoard() {
   });
 }
 
+export function useUpdateBoard() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (payload: UpdateBoardParams) => {
+      const boardId = payload.boardId;
+      return await updateBoard(boardId, payload);
+    },
+    onSuccess: (res) => {
+      if (res.success) {
+        console.log("success useUpdateBoard()", res.data);
+        const boardId = res.data.boardId;
+        queryClient.invalidateQueries({
+          queryKey: ["boards", { id: boardId }],
+        });
+      }
+    },
+  });
+}
+
+// board tasks
 export function useCreateBoardTask() {
   const queryClient = useQueryClient();
   return useMutation({
@@ -78,6 +114,25 @@ export function useDeleteBoardTask() {
   });
 }
 
+export function useEditBoardTask() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (payload: EditBoardTaskParams) => {
+      return await editBoardTask(payload);
+    },
+    onSuccess: (res) => {
+      if (res.success) {
+        console.log("success useEditBoardTask()", res.data);
+        const boardId = res.data.board.boardId;
+        queryClient.invalidateQueries({
+          queryKey: ["boards", { id: boardId }],
+        });
+      }
+    },
+  });
+}
+
+// board task cards
 export function useCreateCard() {
   const queryClient = useQueryClient();
   return useMutation({
@@ -88,6 +143,37 @@ export function useCreateCard() {
       if (res.success) {
         console.log("success useCreateCard()", res.data);
         const boardId = res.data.board.boardId;
+        queryClient.invalidateQueries({
+          queryKey: ["boards", { id: boardId }],
+        });
+      }
+    },
+  });
+}
+
+export function useGetBoardTaskCardById(cardId: string) {
+  return useQuery({
+    queryKey: ["cards", { cardId }],
+    queryFn: async () => await getBoardTaskCard(cardId),
+    enabled: !!cardId,
+    // gcTime: 1000 * 60 * 60,
+  });
+}
+
+export function useUpdateBoardTaskCard() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (payload: UpdateBoardTaskCardParams) => {
+      return await updateBoardTaskCard(payload);
+    },
+    onSuccess: (res) => {
+      if (res.success) {
+        console.log("success useUpdateBoardTaskCard()", res.data);
+        const cardId = res.data.cardId;
+        const boardId = res.data.board.boardId;
+        queryClient.invalidateQueries({
+          queryKey: ["cards", { cardId }],
+        });
         queryClient.invalidateQueries({
           queryKey: ["boards", { id: boardId }],
         });

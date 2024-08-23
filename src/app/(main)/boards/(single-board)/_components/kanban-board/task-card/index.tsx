@@ -104,7 +104,7 @@ export default function TaskCard({
           )}
         </div>
       </div>
-      <TaskCardDetail card={card} />
+      <TaskCardDetail cardId={card.cardId} />
     </Dialog>
   );
 }

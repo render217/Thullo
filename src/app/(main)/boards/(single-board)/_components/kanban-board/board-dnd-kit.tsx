@@ -239,13 +239,16 @@ export default function BoardDndKit({ board }: { board: TBoardDetail }) {
           <ul className="absolute inset-0 -top-[2px] mb-[8px] flex size-full select-none gap-2 overflow-x-auto overflow-y-hidden px-[10px] pb-[8px] pt-[8px] scrollbar-width-auto scrollbar-track-transparent scrollbar-thumb-white">
             {tasks.length > 0 ? (
               <>
-                {tasks.map((task) => (
-                  <SortableTaskItem
-                    key={task.taskId}
-                    task={task}
-                    allowGrab={tasks.length > 1}
-                  />
-                ))}
+                {tasks
+                  // .slice()
+                  // .sort((a, b) => a.order - b.order)
+                  .map((task) => (
+                    <SortableTaskItem
+                      key={task.taskId}
+                      task={task}
+                      allowGrab={tasks.length > 1}
+                    />
+                  ))}
                 <AddTaskItem boardId={board.boardId} />
               </>
             ) : (
