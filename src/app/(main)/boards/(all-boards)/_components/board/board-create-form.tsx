@@ -47,9 +47,8 @@ export default function BoardCreateForm() {
   const { userId } = useAuth();
   const [open, setOpen] = useState(false);
   const [previewImageUrl, setPreviewImageUrl] = useState<string>("");
-  const [isImgUploading, setIsImgUploading] = useState(false);
 
-  const uploadImage = useUploadThing("imageUploader");
+  const { isUploading, startUpload } = useUploadThing("imageUploader");
   const { mutateAsync: createBoardAsync, isPending: isSubmitting } =
     useCreateBoard();
 
@@ -61,7 +60,7 @@ export default function BoardCreateForm() {
   });
 
   async function onSubmit(values: z.infer<typeof createBoardSchema>) {
-    if (isImgUploading || isSubmitting) return;
+    if (isUploading || isSubmitting) return;
 
     let uploadedImgData: ClientUploadedFileData<{
       uploadedBy: string;
@@ -80,12 +79,10 @@ export default function BoardCreateForm() {
     const imageFile = values.image;
 
     if (imageFile) {
-      setIsImgUploading(true);
-      const uploadedImages = await uploadImage.startUpload([imageFile]);
+      const uploadedImages = await startUpload([imageFile]);
       if (uploadedImages && uploadedImages.length > 0) {
         uploadedImgData = uploadedImages[0];
       }
-      setIsImgUploading(false);
     }
 
     const payload = {
@@ -110,19 +107,16 @@ export default function BoardCreateForm() {
 
   return (
     <>
-      {isSubmitting ||
-        (isImgUploading && (
-          <BlockScreen>
-            <Spinner size={50} />
-          </BlockScreen>
-        ))}
-      <div
-        className={isSubmitting || isImgUploading ? "pointer-events-none" : ""}
-      >
+      {(isSubmitting || isUploading) && (
+        <BlockScreen>
+          <Spinner size={50} />
+        </BlockScreen>
+      )}
+      <div className={isSubmitting || isUploading ? "pointer-events-none" : ""}>
         <Dialog
           open={open}
           onOpenChange={(open) => {
-            if (isSubmitting || isImgUploading) return;
+            if (isSubmitting || isUploading) return;
             setOpen(open);
             form.reset();
             setPreviewImageUrl("");
@@ -130,7 +124,7 @@ export default function BoardCreateForm() {
         >
           <DialogTrigger asChild>
             <Button
-              disabled={isSubmitting || isImgUploading}
+              disabled={isSubmitting || isUploading}
               className=""
               size={"sm"}
             >
@@ -160,7 +154,7 @@ export default function BoardCreateForm() {
                     <FormItem>
                       <FormControl>
                         <Input
-                          disabled={isSubmitting || isImgUploading}
+                          disabled={isSubmitting || isUploading}
                           className="border border-gray-400"
                           placeholder="Enter Board Name"
                           {...field}
@@ -174,7 +168,7 @@ export default function BoardCreateForm() {
                 />
                 <div className="mt-4 grid grid-cols-2 items-center gap-2">
                   <BoardImageUpload
-                    isUploading={isImgUploading || isSubmitting}
+                    isUploading={isUploading || isSubmitting}
                     previewImageUrl={previewImageUrl}
                     setPreviewImageUrl={setPreviewImageUrl}
                   />
@@ -186,7 +180,7 @@ export default function BoardCreateForm() {
                         <Select
                           onValueChange={field.onChange}
                           defaultValue={field.value}
-                          disabled={isSubmitting || isImgUploading}
+                          disabled={isSubmitting || isUploading}
                         >
                           <FormControl className="bg-gray-200 hover:bg-gray-200">
                             <SelectTrigger>
@@ -228,7 +222,7 @@ export default function BoardCreateForm() {
                 <div className="flex justify-end gap-2">
                   <DialogClose asChild>
                     <Button
-                      disabled={isSubmitting || isImgUploading}
+                      disabled={isSubmitting || isUploading}
                       onClick={() => {
                         form.reset();
                         setPreviewImageUrl("");
@@ -239,13 +233,8 @@ export default function BoardCreateForm() {
                       Close
                     </Button>
                   </DialogClose>
-                  <Button
-                    disabled={isSubmitting || isImgUploading}
-                    type="submit"
-                  >
-                    {isSubmitting || isImgUploading
-                      ? "Submitting..."
-                      : "Submit"}
+                  <Button disabled={isSubmitting || isUploading} type="submit">
+                    {isSubmitting || isUploading ? "Submitting..." : "Submit"}
                   </Button>
                 </div>
               </form>
