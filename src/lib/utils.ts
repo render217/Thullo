@@ -63,3 +63,4 @@ export const getTailwindColor = (color: string) => {
   const colorObj = LABEL_COLORS_OPTION.find((c) => c.color === color);
   return colorObj ? colorObj.tailwindColor : null;
 };
+export const convertFileToUrl = (file: File) => URL.createObjectURL(file);

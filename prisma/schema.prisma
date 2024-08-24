@@ -140,6 +140,7 @@ model Comment {
 model Attachment {
   attachmentId String   @id @unique @default(cuid())
   contentType  String
+  name         String
   size         Int
   url          String
   card         Card     @relation(fields: [cardId], references: [cardId])

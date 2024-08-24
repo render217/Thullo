@@ -115,9 +115,11 @@ export type TComment = {
 export type TAttachment = {
   attachmentId: string;
   contentType: string;
-  size: string;
+  size: number;
+  name: string;
   url: string;
   cardId: string;
+  boardId: string;
   author: TAttachmentAuthor;
   createdAt: string;
   updatedAt: string;

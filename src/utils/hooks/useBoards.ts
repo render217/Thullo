@@ -7,11 +7,13 @@ import {
   updateBoard,
 } from "../actions/board.actions";
 import {
+  CreateAttachmentParams,
   CreateBoardParams,
   CreateBoardTaskCardParams,
   CreateBoardTaskParams,
   CreateCommentParams,
   CreateLabelParams,
+  DeleteAttachmentParams,
   DeleteCommentParams,
   DeleteLabelParams,
   EditBoardTaskParams,
@@ -36,6 +38,11 @@ import {
   updateComment,
 } from "../actions/comment.actions";
 import { createLabel, deleteLabel, getLabels } from "../actions/label.actions";
+import {
+  createAttachment,
+  deleteAttachment,
+  getAttachments,
+} from "../actions/attachment.actions";
 
 /********
  *
@@ -336,6 +343,66 @@ export function useDeleteLabel() {
         const boardId = res.data.boardId;
         queryClient.invalidateQueries({
           queryKey: ["labels", { cardId }],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["cards", { cardId }],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["boards", { id: boardId }],
+        });
+      }
+    },
+  });
+}
+
+// attachments...
+
+export function useGetAttachments(cardId: string) {
+  return useQuery({
+    queryKey: ["attachments", { cardId }],
+    queryFn: async () => await getAttachments(cardId),
+    enabled: !!cardId,
+  });
+}
+
+export function useCreateAttachments() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (payload: CreateAttachmentParams) => {
+      return await createAttachment(payload);
+    },
+    onSuccess: (res) => {
+      if (res.success) {
+        console.log("success useCreateAttachments()", res.data);
+        const cardId = res.data.cardId;
+        const boardId = res.data.boardId;
+        queryClient.invalidateQueries({
+          queryKey: ["attachments", { cardId }],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["cards", { cardId }],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["boards", { id: boardId }],
+        });
+      }
+    },
+  });
+}
+
+export function useDeleteAttachment() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (payload: DeleteAttachmentParams) => {
+      return await deleteAttachment(payload);
+    },
+    onSuccess: (res) => {
+      if (res.success) {
+        console.log("success useDeleteAttachment()", res.data);
+        const cardId = res.data.cardId;
+        const boardId = res.data.boardId;
+        queryClient.invalidateQueries({
+          queryKey: ["attachments", { cardId }],
         });
         queryClient.invalidateQueries({
           queryKey: ["cards", { cardId }],

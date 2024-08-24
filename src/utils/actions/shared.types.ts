@@ -92,3 +92,17 @@ export type CreateLabelParams = {
 export type DeleteLabelParams = {
   labelId: string;
 };
+// attachments
+
+export type CreateAttachmentParams = {
+  authorId: string;
+  cardId: string;
+  contentType: string;
+  size: number;
+  url: string;
+  name: string;
+};
+
+export type DeleteAttachmentParams = {
+  attachmentId: string;
+};

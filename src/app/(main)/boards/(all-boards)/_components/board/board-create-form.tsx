@@ -39,12 +39,17 @@ import { createBoard } from "@/utils/actions/board.actions";
 import { useAuth } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
 import { useCreateBoard } from "@/utils/hooks/useBoards";
+import { useUploadThing } from "@/lib/uploadthing";
+import { ClientUploadedFileData } from "uploadthing/types";
+import { Lectern } from "lucide-react";
 
 export default function BoardCreateForm() {
   const { userId } = useAuth();
   const [open, setOpen] = useState(false);
   const [previewImageUrl, setPreviewImageUrl] = useState<string>("");
+  const [isImgUploading, setIsImgUploading] = useState(false);
 
+  const uploadImage = useUploadThing("imageUploader");
   const { mutateAsync: createBoardAsync, isPending: isSubmitting } =
     useCreateBoard();
 
@@ -56,12 +61,37 @@ export default function BoardCreateForm() {
   });
 
   async function onSubmit(values: z.infer<typeof createBoardSchema>) {
-    console.log(values);
+    if (isImgUploading || isSubmitting) return;
+
+    let uploadedImgData: ClientUploadedFileData<{
+      uploadedBy: string;
+    }> = {
+      customId: "",
+      key: "",
+      name: "",
+      size: 0,
+      type: "",
+      url: "",
+      serverData: {
+        uploadedBy: "",
+      },
+    };
+
+    const imageFile = values.image;
+
+    if (imageFile) {
+      setIsImgUploading(true);
+      const uploadedImages = await uploadImage.startUpload([imageFile]);
+      if (uploadedImages && uploadedImages.length > 0) {
+        uploadedImgData = uploadedImages[0];
+      }
+      setIsImgUploading(false);
+    }
 
     const payload = {
       title: values.title,
       visibility: values.visibility,
-      image: "",
+      image: uploadedImgData.url ? uploadedImgData.url : "",
     };
 
     const res = await createBoardAsync({ userId: userId!, payload });
@@ -80,23 +110,30 @@ export default function BoardCreateForm() {
 
   return (
     <>
-      {isSubmitting && (
-        <BlockScreen>
-          <Spinner size={50} />
-        </BlockScreen>
-      )}
-      <div className={isSubmitting ? "pointer-events-none" : ""}>
+      {isSubmitting ||
+        (isImgUploading && (
+          <BlockScreen>
+            <Spinner size={50} />
+          </BlockScreen>
+        ))}
+      <div
+        className={isSubmitting || isImgUploading ? "pointer-events-none" : ""}
+      >
         <Dialog
           open={open}
           onOpenChange={(open) => {
-            if (isSubmitting) return;
+            if (isSubmitting || isImgUploading) return;
             setOpen(open);
             form.reset();
             setPreviewImageUrl("");
           }}
         >
           <DialogTrigger asChild>
-            <Button disabled={isSubmitting} className="" size={"sm"}>
+            <Button
+              disabled={isSubmitting || isImgUploading}
+              className=""
+              size={"sm"}
+            >
               + create
             </Button>
           </DialogTrigger>
@@ -123,6 +160,7 @@ export default function BoardCreateForm() {
                     <FormItem>
                       <FormControl>
                         <Input
+                          disabled={isSubmitting || isImgUploading}
                           className="border border-gray-400"
                           placeholder="Enter Board Name"
                           {...field}
@@ -136,6 +174,7 @@ export default function BoardCreateForm() {
                 />
                 <div className="mt-4 grid grid-cols-2 items-center gap-2">
                   <BoardImageUpload
+                    isUploading={isImgUploading || isSubmitting}
                     previewImageUrl={previewImageUrl}
                     setPreviewImageUrl={setPreviewImageUrl}
                   />
@@ -147,6 +186,7 @@ export default function BoardCreateForm() {
                         <Select
                           onValueChange={field.onChange}
                           defaultValue={field.value}
+                          disabled={isSubmitting || isImgUploading}
                         >
                           <FormControl className="bg-gray-200 hover:bg-gray-200">
                             <SelectTrigger>
@@ -188,7 +228,7 @@ export default function BoardCreateForm() {
                 <div className="flex justify-end gap-2">
                   <DialogClose asChild>
                     <Button
-                      disabled={isSubmitting}
+                      disabled={isSubmitting || isImgUploading}
                       onClick={() => {
                         form.reset();
                         setPreviewImageUrl("");
@@ -199,8 +239,13 @@ export default function BoardCreateForm() {
                       Close
                     </Button>
                   </DialogClose>
-                  <Button disabled={isSubmitting} type="submit">
-                    {isSubmitting ? "Submitting..." : "Submit"}
+                  <Button
+                    disabled={isSubmitting || isImgUploading}
+                    type="submit"
+                  >
+                    {isSubmitting || isImgUploading
+                      ? "Submitting..."
+                      : "Submit"}
                   </Button>
                 </div>
               </form>
@@ -214,7 +259,7 @@ export default function BoardCreateForm() {
 
 function PreviewImage({ imgUrl = "" }: { imgUrl: string }) {
   return (
-    <div className="max-h-32 overflow-hidden rounded-md">
+    <div className="h-32 overflow-hidden rounded-md">
       {!imgUrl && (
         <Image
           className="mx-auto"
@@ -225,11 +270,9 @@ function PreviewImage({ imgUrl = "" }: { imgUrl: string }) {
         />
       )}
       {imgUrl && (
-        <Image
-          className="w-full"
+        <img
+          className="mx-auto max-h-[100%] max-w-[100%]"
           src={imgUrl}
-          height={400}
-          width={400}
           alt="cover-image"
         />
       )}

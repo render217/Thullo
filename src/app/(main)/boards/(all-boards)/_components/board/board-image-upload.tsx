@@ -16,9 +16,11 @@ import { useFormContext } from "react-hook-form";
 import { z } from "zod";
 
 export default function BoardImageUpload({
+  isUploading,
   previewImageUrl,
   setPreviewImageUrl,
 }: {
+  isUploading: boolean;
   previewImageUrl: string;
   setPreviewImageUrl: React.Dispatch<React.SetStateAction<string>>;
 }) {
@@ -38,6 +40,7 @@ export default function BoardImageUpload({
               <>
                 <Button
                   type="button"
+                  disabled={isUploading}
                   onClick={() => {
                     imageRef.current?.click();
                   }}
@@ -92,6 +95,7 @@ export default function BoardImageUpload({
               {imageName && (
                 <div
                   onClick={() => {
+                    if (isUploading) return;
                     form.resetField("image");
                     setPreviewImageUrl("");
                   }}

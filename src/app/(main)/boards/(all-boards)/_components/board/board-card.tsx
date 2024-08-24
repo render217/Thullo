@@ -25,13 +25,6 @@ export default function BoardCard({ board }: { board: TBoard }) {
             href={`/boards/${board.boardId}`}
             className="h-[200px] overflow-hidden p-4"
           >
-            {/* <Image
-              className="w-full rounded-md"
-              src={board?.boardImage}
-              height={150}
-              width={200}
-              alt="board"
-            /> */}
             <BoardCardImage imageUrl={board?.boardImage} />
           </Link>
         </CardHeader>
@@ -40,7 +33,7 @@ export default function BoardCard({ board }: { board: TBoard }) {
           <CardTitle className="h-12">
             <Link
               href={`/boards/${board.boardId}`}
-              className="text-sm font-semibold hover:underline"
+              className="text-lg font-semibold hover:underline"
             >
               {board.boardName}
             </Link>
@@ -88,13 +81,11 @@ function BoardCardImage({ imageUrl }: { imageUrl: string }) {
     validateImage();
   }, [imageUrl]);
   return (
-    <>
+    <div className="size-full rounded-md border">
       {!isLoading ? (
-        <Image
-          className="size-full rounded-md object-cover"
+        <img
+          className="mx-auto size-full max-h-[100%] max-w-[100%] object-contain"
           src={img}
-          height={150}
-          width={200}
           alt="board"
         />
       ) : (
@@ -102,6 +93,6 @@ function BoardCardImage({ imageUrl }: { imageUrl: string }) {
         <div className="size-full animate-pulse rounded-md bg-gray-200 object-cover"></div>
         // </div>
       )}
-    </>
+    </div>
   );
 }
