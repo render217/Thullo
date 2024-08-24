@@ -61,7 +61,13 @@ export async function getBoard(
         tasks: {
           include: {
             board: true,
-            cards: true,
+            cards: {
+              include: {
+                labels: true,
+                comments: true,
+                attachments: true,
+              },
+            },
           },
         },
       },

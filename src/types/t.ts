@@ -99,12 +99,14 @@ export type TLabel = {
   name: string;
   color: string;
   cardId: string;
+  boardId: string;
 };
 
 export type TComment = {
   commentId: string;
   content: string;
   cardId: string;
+  boardId: string;
   author: TCommentAuthor;
   createdAt: string;
   updatedAt: string;

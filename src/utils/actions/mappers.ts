@@ -108,6 +108,7 @@ export function labelDto(label: any) {
     name: label.name,
     color: label.color,
     cardId: label.cardId,
+    boardId: label?.card?.task?.board?.boardId || "",
   };
 }
 
@@ -116,6 +117,7 @@ export function commentDto(comment: any) {
     commentId: comment.commentId,
     content: comment.content,
     cardId: comment.cardId,
+    boardId: comment?.card?.task?.board?.boardId || "",
     author: userDto(comment.author),
     createdAt: comment.createdAt,
     updatedAt: comment.updatedAt,

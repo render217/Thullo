@@ -13,19 +13,25 @@ import { GripVertical, MessageSquareText, Paperclip } from "lucide-react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { DialogTrigger } from "@radix-ui/react-dialog";
 import { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import TaskCardDetail from "../task-card-detail";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { TBoardTaskCard } from "@/types/t";
+import { cn, getTailwindColor } from "@/lib/utils";
 export default function TaskCard({
-  card,
+  card: cardData,
   listeners,
 }: {
   card: TBoardTaskCard;
   listeners?: SyntheticListenerMap | undefined;
 }) {
+  const [card, setCard] = useState<TBoardTaskCard>(cardData);
   const [openDragItem, setOpenDragItem] = useState(false);
+
+  useEffect(() => {
+    setCard(cardData);
+  }, [cardData]);
 
   return (
     <Dialog>
@@ -67,17 +73,26 @@ export default function TaskCard({
             <h3 className="w-full text-[14px] font-semibold">{card.title}</h3>
           </DialogTrigger>
         </div>
+
         {card.labels.length > 0 && (
           <DialogTrigger>
             <div className="flex flex-wrap items-center gap-2 py-1.5">
-              {card.labels.map((label) => (
-                <span
-                  key={label.labelId}
-                  className="grid h-[14px] place-content-center rounded-md border border-slate-400 px-2 py-0 text-[10px]"
-                >
-                  {label.name}
-                </span>
-              ))}
+              {card.labels.map((label) => {
+                const twColor = getTailwindColor(label.color);
+                const isNone = label.color === "none";
+                return (
+                  <span
+                    key={label.labelId}
+                    className={cn(
+                      "grid h-[14px] place-content-center rounded-md border px-2 py-0 text-[10px] text-background",
+                      twColor,
+                      isNone && "border-gray-400 text-black",
+                    )}
+                  >
+                    {label.name}
+                  </span>
+                );
+              })}
             </div>
           </DialogTrigger>
         )}

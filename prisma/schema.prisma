@@ -97,7 +97,7 @@ model Card {
   task        Task         @relation(fields: [taskId], references: [taskId], onDelete: Cascade)
   order       Int
   title       String
-  description String?
+  description String
   coverImage  String?
   labels      Label[]
   cardMembers CardMember[]

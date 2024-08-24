@@ -8,132 +8,107 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useActionSelector } from ".";
-import { cn } from "@/lib/utils";
+import { cn, getTailwindColor } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { LABEL_COLORS_OPTION } from "@/lib/constants";
+import { TBoardTaskCard, TLabel } from "@/types/t";
+import { useCreateLabel, useDeleteLabel } from "@/utils/hooks/useBoards";
 
-type ILabel = {
-  tag: string;
+type labelFormData = {
+  name: string;
   color: string;
 };
-const labelsDefaultData: ILabel[] = [
+
+const labelsDefaultData: TLabel[] = [
   {
-    tag: "technology",
-    color: "bg-red-400",
+    name: "technology",
+    color: "red",
+    cardId: "cd",
+    labelId: "1",
+    boardId: "",
   },
   {
-    tag: "design",
-    color: "bg-blue-400",
+    name: "design",
+    color: "blue",
+    cardId: "cd",
+    labelId: "2",
+    boardId: "",
   },
   {
-    tag: "development",
-    color: "bg-purple-400",
+    name: "development",
+    color: "purple",
+    cardId: "cd",
+    labelId: "3",
+    boardId: "",
   },
-  // {
-  //   tag: "coding",
-  //   color: "bg-orange-400",
-  // },
-  // {
-  //   tag: "AI technology",
-  //   color: "bg-black",
-  // },
-  // {
-  //   tag: "bootstrap",
-  //   color: "bg-lime-800",
-  // },
-  // {
-  //   tag: "testing",
-  //   color: "bg-blue-800",
-  // },
 ];
-export default function CardLabelForm() {
+
+export default function CardLabelForm({ card }: { card: TBoardTaskCard }) {
   const { openAction } = useActionSelector();
-  const [labels, setLabels] = useState<ILabel[]>(labelsDefaultData);
-  const [labelData, setLabelData] = useState({
-    label: "",
-    color: {
-      id: "",
-      color: "",
-      tailwindColor: "",
-    },
+  const [labels, setLabels] = useState<TLabel[]>([]);
+  const [labelNameError, setLabelNameError] = useState(false);
+  const [labelData, setLabelData] = useState<labelFormData>({
+    name: "",
+    color: "",
   });
 
-  const { label, color: selectedColor } = labelData;
+  useEffect(() => {
+    setLabels(card.labels);
+  }, [card]);
+
+  useEffect(() => {
+    if (labelData.name.length > 15) {
+      setLabelNameError(true);
+    } else {
+      setLabelNameError(false);
+    }
+  }, [labelData.name]);
+
   const handleSelectColor = (color: string) => {
-    const targetColor = colors.find((c) => c.id === color);
-    if (!targetColor) return;
-    setLabelData({ ...labelData, color: targetColor });
+    if (color === "none") {
+      setLabelData({ ...labelData, color: "none" });
+      return;
+    }
+    setLabelData({ ...labelData, color });
   };
 
-  const addToLabels = () => {};
-  const remomveFromLabels = () => {};
-  const handleAddLabel = () => {};
+  const isBtnDisabled =
+    labelData.name === "" || labelData.color === "" || labelNameError;
 
-  const colors = [
-    {
-      id: "red",
-      color: "red",
-      tailwindColor: "bg-red-400",
-    },
-    {
-      id: "yellow",
-      color: "yellow",
-      tailwindColor: "bg-yellow-400",
-    },
-    {
-      id: "purple",
-      color: "purple",
-      tailwindColor: "bg-purple-400",
-    },
-    {
-      id: "green",
-      color: "green",
-      tailwindColor: "bg-green-400",
-    },
-    {
-      id: "teal",
-      color: "teal",
-      tailwindColor: "bg-teal-400",
-    },
-    {
-      id: "orange",
-      color: "orange",
-      tailwindColor: "bg-orange-400",
-    },
-    {
-      id: "slate",
-      color: "slate",
-      tailwindColor: "bg-slate-700",
-    },
+  const { mutateAsync: createLabelAsync, isPending: isCreatingLabel } =
+    useCreateLabel();
 
-    {
-      id: "gray",
-      color: "gray",
-      tailwindColor: "bg-gray-400",
-    },
-    {
-      id: "blue",
-      color: "blue",
-      tailwindColor: "bg-blue-600",
-    },
-    {
-      id: "black",
-      color: "black",
-      tailwindColor: "bg-black",
-    },
-    {
-      id: "sky",
-      color: "sky",
-      tailwindColor: "bg-sky-400",
-    },
-    {
-      id: "rose",
-      color: "rose",
-      tailwindColor: "bg-rose-600",
-    },
-  ];
+  const { mutateAsync: deleteLabelAsync, isPending: isDeletingLabel } =
+    useDeleteLabel();
+
+  const handleAddLabel = async () => {
+    if (isBtnDisabled || isCreatingLabel) return;
+    const payload = {
+      cardId: card.cardId,
+      name: labelData.name,
+      color: labelData.color,
+    };
+    const res = await createLabelAsync(payload);
+    if (res.success) {
+      console.log("success creating label", res.data);
+      setLabelData({ name: "", color: "" });
+    }
+  };
+
+  const handleDeleteLabel = async (labelId: string) => {
+    if (isDeletingLabel) return;
+    const payload = {
+      labelId,
+    };
+    const res = await deleteLabelAsync(payload);
+    if (res.success) {
+      console.log("success deleting label", res.data);
+    }
+  };
+
   return (
     <div>
       <DropdownMenu
@@ -155,33 +130,47 @@ export default function CardLabelForm() {
           <div className="relative py-2">
             <Input
               className="h-6 py-0.5 pr-[28px] text-[10px] shadow-sm focus-visible:ring-0"
-              placeholder="Label..."
-              value={label}
+              placeholder="Enter label name"
+              value={labelData.name}
               onChange={(e) =>
-                setLabelData({ ...labelData, label: e.target.value })
+                setLabelData({ ...labelData, name: e.target.value })
               }
             />
+            {labelNameError && (
+              <p className="py-1 pl-1 text-[10px] font-light text-red-500">
+                name should be less than 15 character
+              </p>
+            )}
           </div>
           {/* break to other component */}
           <div className="fit grid grid-cols-4 gap-1 pb-2 pt-1">
-            {colors.map((color) => {
-              const isSelected = selectedColor.id === color.id;
+            {LABEL_COLORS_OPTION.map((color) => {
+              const isSelected = labelData.color === color.color;
+              const isNone = color.color === "none";
               return (
                 <div
-                  onClick={() => handleSelectColor(color.id)}
-                  key={color.id}
+                  onClick={() => handleSelectColor(color.color)}
+                  key={color.name}
                   className={cn(
-                    "h-8 w-full cursor-pointer rounded-md border-2 border-transparent hover:scale-95 hover:border-slate-900 hover:p-2",
-                    isSelected && "scale-95 border-slate-900 p-2",
+                    "relative h-8 w-full cursor-pointer rounded-md border-2 border-transparent hover:z-10 hover:scale-95 hover:border-slate-900 hover:p-2",
+                    isSelected && "z-10 scale-95 border-slate-900 p-2",
+                    isNone && "scale-100 p-0 hover:scale-100 hover:p-0",
                   )}
                 >
-                  <div
-                    className={cn(
-                      color.tailwindColor,
-                      "h-8 w-full rounded-md",
-                      isSelected && "",
-                    )}
-                  ></div>
+                  {isNone && (
+                    <p className="top-0 grid h-8 w-full place-content-center text-[8px]">
+                      none
+                    </p>
+                  )}
+                  {!isNone && (
+                    <div
+                      className={cn(
+                        color.tailwindColor,
+                        "h-8 w-full rounded-md",
+                        isSelected && "",
+                      )}
+                    ></div>
+                  )}
                 </div>
               );
             })}
@@ -193,31 +182,49 @@ export default function CardLabelForm() {
             </div>
             <ScrollArea className="h-[80px] rounded-md border p-1">
               <div className="flex flex-wrap gap-3 py-2">
-                {labelsDefaultData.map((label, idx) => {
-                  return (
-                    <div
-                      // key={label.tag}
-                      key={idx}
-                      className={cn(
-                        "relative grid w-fit place-content-center rounded-md border px-2",
-                        label.color,
-                        "text-background",
-                      )}
-                    >
-                      <span className="block text-[10px] font-light">
-                        {label.tag}
-                      </span>
-                      <span className="absolute -right-2 -top-1 cursor-pointer rounded-full bg-red-500 hover:scale-x-110">
-                        <CircleX className="size-3" />
-                      </span>
-                    </div>
-                  );
-                })}
+                {labels?.length === 0 && (
+                  <p className="mx-auto text-[10px]">No Avaliable Labels</p>
+                )}
+                {labels?.length > 0 &&
+                  labels.map((label, idx) => {
+                    const twColor = getTailwindColor(label.color);
+                    const isNone = label.color === "none";
+                    return (
+                      <div
+                        // key={label.tag}
+                        key={idx}
+                        className={cn(
+                          "relative grid w-fit place-content-center rounded-md border px-2",
+                          twColor,
+                          "text-background",
+                          isNone && "text-black",
+                        )}
+                      >
+                        <span className="block text-[10px] font-light">
+                          {label.name}
+                        </span>
+                        <span
+                          onClick={() => handleDeleteLabel(label.labelId)}
+                          className="absolute -right-2 -top-1 cursor-pointer rounded-full bg-red-500 text-white hover:scale-x-110"
+                        >
+                          <CircleX className="size-3" />
+                        </span>
+                      </div>
+                    );
+                  })}
               </div>
             </ScrollArea>
           </div>
           <div className="mt-2">
-            <Button size={"sm"} className="mx-auto block h-6 text-[10px]">
+            <Button
+              disabled={isBtnDisabled || isCreatingLabel}
+              onClick={handleAddLabel}
+              size={"sm"}
+              className={cn(
+                "mx-auto block h-6 text-[10px]",
+                isBtnDisabled && "cursor-not-allowed",
+              )}
+            >
               Add Label
             </Button>
           </div>

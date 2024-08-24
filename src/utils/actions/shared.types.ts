@@ -60,3 +60,35 @@ export type UpdateBoardTaskCardParams = {
   title?: string;
   description?: string;
 };
+
+// comments
+export type GetCommentsParams = {
+  cardId: string;
+};
+export type CreateCommentParams = {
+  cardId: string;
+  content: string;
+  authorId: string;
+};
+export type UpdateCommentParams = {
+  commentId: string;
+  content?: string;
+  authorId: string;
+};
+export type DeleteCommentParams = {
+  commentId: string;
+  authorId: string;
+};
+
+// labels;
+export type GetLabelsParams = {
+  cardId: string;
+};
+export type CreateLabelParams = {
+  cardId: string;
+  name: string;
+  color: string;
+};
+export type DeleteLabelParams = {
+  labelId: string;
+};

@@ -10,9 +10,14 @@ import {
   CreateBoardParams,
   CreateBoardTaskCardParams,
   CreateBoardTaskParams,
+  CreateCommentParams,
+  CreateLabelParams,
+  DeleteCommentParams,
+  DeleteLabelParams,
   EditBoardTaskParams,
   UpdateBoardParams,
   UpdateBoardTaskCardParams,
+  UpdateCommentParams,
 } from "../actions/shared.types";
 import {
   createBoardTask,
@@ -24,7 +29,19 @@ import {
   getBoardTaskCard,
   updateBoardTaskCard,
 } from "../actions/boardTaskCard.actions";
+import {
+  createComment,
+  deleteComment,
+  getComments,
+  updateComment,
+} from "../actions/comment.actions";
+import { createLabel, deleteLabel, getLabels } from "../actions/label.actions";
 
+/********
+ *
+ *  BOARDS
+ *
+ *******/
 export function useGetBoards() {
   return useQuery({
     queryKey: ["boards"],
@@ -77,7 +94,11 @@ export function useUpdateBoard() {
   });
 }
 
-// board tasks
+/********
+ *
+ *  BOARD_TASKS
+ *
+ *******/
 export function useCreateBoardTask() {
   const queryClient = useQueryClient();
   return useMutation({
@@ -132,7 +153,11 @@ export function useEditBoardTask() {
   });
 }
 
-// board task cards
+/********
+ *
+ *  BOARD_TASK_CARDS
+ *
+ *******/
 export function useCreateCard() {
   const queryClient = useQueryClient();
   return useMutation({
@@ -171,6 +196,147 @@ export function useUpdateBoardTaskCard() {
         console.log("success useUpdateBoardTaskCard()", res.data);
         const cardId = res.data.cardId;
         const boardId = res.data.board.boardId;
+        queryClient.invalidateQueries({
+          queryKey: ["cards", { cardId }],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["boards", { id: boardId }],
+        });
+      }
+    },
+  });
+}
+
+// comments
+
+export function useGetCardComments(cardId: string) {
+  return useQuery({
+    queryKey: ["comments", { cardId }],
+    queryFn: async () => await getComments({ cardId }),
+    enabled: !!cardId,
+  });
+}
+
+export function useCreateComment() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (payload: CreateCommentParams) => {
+      return await createComment(payload);
+    },
+    onSuccess: (res) => {
+      if (res.success) {
+        console.log("success useCreateComment()", res.data);
+        const cardId = res.data.cardId;
+        const boardId = res.data.boardId;
+        queryClient.invalidateQueries({
+          queryKey: ["comments", { cardId }],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["cards", { cardId }],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["boards", { id: boardId }],
+        });
+      }
+    },
+  });
+}
+
+export function useUpdateComment() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (payload: UpdateCommentParams) => {
+      return await updateComment(payload);
+    },
+    onSuccess: (res) => {
+      if (res.success) {
+        console.log("success useUpdateComment()", res.data);
+        const cardId = res.data.cardId;
+        queryClient.invalidateQueries({
+          queryKey: ["comments", { cardId }],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["cards", { cardId }],
+        });
+      }
+    },
+  });
+}
+
+export function useDeleteComment() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (payload: DeleteCommentParams) => {
+      return await deleteComment(payload);
+    },
+    onSuccess: (res) => {
+      if (res.success) {
+        // console.log("success useDeleteComment()", res.data);
+        const cardId = res.data.cardId;
+        const boardId = res.data.boardId;
+        queryClient.invalidateQueries({
+          queryKey: ["comments", { cardId }],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["cards", { cardId }],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["boards", { id: boardId }],
+        });
+      }
+    },
+  });
+}
+
+// labels...
+
+export function useGetLabels(cardId: string) {
+  return useQuery({
+    queryKey: ["labels", { cardId }],
+    queryFn: async () => await getLabels({ cardId }),
+    enabled: !!cardId,
+  });
+}
+
+export function useCreateLabel() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (payload: CreateLabelParams) => {
+      return await createLabel(payload);
+    },
+    onSuccess: (res) => {
+      if (res.success) {
+        console.log("success useCreateLabel()", res.data);
+        const cardId = res.data.cardId;
+        const boardId = res.data.boardId;
+        queryClient.invalidateQueries({
+          queryKey: ["labels", { cardId }],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["cards", { cardId }],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["boards", { id: boardId }],
+        });
+      }
+    },
+  });
+}
+
+export function useDeleteLabel() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (payload: DeleteLabelParams) => {
+      return await deleteLabel(payload);
+    },
+    onSuccess: (res) => {
+      if (res.success) {
+        console.log("success useDeleteLabel()", res.data);
+        const cardId = res.data.cardId;
+        const boardId = res.data.boardId;
+        queryClient.invalidateQueries({
+          queryKey: ["labels", { cardId }],
+        });
         queryClient.invalidateQueries({
           queryKey: ["cards", { cardId }],
         });

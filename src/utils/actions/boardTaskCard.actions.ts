@@ -46,6 +46,7 @@ export async function createBoardTaskCard(
     const newBoardTaskCard = await db.card.create({
       data: {
         title: payload.title,
+        description: "",
         task: { connect: { taskId: payload.taskId } },
         order: taskCardLength + 1,
       },
