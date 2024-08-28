@@ -83,7 +83,7 @@ export function cardDto(card: any) {
     },
     cardMembers:
       card.cardMembers?.length > 0
-        ? card.cardMembers.map((member: any) => userDto(member))
+        ? card.cardMembers.map((member: any) => userDto(member?.user))
         : [],
     comments:
       card.comments?.length > 0
@@ -92,10 +92,6 @@ export function cardDto(card: any) {
     attachments:
       card.attachments?.length > 0
         ? card.attachments.map((attachment: any) => attachmentDto(attachment))
-        : [],
-    members:
-      card.members?.length > 0
-        ? card.members.map((member: any) => userDto(member))
         : [],
     createdAt: card.createdAt,
     updatedAt: card.updatedAt,

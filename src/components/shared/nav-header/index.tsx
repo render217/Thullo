@@ -47,7 +47,8 @@ export default function NavHeader() {
           </SignedIn>
 
           <div className="ml-auto mr-[20px]">
-            <NavSearchForm />
+            {/* general search form.... */}
+            {/* <NavSearchForm /> */}
           </div>
 
           <div className="mx-5">

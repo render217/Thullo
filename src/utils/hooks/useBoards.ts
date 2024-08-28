@@ -20,7 +20,9 @@ import {
   DeleteCommentParams,
   DeleteLabelParams,
   EditBoardTaskParams,
+  GetUsersInBoardNotInCardParams,
   GetUsersNotInBoardParams,
+  UnAssignMemberParams,
   UpdateBoardParams,
   UpdateBoardTaskCardParams,
   UpdateCommentParams,
@@ -31,8 +33,10 @@ import {
   editBoardTask,
 } from "../actions/boardTask.actions";
 import {
+  assignMembersToTaskCard,
   createBoardTaskCard,
   getBoardTaskCard,
+  unAssignMemberToTaskCard,
   updateBoardTaskCard,
 } from "../actions/boardTaskCard.actions";
 import {
@@ -47,7 +51,11 @@ import {
   deleteAttachment,
   getAttachments,
 } from "../actions/attachment.actions";
-import { getUsers, getUsersNotInBoard } from "../actions/user.actions";
+import {
+  getUsers,
+  getUsersInBoardNotInCard,
+  getUsersNotInBoard,
+} from "../actions/user.actions";
 
 /********
  *
@@ -255,6 +263,70 @@ export function useUpdateBoardTaskCard() {
         });
         queryClient.invalidateQueries({
           queryKey: ["boards", { id: boardId }],
+        });
+      }
+    },
+  });
+}
+
+export function useAssignMembers() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (payload: { cardId: string; userIds: string[] }) => {
+      return await assignMembersToTaskCard(payload);
+    },
+    onSuccess: (res) => {
+      if (res.success) {
+        console.log("success useAssignMembers()", res.data);
+        const cardId = res.data.cardId;
+        const boardId = res.data.board.boardId;
+        queryClient.invalidateQueries({
+          queryKey: ["cards", { cardId }],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["boards", { id: boardId }],
+        });
+        queryClient.invalidateQueries({
+          queryKey: [
+            "users",
+            {
+              boardId: boardId,
+              cardId: cardId,
+              userName: "",
+            },
+          ],
+        });
+      }
+    },
+  });
+}
+
+export function useUnassignMember() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (payload: UnAssignMemberParams) => {
+      return await unAssignMemberToTaskCard(payload);
+    },
+    onSuccess: (res) => {
+      if (res.success) {
+        console.log("success useUnassignMember()", res.data);
+        const cardId = res.data.cardId;
+        const boardId = res.data.board.boardId;
+        queryClient.invalidateQueries({
+          queryKey: ["cards", { cardId }],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["boards", { id: boardId }],
+        });
+        queryClient.invalidateQueries({
+          queryKey: [
+            "users",
+            {
+              boardId: boardId,
+              cardId: cardId,
+              userName: "",
+            },
+          ],
         });
       }
     },
@@ -478,5 +550,21 @@ export function useGetUsersNotInBoard(payload: GetUsersNotInBoardParams) {
       { boardId: payload.boardId, userName: payload.userName },
     ],
     queryFn: async () => await getUsersNotInBoard(payload),
+  });
+}
+
+export function useGetUsersInBoardNotInCard(
+  payload: GetUsersInBoardNotInCardParams,
+) {
+  return useQuery({
+    queryKey: [
+      "users",
+      {
+        boardId: payload.boardId,
+        cardId: payload.cardId,
+        userName: payload.userName,
+      },
+    ],
+    queryFn: async () => await getUsersInBoardNotInCard(payload),
   });
 }

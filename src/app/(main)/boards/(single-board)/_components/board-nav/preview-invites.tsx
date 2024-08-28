@@ -11,7 +11,7 @@ import {
 import { Avatar } from "@/components/ui/avatar";
 export default function PreviewInvites() {
   return (
-    <div>
+    <div className="">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           {/* <div className="flex w-full cursor-pointer flex-row items-center gap-1 rounded-md p-2 text-xs text-slate-500 shadow-sm hover:bg-slate-300">
@@ -29,7 +29,12 @@ export default function PreviewInvites() {
             </div>
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-[220px] border p-3 shadow-sm shadow-blue-200">
+        <DropdownMenuContent className="relative w-[220px] border p-3">
+          <div className="absolute inset-0 z-20 grid place-content-center bg-black/80">
+            <p className="rounded-md border p-4 text-xs text-white">
+              to be implemented
+            </p>
+          </div>
           <div>
             <h3 className="text-sm font-semibold">Preview Invites</h3>
             <p className="text-[10px]"> Users invited to this board </p>

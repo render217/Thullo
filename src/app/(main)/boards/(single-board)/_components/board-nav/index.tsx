@@ -5,7 +5,7 @@ import BoardMemebers from "./board-members";
 
 import { useParams } from "next/navigation";
 // import InviteUser from "./invite-user";
-// import PreviewInvites from "./preview-invites";
+import PreviewInvites from "./preview-invites";
 import ChangeVisibility from "./change-visibility";
 import BoardDetailNavSkeleton from "@/components/shared/skeletons/boards/board-detail-nav-skeleton";
 import AddUser from "./add-user";
@@ -24,7 +24,9 @@ export default function BoardNav() {
         <BoardMemebers members={board.boardMember} />
         <AddUser board={board} />
         {/* <InviteUser /> */}
-        {/* <PreviewInvites /> */}
+        <div className="ml-6">
+          <PreviewInvites />
+        </div>
         <div className="ml-auto">
           <BoardSideBar />
         </div>

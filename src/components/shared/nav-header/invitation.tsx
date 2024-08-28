@@ -31,7 +31,12 @@ export default function Invitation() {
             </span>
           </div>
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-[220px] border p-3 shadow-sm shadow-blue-200">
+        <DropdownMenuContent className="relative w-[220px] border p-3 shadow-none">
+          <div className="absolute inset-0 z-20 grid place-content-center bg-black/80">
+            <p className="rounded-md border p-4 text-xs text-white">
+              to be implemented
+            </p>
+          </div>
           <div>
             <h3 className="text-sm font-semibold">Your Invites</h3>
             <p className="text-[10px]">Recevied Invites from other boards </p>

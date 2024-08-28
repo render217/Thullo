@@ -77,6 +77,22 @@ export type UpdateBoardTaskCardParams = {
   coverImage?: string;
 };
 
+export type GetUsersInBoardNotInCardParams = {
+  cardId: string;
+  boardId: string;
+  userName: string;
+};
+
+export type AssignMembersParams = {
+  cardId: string;
+  userIds: string[];
+};
+
+export type UnAssignMemberParams = {
+  cardId: string;
+  userId: string;
+};
+
 // comments
 export type GetCommentsParams = {
   cardId: string;

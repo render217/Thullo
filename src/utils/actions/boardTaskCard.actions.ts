@@ -1,8 +1,10 @@
 "use server";
 import db from "@/db/db";
 import {
+  AssignMembersParams,
   CreateBoardTaskCardParams,
   GetBoardTaskParams,
+  UnAssignMemberParams,
   UpdateBoardTaskCardParams,
 } from "./shared.types";
 import { Response } from "@/types/axios.types";
@@ -112,6 +114,7 @@ export async function getBoardTaskCard(
           },
         },
         labels: true,
+
         cardMembers: {
           include: {
             user: true,
@@ -217,6 +220,202 @@ export async function updateBoardTaskCard(
     return {
       success: false,
       data: "Error updating card",
+    };
+  }
+}
+
+export async function assignMembersToTaskCard(
+  payload: AssignMembersParams,
+): Promise<Response<TBoardTaskCard>> {
+  try {
+    if (!payload.cardId) {
+      return {
+        success: false,
+        data: "Card ID is required",
+      };
+    }
+
+    if (payload.userIds.length === 0) {
+      return {
+        success: false,
+        data: "User IDs are required",
+      };
+    }
+
+    const targetCard = await db.card.findUnique({
+      where: {
+        cardId: payload.cardId,
+      },
+      include: {
+        task: {
+          include: {
+            board: true,
+          },
+        },
+        labels: true,
+        cardMembers: {
+          include: {
+            user: true,
+          },
+        },
+        comments: {
+          include: {
+            author: true,
+          },
+        },
+        attachments: {
+          include: {
+            author: true,
+          },
+        },
+      },
+    });
+
+    if (!targetCard) {
+      return {
+        success: false,
+        data: "Card not found",
+      };
+    }
+
+    // Check if each user exists and filter out non-existent users
+    const userIds = payload.userIds;
+    const existingUsers = await db.user.findMany({
+      where: {
+        clerkId: { in: userIds },
+      },
+    });
+
+    const existingUserIds = new Set(existingUsers.map((user) => user.clerkId));
+    const nonExistentUserIds = userIds.filter((id) => !existingUserIds.has(id));
+    // Add available users to the board
+    const usersToAdd = userIds.filter((id) => existingUserIds.has(id));
+    const assignedMembers = await Promise.all(
+      usersToAdd.map((userId) =>
+        db.cardMember.create({
+          data: {
+            cardId: payload.cardId,
+            userId: userId,
+          },
+        }),
+      ),
+    );
+
+    const mappedTaskCard = cardDto(targetCard);
+
+    console.log({ mappedTaskCard: targetCard.cardMembers });
+
+    if (nonExistentUserIds.length > 0) {
+      console.log(`Some users not found: ${nonExistentUserIds.join(", ")}`);
+      return {
+        success: true,
+        data: mappedTaskCard,
+      };
+    }
+    return {
+      success: true,
+      data: mappedTaskCard,
+    };
+  } catch (error) {
+    console.log("assignMembersToTaskCardError:", error);
+    return {
+      success: false,
+      data: "Error assigning members to card",
+    };
+  }
+}
+
+export async function unAssignMemberToTaskCard(
+  payload: UnAssignMemberParams,
+): Promise<Response<TBoardTaskCard>> {
+  try {
+    if (!payload.cardId) {
+      return {
+        success: false,
+        data: "Card ID is required",
+      };
+    }
+
+    if (!payload.userId) {
+      return {
+        success: false,
+        data: "User ID is required",
+      };
+    }
+
+    const targetCard = await db.card.findUnique({
+      where: {
+        cardId: payload.cardId,
+      },
+      include: {
+        task: {
+          include: {
+            board: true,
+          },
+        },
+        labels: true,
+
+        cardMembers: {
+          include: {
+            user: true,
+          },
+        },
+        comments: {
+          include: {
+            author: true,
+          },
+        },
+        attachments: {
+          include: {
+            author: true,
+          },
+        },
+      },
+    });
+
+    if (!targetCard) {
+      return {
+        success: false,
+        data: "Card not found",
+      };
+    }
+
+    const targetMember = await db.cardMember.findUnique({
+      where: {
+        cardId_userId: {
+          cardId: payload.cardId,
+          userId: payload.userId,
+        },
+      },
+    });
+
+    if (!targetMember) {
+      return {
+        success: false,
+        data: "Member not found",
+      };
+    }
+
+    await db.cardMember.delete({
+      where: {
+        cardId_userId: {
+          cardId: targetCard.cardId,
+          userId: targetMember.userId,
+        },
+      },
+    });
+
+    const mappedTaskCard = cardDto(targetCard);
+
+    return {
+      success: true,
+      data: mappedTaskCard,
+    };
+  } catch (error) {
+    console.log("unAssignMemberToTaskCardError:", error);
+    return {
+      success: false,
+      data: "Error unassigning members to card",
     };
   }
 }

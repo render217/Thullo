@@ -24,6 +24,7 @@ export default function TaskCardDetail({ cardId }: { cardId: string }) {
   if (isLoading) return <TaskCardDetailLoading />;
   if (response?.success) {
     const card = response.data;
+    console.log("card", card);
     return (
       <DialogContent
         aria-describedby={"card detail"}

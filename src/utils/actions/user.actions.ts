@@ -4,10 +4,11 @@ import db from "@/db/db";
 import { handleError } from "@/lib/utils";
 import {
   CreateUserParams,
+  GetUsersInBoardNotInCardParams,
   GetUsersNotInBoardParams,
   UpdateUserParams,
 } from "./shared.types";
-import { TBoardMember, TUser } from "@/types/t";
+import { TBoardMember, TBoardTaskCard, TCardMember, TUser } from "@/types/t";
 import { Response } from "@/types/axios.types";
 import { userDto } from "./mappers";
 
@@ -137,6 +138,64 @@ export async function getUsersNotInBoard(
     };
   } catch (error) {
     console.log("getUsersNotInBoardError", error);
+    return {
+      success: false,
+      data: "Error fetching users",
+    };
+  }
+}
+
+export async function getUsersInBoardNotInCard(
+  payload: GetUsersInBoardNotInCardParams,
+): Promise<Response<TCardMember[]>> {
+  try {
+    if (payload.cardId === "") {
+      return {
+        success: false,
+        data: "Card ID is required",
+      };
+    }
+
+    const targetCard = await db.card.findUnique({
+      where: {
+        cardId: payload.cardId,
+      },
+    });
+
+    if (!targetCard) {
+      return {
+        success: false,
+        data: "Card not found",
+      };
+    }
+
+    const users = await db.user.findMany({
+      where: {
+        username: {
+          mode: "insensitive",
+          contains: payload.userName ?? "",
+        },
+        boardMember: {
+          some: {
+            boardId: payload.boardId,
+          },
+        },
+        cardMember: {
+          none: {
+            cardId: payload.cardId,
+          },
+        },
+      },
+    });
+
+    const mappedUsers = users.map((user) => userDto(user));
+
+    return {
+      success: true,
+      data: mappedUsers,
+    };
+  } catch (error) {
+    console.log("getUsersInBoardNotInCardError", error);
     return {
       success: false,
       data: "Error fetching users",

@@ -199,6 +199,8 @@ export async function updateBoard(
   }
 }
 
+export async function deleteBoard() {}
+
 export async function addBoardMember(
   payload: AddBoardMemberParams,
 ): Promise<Response<TBoardDetail>> {
@@ -379,4 +381,3 @@ export async function removeMemberFromBoard(
     };
   }
 }
-export async function deleteBoard() {}
