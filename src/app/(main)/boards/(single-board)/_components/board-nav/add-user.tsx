@@ -11,7 +11,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
-import { useGetUsersNotInBoard, useUsersSearch } from "@/utils/hooks/useBoards";
+import {
+  useAddBoardMember,
+  useGetUsersNotInBoard,
+  useUsersSearch,
+} from "@/utils/hooks/useBoards";
 import { TBoard, TBoardDetail, TBoardMember, TCommonUser } from "@/types/t";
 import { Avatar } from "@/components/ui/avatar";
 
@@ -28,6 +32,31 @@ export default function AddUser({ board }: { board: TBoardDetail }) {
     boardId: board?.boardId,
     userName: nameVal,
   });
+
+  const { mutateAsync: addMembersAsync, isPending: isAddingMembers } =
+    useAddBoardMember();
+
+  const handleSelect = (u: TCommonUser) => {
+    setSelectedUsers((prev) => [...prev, u]);
+  };
+
+  const handleDeSelect = (u: TCommonUser) => {
+    setSelectedUsers((prev) => prev.filter((user) => user.id !== u.id));
+  };
+
+  const handleAddMembers = async () => {
+    const userIds = selectedUsers.map((user) => user.id);
+    const payload = {
+      boardId: board?.boardId,
+      userIds: userIds,
+    };
+
+    const res = await addMembersAsync(payload);
+    if (res.success) {
+      console.log(res.data);
+      setSelectedUsers([]);
+    }
+  };
 
   const handleSearchClick = () => {
     refetch();
@@ -69,12 +98,14 @@ export default function AddUser({ board }: { board: TBoardDetail }) {
           {/* break to other component */}
           <div className="relative py-2">
             <Input
+              disabled={isAddingMembers}
               value={userName}
               onChange={handleInputChange}
               className="h-7 py-0.5 pr-[28px] text-[10px] shadow-sm focus-visible:ring-0"
               placeholder="Search for user..."
             />
             <Button
+              disabled={isAddingMembers}
               onClick={handleSearchClick}
               className="absolute right-1 top-3 h-5 w-fit p-1"
             >
@@ -82,30 +113,35 @@ export default function AddUser({ board }: { board: TBoardDetail }) {
             </Button>
           </div>
           {/* break to other component */}
-          {/* <div className="my-2">
-            <ScrollArea className="max-w-[200px] rounded-md border border-slate-300">
-              <div className="flex gap-3 p-2 py-3">
-                {users.map((user) => {
-                  return (
-                    <div
-                      key={user.id}
-                      className={cn(
-                        "border-slate-00 relative grid w-fit place-content-center rounded-md border px-2",
-                      )}
-                    >
-                      <span className="block text-[10px] font-light">
-                        {user.username}
-                      </span>
-                      <span className="absolute -right-2 -top-1 cursor-pointer rounded-full bg-red-500 text-white hover:scale-x-110">
-                        <CircleX className="size-3" />
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
-              <ScrollBar orientation="horizontal" />
-            </ScrollArea>
-          </div> */}
+          {selectedUsers.length > 0 && (
+            <div className="my-2">
+              <ScrollArea className="max-w-[200px] rounded-md border border-slate-300">
+                <div className="flex gap-3 p-2 py-3">
+                  {selectedUsers.map((user) => {
+                    return (
+                      <div
+                        key={user.id}
+                        className={cn(
+                          "relative grid w-fit place-content-center rounded-md border border-slate-400 px-2",
+                        )}
+                      >
+                        <span className="block text-[10px] font-light">
+                          {user.username}
+                        </span>
+                        <span
+                          onClick={() => handleDeSelect(user)}
+                          className="absolute -right-2 -top-1 cursor-pointer rounded-full bg-red-500 text-white hover:scale-x-110"
+                        >
+                          <CircleX className="size-3" />
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+                <ScrollBar orientation="horizontal" />
+              </ScrollArea>
+            </div>
+          )}
 
           <div className="h-[140px] overflow-hidden rounded-md border border-slate-300">
             <ScrollArea className="h-[140px] pr-2">
@@ -139,7 +175,10 @@ export default function AddUser({ board }: { board: TBoardDetail }) {
                           {user.username}
                         </h2>
                       </div>
-                      <span className="absolute right-1 top-1 block rounded-md border bg-blue-500 p-0.5 px-1 text-[8px] text-white">
+                      <span
+                        onClick={() => handleSelect(user)}
+                        className="absolute right-1 top-1 block rounded-md border bg-blue-500 p-0.5 px-1 text-[8px] text-white"
+                      >
                         select
                       </span>
                     </div>
@@ -151,8 +190,19 @@ export default function AddUser({ board }: { board: TBoardDetail }) {
 
           {selectedUsers.length > 0 && (
             <div className="mt-2">
-              <Button size={"sm"} className="mx-auto block h-6 text-[10px]">
-                Add Members
+              <Button
+                onClick={handleAddMembers}
+                size={"sm"}
+                className={cn(
+                  "mx-auto block h-6 w-[100px] text-[10px]",
+                  isAddingMembers ? "cursor-not-allowed opacity-40" : "",
+                )}
+              >
+                {isAddingMembers ? (
+                  <LoaderCircle className="mx-auto size-4 animate-spin" />
+                ) : (
+                  <p>Add Members</p>
+                )}
               </Button>
             </div>
           )}

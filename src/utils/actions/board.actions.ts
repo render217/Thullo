@@ -8,6 +8,7 @@ import { TBoard, TBoardDetail, TVisibility } from "@/types/t";
 import {
   AddBoardMemberParams,
   CreateBoardParams,
+  RemoveMemberFromBoardParams,
   UpdateBoardParams,
 } from "./shared.types";
 import { getUserById } from "./user.actions";
@@ -200,7 +201,7 @@ export async function updateBoard(
 
 export async function addBoardMember(
   payload: AddBoardMemberParams,
-): Promise<Response<TBoard>> {
+): Promise<Response<TBoardDetail>> {
   try {
     if (payload.boardId.trim() === "") {
       return {
@@ -209,23 +210,103 @@ export async function addBoardMember(
       };
     }
 
-    if (payload.userId.trim() === "") {
+    if (payload.userIds.length === 0) {
       return {
         success: false,
-        data: "User ID is required",
+        data: "User IDs are required",
       };
     }
 
-    const targetUser = await db.user.findUnique({
+    // Check if the board exists
+    const targetBoard = await db.board.findUnique({
       where: {
-        clerkId: payload.userId,
+        boardId: payload.boardId,
+      },
+      include: {
+        admin: true,
+        boardMember: {
+          include: {
+            user: true,
+          },
+        },
+        tasks: {
+          include: {
+            board: true,
+            cards: {
+              include: {
+                labels: true,
+                comments: true,
+                attachments: true,
+              },
+            },
+          },
+        },
       },
     });
 
-    if (!targetUser) {
+    if (!targetBoard) {
       return {
         success: false,
-        data: "User not found",
+        data: "Board not found",
+      };
+    }
+
+    // Check if each user exists and filter out non-existent users
+    const userIds = payload.userIds;
+    const existingUsers = await db.user.findMany({
+      where: {
+        clerkId: { in: userIds },
+      },
+    });
+
+    const existingUserIds = new Set(existingUsers.map((user) => user.clerkId));
+    const nonExistentUserIds = userIds.filter((id) => !existingUserIds.has(id));
+
+    // Add available users to the board
+    const usersToAdd = userIds.filter((id) => existingUserIds.has(id));
+    const newMembers = await Promise.all(
+      usersToAdd.map((userId) =>
+        db.boardMember.create({
+          data: {
+            boardId: payload.boardId,
+            userId,
+          },
+        }),
+      ),
+    );
+
+    const mappedBoard = boardDetailDto(targetBoard);
+
+    // Return appropriate response
+    if (nonExistentUserIds.length > 0) {
+      console.log(`Some users not found: ${nonExistentUserIds.join(", ")}`);
+      return {
+        success: true,
+        data: mappedBoard,
+      };
+    }
+
+    return {
+      success: true,
+      data: mappedBoard,
+    };
+  } catch (error) {
+    console.log("addBoardMemberError", error);
+    return {
+      success: false,
+      data: "Error adding members to board",
+    };
+  }
+}
+
+export async function removeMemberFromBoard(
+  payload: RemoveMemberFromBoardParams,
+): Promise<Response<TBoardDetail>> {
+  try {
+    if (payload.boardId.trim() === "") {
+      return {
+        success: false,
+        data: "Board ID is required",
       };
     }
 
@@ -262,10 +343,26 @@ export async function addBoardMember(
       };
     }
 
-    const newMember = await db.boardMember.create({
-      data: {
+    const member = await db.boardMember.findFirst({
+      where: {
         boardId: payload.boardId,
         userId: payload.userId,
+      },
+    });
+
+    if (!member) {
+      return {
+        success: false,
+        data: "Member not found",
+      };
+    }
+
+    await db.boardMember.delete({
+      where: {
+        boardId_userId: {
+          boardId: payload.boardId,
+          userId: member.userId,
+        },
       },
     });
 
@@ -275,12 +372,11 @@ export async function addBoardMember(
       data: mappedBoard,
     };
   } catch (error) {
-    console.log("addBoardMemberError", error);
+    console.log("removeMemberFromBoardError", error);
     return {
       success: false,
-      data: "Error adding member to board",
+      data: "Error removing member from board",
     };
   }
 }
-export async function removeMemberFromBoard() {}
 export async function deleteBoard() {}

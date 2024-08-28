@@ -19,6 +19,7 @@ import {
   CircleCheck,
   CirclePlus,
   CircleX,
+  LoaderCircle,
   Pencil,
   ScrollText,
   User,
@@ -32,6 +33,7 @@ import { cn } from "@/lib/utils";
 import { TBoardDetail, TBoardMember, TBoardTaskCard } from "@/types/t";
 import BoardDescription from "./board-description";
 import BoardTitle from "./board-title";
+import { useRemoveMemberFromBoard } from "@/utils/hooks/useBoards";
 
 export default function BoardSideBarContent({
   board,
@@ -100,11 +102,19 @@ export default function BoardSideBarContent({
           <div className="mt-2">
             <ScrollArea className="p-1 pr-4">
               <div className="flex flex-col gap-2">
-                <TeamMember isAdmin={true} member={board.admin} />
+                <TeamMember
+                  isAdmin={true}
+                  member={board.admin}
+                  boardId={board?.boardId}
+                />
                 {board.boardMember.length > 0 ? (
                   <>
                     {board.boardMember.map((member) => (
-                      <TeamMember key={member.id} member={member} />
+                      <TeamMember
+                        key={member.id}
+                        member={member}
+                        boardId={board?.boardId}
+                      />
                     ))}
                   </>
                 ) : (
@@ -123,12 +133,28 @@ export default function BoardSideBarContent({
 }
 
 function TeamMember({
+  boardId,
   member,
   isAdmin = false,
 }: {
   member: TBoardMember;
   isAdmin?: Boolean;
+  boardId: string;
 }) {
+  const { mutateAsync: removeMemberAsync, isPending: isRemoving } =
+    useRemoveMemberFromBoard();
+
+  const handleRemoveMember = async () => {
+    const payload = {
+      boardId: boardId,
+      userId: member.id,
+    };
+    const res = await removeMemberAsync(payload);
+    if (res.success) {
+      console.log("Member removed successfully");
+    }
+  };
+
   return (
     <div className="flex items-center gap-3 py-1">
       <div className="h-7 w-7 overflow-hidden rounded-md">
@@ -155,7 +181,11 @@ function TeamMember({
               variant={"outline"}
               size={"sm"}
             >
-              Remove
+              {isRemoving ? (
+                <LoaderCircle className="mx-auto size-4 animate-spin" />
+              ) : (
+                <p>Remove</p>
+              )}
             </Button>
           </DialogTrigger>
           <DialogContent className="max-w-[400px] gap-2">
@@ -187,11 +217,15 @@ function TeamMember({
                   </Button>
                 </DialogClose>
                 <Button
-                  onClick={() => {}}
+                  onClick={handleRemoveMember}
                   className="block h-7 w-20 text-xs"
                   size={"sm"}
                 >
-                  Proceed
+                  {isRemoving ? (
+                    <LoaderCircle className="mx-auto size-4 animate-spin" />
+                  ) : (
+                    <p>Proceed</p>
+                  )}
                 </Button>
               </div>
             </DialogFooter>

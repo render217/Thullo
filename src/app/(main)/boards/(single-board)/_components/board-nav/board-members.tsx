@@ -17,13 +17,12 @@ export default function BoardMemebers({
       <div className="flex items-center gap-4">
         {displayMembers.map((member) => {
           return (
-            <div key={member.id} className="flex items-center gap-2">
-              <Image
+            <div key={member.id} className="h-9 w-9 overflow-hidden rounded-md">
+              <img
                 src={member.profileImage}
-                height={100}
-                width={150}
+                loading="lazy"
                 alt="avatar"
-                className="h-7 w-8 rounded-md"
+                className="size-full object-cover"
               />
             </div>
           );

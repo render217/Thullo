@@ -31,6 +31,11 @@ export type UpdateBoardParams = {
 
 export type AddBoardMemberParams = {
   boardId: string;
+  userIds: string[];
+};
+
+export type RemoveMemberFromBoardParams = {
+  boardId: string;
   userId: string;
 };
 

@@ -30,10 +30,15 @@ const nextConfig = {
         hostname: "images.unsplash.com",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "img.clerk.com",
+        pathname: "/**",
+      },
     ],
   },
 };
-
+// https://img.clerk.com
 //https:cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/441.jpg
 
 // upload-thing..pattern.

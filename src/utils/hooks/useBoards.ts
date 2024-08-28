@@ -5,6 +5,7 @@ import {
   createBoard,
   getBoard,
   getBoards,
+  removeMemberFromBoard,
   updateBoard,
 } from "../actions/board.actions";
 import {
@@ -117,6 +118,30 @@ export function useAddBoardMember() {
         const boardId = res.data.boardId;
         queryClient.invalidateQueries({
           queryKey: ["boards", { id: boardId }],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["users", { boardId: boardId, userName: "" }],
+        });
+      }
+    },
+  });
+}
+
+export function useRemoveMemberFromBoard() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (payload: { boardId: string; userId: string }) => {
+      return await removeMemberFromBoard(payload);
+    },
+    onSuccess: (res) => {
+      if (res.success) {
+        console.log("success useRemoveMemberFromBoard()", res.data);
+        const boardId = res.data.boardId;
+        queryClient.invalidateQueries({
+          queryKey: ["boards", { id: boardId }],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["users", { boardId: boardId, userName: "" }],
         });
       }
     },
