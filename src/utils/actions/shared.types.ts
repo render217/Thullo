@@ -29,6 +29,16 @@ export type UpdateBoardParams = {
   visibility?: string;
 };
 
+export type AddBoardMemberParams = {
+  boardId: string;
+  userId: string;
+};
+
+export type GetUsersNotInBoardParams = {
+  boardId: string;
+  userName: string;
+};
+
 // BOARD TASKS
 
 export type CreateBoardTaskParams = {
@@ -59,6 +69,7 @@ export type UpdateBoardTaskCardParams = {
   cardId: string;
   title?: string;
   description?: string;
+  coverImage?: string;
 };
 
 // comments

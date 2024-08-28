@@ -181,6 +181,7 @@ export async function updateBoardTaskCard(
       data: {
         title: payload.title || targetCard.title,
         description: payload.description || targetCard.description,
+        coverImage: payload.coverImage || targetCard.coverImage,
       },
       include: {
         task: {

@@ -2,24 +2,45 @@
 import { Button } from "@/components/ui/button";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
-import { CircleX, Plus, Search } from "lucide-react";
+import { CircleX, LoaderCircle, Plus, Search } from "lucide-react";
 import Image from "next/image";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
 } from "@/components/ui/dropdown-menu";
-import { useDebounceValue } from "usehooks-ts";
-
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
-import { debounce } from "lodash";
-export default function InviteUser() {
+import { useGetUsersNotInBoard, useUsersSearch } from "@/utils/hooks/useBoards";
+import { TBoard, TBoardDetail, TBoardMember, TCommonUser } from "@/types/t";
+import { Avatar } from "@/components/ui/avatar";
+
+export default function AddUser({ board }: { board: TBoardDetail }) {
   const [userName, setUserName] = useState("");
   const [nameVal, setNameVal] = useState("");
+
+  const [selectedUsers, setSelectedUsers] = useState<TBoardMember[]>([]);
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUserName(e.target.value);
   };
+
+  const { data, isLoading, isError, error, refetch } = useGetUsersNotInBoard({
+    boardId: board?.boardId,
+    userName: nameVal,
+  });
+
+  const handleSearchClick = () => {
+    refetch();
+  };
+  const usersResult = data?.success ? data.data : [];
+
+  // Filter out the admin and selected users
+  const filteredUsers =
+    usersResult.filter(
+      (user) =>
+        user.id !== board?.admin?.id &&
+        !selectedUsers.some((selected) => selected.id === user.id),
+    ) || [];
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
@@ -42,8 +63,8 @@ export default function InviteUser() {
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-[220px] border p-3 shadow-sm shadow-blue-200">
           <div>
-            <h3 className="text-sm font-semibold">Invite to Board</h3>
-            <p className="text-[10px]"> Search users you want to invite to </p>
+            <h3 className="text-sm font-semibold">Add to Board</h3>
+            <p className="text-[10px]"> Search users you want to add to </p>
           </div>
           {/* break to other component */}
           <div className="relative py-2">
@@ -53,15 +74,18 @@ export default function InviteUser() {
               className="h-7 py-0.5 pr-[28px] text-[10px] shadow-sm focus-visible:ring-0"
               placeholder="Search for user..."
             />
-            <Button className="absolute right-1 top-3 h-5 w-fit p-1">
+            <Button
+              onClick={handleSearchClick}
+              className="absolute right-1 top-3 h-5 w-fit p-1"
+            >
               <Search className="size-3" />
             </Button>
           </div>
           {/* break to other component */}
-          <div className="my-2">
+          {/* <div className="my-2">
             <ScrollArea className="max-w-[200px] rounded-md border border-slate-300">
               <div className="flex gap-3 p-2 py-3">
-                {/* {users.map((user) => {
+                {users.map((user) => {
                   return (
                     <div
                       key={user.id}
@@ -77,18 +101,27 @@ export default function InviteUser() {
                       </span>
                     </div>
                   );
-                })} */}
+                })}
               </div>
               <ScrollBar orientation="horizontal" />
             </ScrollArea>
-          </div>
+          </div> */}
+
           <div className="h-[140px] overflow-hidden rounded-md border border-slate-300">
-            {/* <div className="flex size-full items-center justify-center">
-              <p className="text-[10px]">searching...</p>
-            </div> */}
-            <ScrollArea className="flex h-[140px] pr-2">
+            <ScrollArea className="h-[140px] pr-2">
+              {isLoading && (
+                <div className="grid size-full h-[130px] place-content-center">
+                  <LoaderCircle className="mx-auto size-4 animate-spin" />
+                </div>
+              )}
+
+              {!isLoading && filteredUsers.length === 0 && (
+                <div className="grid size-full h-[130px] place-content-center">
+                  <p className="text-[12px]">No users avalible</p>
+                </div>
+              )}
               <div className="flex flex-col gap-2 p-1">
-                {/* {users.map((user) => {
+                {filteredUsers.map((user) => {
                   return (
                     <div
                       key={user.id}
@@ -111,23 +144,25 @@ export default function InviteUser() {
                       </span>
                     </div>
                   );
-                })} */}
+                })}
               </div>
             </ScrollArea>
           </div>
 
-          <div className="mt-2">
-            <Button size={"sm"} className="mx-auto block h-6 text-[10px]">
-              Add Members
-            </Button>
-          </div>
+          {selectedUsers.length > 0 && (
+            <div className="mt-2">
+              <Button size={"sm"} className="mx-auto block h-6 text-[10px]">
+                Add Members
+              </Button>
+            </div>
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
     </div>
   );
 }
 
-const users = [
+const users2 = [
   {
     id: "034b5131-5396-4dce-b31e-e80e876f7537",
     username: "Brook.VonRueden72",

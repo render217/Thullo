@@ -57,12 +57,10 @@ export default function TaskCard({
         {card.coverImage && (
           <div className="max-h-[100px] w-full overflow-hidden rounded-lg bg-white shadow-lg">
             <DialogTrigger>
-              <Image
-                className="h-full w-full rounded-md object-cover"
+              <img
+                className="size-full rounded-md object-cover"
                 src={card?.coverImage}
-                layout="responsive"
-                width={100}
-                height={100}
+                loading="lazy"
                 alt="cardimage"
               />
             </DialogTrigger>

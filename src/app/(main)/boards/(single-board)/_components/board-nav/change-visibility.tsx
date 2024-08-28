@@ -13,8 +13,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { LockOpen, Lock } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { TBoard } from "@/types/t";
 
-export default function ChangeVisibility() {
+export default function ChangeVisibility({ board }: { board: TBoard }) {
   const [open, setOpen] = useState(false);
   const [visibility, setVisibility] = useState<"public" | "private">("public");
   const isPrivate = visibility === "private";

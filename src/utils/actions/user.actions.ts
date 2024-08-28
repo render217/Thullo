@@ -2,7 +2,14 @@
 
 import db from "@/db/db";
 import { handleError } from "@/lib/utils";
-import { CreateUserParams, UpdateUserParams } from "./shared.types";
+import {
+  CreateUserParams,
+  GetUsersNotInBoardParams,
+  UpdateUserParams,
+} from "./shared.types";
+import { TBoardMember, TUser } from "@/types/t";
+import { Response } from "@/types/axios.types";
+import { userDto } from "./mappers";
 
 export async function createUser(user: CreateUserParams) {
   try {
@@ -73,5 +80,66 @@ export async function getUserById(clerkId: string) {
     // handleError(error);
     console.log("getUserByIdError", error);
     return null;
+  }
+}
+
+export async function getUsers(
+  username: string,
+): Promise<Response<TBoardMember[]>> {
+  try {
+    const users = await db.user.findMany({
+      where: {
+        username: {
+          mode: "insensitive",
+          contains: username ?? "",
+        },
+      },
+    });
+
+    const mappedUser = users.map((user) => userDto(user));
+
+    return {
+      success: true,
+      data: mappedUser,
+    };
+  } catch (error) {
+    console.log("getUsersError", error);
+    return {
+      success: false,
+      data: "Error fetching users",
+    };
+  }
+}
+
+export async function getUsersNotInBoard(
+  payload: GetUsersNotInBoardParams,
+): Promise<Response<TBoardMember[]>> {
+  try {
+    const users = await db.user.findMany({
+      where: {
+        username: {
+          mode: "insensitive",
+          contains: payload.userName ?? "",
+        },
+        boardMember: {
+          none: {
+            boardId: payload.boardId,
+          },
+        },
+      },
+    });
+
+    const mappedUsers = users.map((user) => userDto(user));
+
+    return {
+      success: true,
+      data: mappedUsers,
+    };
+  } catch (error) {
+    console.log("getUsersNotInBoardError", error);
+    return {
+      success: false,
+      data: "Error fetching users",
+    };
   }
 }

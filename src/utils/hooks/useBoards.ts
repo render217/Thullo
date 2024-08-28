@@ -1,12 +1,14 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import boardsServices from "../services/boards.services";
 import {
+  addBoardMember,
   createBoard,
   getBoard,
   getBoards,
   updateBoard,
 } from "../actions/board.actions";
 import {
+  AddBoardMemberParams,
   CreateAttachmentParams,
   CreateBoardParams,
   CreateBoardTaskCardParams,
@@ -17,6 +19,7 @@ import {
   DeleteCommentParams,
   DeleteLabelParams,
   EditBoardTaskParams,
+  GetUsersNotInBoardParams,
   UpdateBoardParams,
   UpdateBoardTaskCardParams,
   UpdateCommentParams,
@@ -43,6 +46,7 @@ import {
   deleteAttachment,
   getAttachments,
 } from "../actions/attachment.actions";
+import { getUsers, getUsersNotInBoard } from "../actions/user.actions";
 
 /********
  *
@@ -92,6 +96,24 @@ export function useUpdateBoard() {
     onSuccess: (res) => {
       if (res.success) {
         console.log("success useUpdateBoard()", res.data);
+        const boardId = res.data.boardId;
+        queryClient.invalidateQueries({
+          queryKey: ["boards", { id: boardId }],
+        });
+      }
+    },
+  });
+}
+
+export function useAddBoardMember() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (payload: AddBoardMemberParams) => {
+      return await addBoardMember(payload);
+    },
+    onSuccess: (res) => {
+      if (res.success) {
+        console.log("success useAddBoardMember()", res.data);
         const boardId = res.data.boardId;
         queryClient.invalidateQueries({
           queryKey: ["boards", { id: boardId }],
@@ -412,5 +434,24 @@ export function useDeleteAttachment() {
         });
       }
     },
+  });
+}
+
+// users search...
+export function useUsersSearch(userName: string) {
+  return useQuery({
+    queryKey: ["users", { userName }],
+    queryFn: async () => await getUsers(userName),
+    // enabled: !!userName,
+  });
+}
+
+export function useGetUsersNotInBoard(payload: GetUsersNotInBoardParams) {
+  return useQuery({
+    queryKey: [
+      "users",
+      { boardId: payload.boardId, userName: payload.userName },
+    ],
+    queryFn: async () => await getUsersNotInBoard(payload),
   });
 }

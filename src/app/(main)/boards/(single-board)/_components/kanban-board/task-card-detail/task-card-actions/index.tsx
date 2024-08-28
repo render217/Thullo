@@ -92,7 +92,7 @@ export default function TaskCardActions({ card }: { card: TBoardTaskCard }) {
       </div>
       <SelectorProvider>
         <div className="mt-2 flex flex-col gap-3 px-4">
-          <CardCoverImageForm />
+          <CardCoverImageForm card={card} />
           <CardLabelForm card={card} />
           <CardMembersForm />
         </div>

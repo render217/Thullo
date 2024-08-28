@@ -55,7 +55,7 @@ export default function TaskHeader({ task }: { task: TBoardTask }) {
   }, [task.title]);
 
   useEffect(() => {
-    console.log({ isEditing, textRef: textAreaRef?.current });
+    // console.log({ isEditing, textRef: textAreaRef?.current });
     if (isEditing && textAreaRef?.current) {
       const textAreaElement = textAreaRef.current.textArea;
       textAreaElement.focus();

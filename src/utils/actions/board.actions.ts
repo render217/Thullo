@@ -5,7 +5,11 @@ import { handleError } from "@/lib/utils";
 import { boardDetailDto, boardDto } from "./mappers";
 import { Response } from "@/types/axios.types";
 import { TBoard, TBoardDetail, TVisibility } from "@/types/t";
-import { CreateBoardParams, UpdateBoardParams } from "./shared.types";
+import {
+  AddBoardMemberParams,
+  CreateBoardParams,
+  UpdateBoardParams,
+} from "./shared.types";
 import { getUserById } from "./user.actions";
 import { string } from "zod";
 
@@ -193,3 +197,90 @@ export async function updateBoard(
     };
   }
 }
+
+export async function addBoardMember(
+  payload: AddBoardMemberParams,
+): Promise<Response<TBoard>> {
+  try {
+    if (payload.boardId.trim() === "") {
+      return {
+        success: false,
+        data: "Board ID is required",
+      };
+    }
+
+    if (payload.userId.trim() === "") {
+      return {
+        success: false,
+        data: "User ID is required",
+      };
+    }
+
+    const targetUser = await db.user.findUnique({
+      where: {
+        clerkId: payload.userId,
+      },
+    });
+
+    if (!targetUser) {
+      return {
+        success: false,
+        data: "User not found",
+      };
+    }
+
+    const targetBoard = await db.board.findUnique({
+      where: {
+        boardId: payload.boardId,
+      },
+      include: {
+        admin: true,
+        boardMember: {
+          include: {
+            user: true,
+          },
+        },
+        tasks: {
+          include: {
+            board: true,
+            cards: {
+              include: {
+                labels: true,
+                comments: true,
+                attachments: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!targetBoard) {
+      return {
+        success: false,
+        data: "Board not found",
+      };
+    }
+
+    const newMember = await db.boardMember.create({
+      data: {
+        boardId: payload.boardId,
+        userId: payload.userId,
+      },
+    });
+
+    const mappedBoard = boardDetailDto(targetBoard);
+    return {
+      success: true,
+      data: mappedBoard,
+    };
+  } catch (error) {
+    console.log("addBoardMemberError", error);
+    return {
+      success: false,
+      data: "Error adding member to board",
+    };
+  }
+}
+export async function removeMemberFromBoard() {}
+export async function deleteBoard() {}
