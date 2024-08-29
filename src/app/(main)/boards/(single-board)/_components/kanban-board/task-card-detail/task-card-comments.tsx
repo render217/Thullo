@@ -6,6 +6,7 @@ import {
 import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { useCardStore } from "@/lib/store/useCardStore";
 import { formatDate } from "@/lib/utils";
 import { ICard, IComment } from "@/types";
 import { TBoardTaskCard, TComment } from "@/types/t";
@@ -20,16 +21,19 @@ import { useEffect, useRef, useState } from "react";
 const userImage =
   "https://preview.redd.it/i-got-bored-so-i-decided-to-draw-a-random-image-on-the-v0-4ig97vv85vjb1.png?width=1080&crop=smart&auto=webp&s=28c3ad73cff636f7ba478a0c19d734cd538949d4";
 
-export default function TaskCardComments({ card }: { card: TBoardTaskCard }) {
+export default function TaskCardComments({
+  isVisitor,
+}: {
+  isVisitor: boolean;
+}) {
   const { userId } = useAuth();
+  const { card } = useCardStore();
   if (!userId) return null;
   const [comments, setComments] = useState(card.comments);
   const [commentText, setCommentText] = useState("");
 
   useEffect(() => {
     setComments(card.comments);
-    console.log(card.comments.length);
-    // console.log("card change detected");
   }, [card]);
 
   const { mutateAsync: createCommentAsync, isPending: isCreatingComment } =
@@ -46,42 +50,41 @@ export default function TaskCardComments({ card }: { card: TBoardTaskCard }) {
 
     const res = await createCommentAsync(payload);
     if (res.success) {
-      console.log("Comment created successfully", res.data);
       setCommentText("");
-    } else {
-      console.log("Error creating comment:", res.data);
     }
   };
 
   return (
     <div>
       <div className="py-2 text-xs font-bold">Comments</div>
-      <div className="px-0.5">
-        <div className="relative">
-          <div className="absolute left-2 top-2 h-7 w-7 overflow-hidden rounded-md">
-            <img className="size-full object-cover" src={userImage} alt="" />
+      {!isVisitor && (
+        <div className="px-0.5">
+          <div className="relative">
+            <div className="absolute left-2 top-2 h-7 w-7 overflow-hidden rounded-md">
+              <img className="size-full object-cover" src={userImage} alt="" />
+            </div>
+            <AutosizeTextarea
+              disabled={isCreatingComment}
+              value={commentText}
+              onChange={(e) => setCommentText(e.target.value)}
+              minHeight={80}
+              className="min-h-[80px] resize-none pl-[42px] pt-[10px] text-xs focus-visible:ring-0"
+              placeholder="Write a comment "
+            />
           </div>
-          <AutosizeTextarea
-            disabled={isCreatingComment}
-            value={commentText}
-            onChange={(e) => setCommentText(e.target.value)}
-            minHeight={80}
-            className="min-h-[80px] resize-none pl-[42px] pt-[10px] text-xs focus-visible:ring-0"
-            placeholder="Write a comment "
-          />
-        </div>
 
-        <div className="flex justify-end py-2">
-          <Button
-            onClick={handleAddComment}
-            disabled={isCreatingComment}
-            size={"sm"}
-            className="h-fit py-1 text-[10px]"
-          >
-            add comment
-          </Button>
+          <div className="flex justify-end py-2">
+            <Button
+              onClick={handleAddComment}
+              disabled={isCreatingComment}
+              size={"sm"}
+              className="h-fit py-1 text-[10px]"
+            >
+              add comment
+            </Button>
+          </div>
         </div>
-      </div>
+      )}
       <div className="mt-4 flex flex-col gap-2 px-2 py-3">
         {comments.map((comment) => {
           const isAuthor = comment.author.id === userId;
@@ -151,7 +154,6 @@ function CommentCard({
     };
     const res = await updateCommentAsync(payload);
     if (res.success) {
-      console.log("comment updated..");
     }
   };
 
@@ -174,9 +176,6 @@ function CommentCard({
 
     const res = await deleteCommentAsync(payload);
     if (res.success) {
-      // console.log("comment deleted", res.data);
-    } else {
-      // console.log("error in deleting comment", res.data);
     }
   };
 

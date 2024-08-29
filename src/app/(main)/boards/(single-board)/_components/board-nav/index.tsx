@@ -9,24 +9,29 @@ import PreviewInvites from "./preview-invites";
 import ChangeVisibility from "./change-visibility";
 import BoardDetailNavSkeleton from "@/components/shared/skeletons/boards/board-detail-nav-skeleton";
 import AddUser from "./add-user";
+import { useAuth } from "@clerk/nextjs";
 
 export default function BoardNav() {
+  const { userId } = useAuth();
   const params = useParams();
+
   const { data, status } = useGetBoardById(params?.id as string);
   if (status === "pending") return <BoardDetailNavSkeleton />;
   if (!data?.success) return null;
   const board = data.data;
-
+  const isAdmin = userId === board.admin?.id;
   return (
     <div className="px-[2%]">
       <div className="flex items-center gap-4">
         <ChangeVisibility board={board} />
         <BoardMemebers members={board.boardMember} />
-        <AddUser board={board} />
+        {isAdmin && <AddUser board={board} />}
         {/* <InviteUser /> */}
-        <div className="ml-6">
-          <PreviewInvites />
-        </div>
+        {isAdmin && (
+          <div className="ml-6">
+            <PreviewInvites />
+          </div>
+        )}
         <div className="ml-auto">
           <BoardSideBar />
         </div>

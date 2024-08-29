@@ -16,6 +16,10 @@ export type UpdateUserParams = {
 };
 
 // BOARDS
+export type GetBoardsParams = {
+  userId: string;
+};
+
 export type CreateBoardParams = {
   title: string;
   visibility: string;
@@ -27,6 +31,10 @@ export type UpdateBoardParams = {
   boardName?: string;
   description?: string;
   visibility?: string;
+};
+export type DeleteBoardParams = {
+  boardId: string;
+  adminId: string;
 };
 
 export type AddBoardMemberParams = {
@@ -67,6 +75,10 @@ export type CreateBoardTaskCardParams = {
 };
 
 export type GetBoardTaskParams = {
+  cardId: string;
+};
+
+export type DeleteCardParams = {
   cardId: string;
 };
 

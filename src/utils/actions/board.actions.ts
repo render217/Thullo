@@ -8,15 +8,68 @@ import { TBoard, TBoardDetail, TVisibility } from "@/types/t";
 import {
   AddBoardMemberParams,
   CreateBoardParams,
+  DeleteBoardParams,
+  GetBoardsParams,
   RemoveMemberFromBoardParams,
   UpdateBoardParams,
 } from "./shared.types";
 import { getUserById } from "./user.actions";
 import { string } from "zod";
 
-export async function getBoards(): Promise<Response<TBoard[]>> {
+// export async function getBoards(): Promise<Response<TBoard[]>> {
+//   try {
+//     const boards = await db.board.findMany({
+//       include: {
+//         admin: true,
+//         boardMember: {
+//           include: {
+//             user: true,
+//           },
+//         },
+//       },
+//       orderBy: {
+//         createdAt: "desc",
+//       },
+//     });
+//     const mappedBoards = boards.map((b) => boardDto(b));
+//     return {
+//       success: true,
+//       data: mappedBoards,
+//     };
+//   } catch (error) {
+//     console.log("getBoardsError", error);
+//     return {
+//       success: false,
+//       data: "Error fetching boards",
+//     };
+//   }
+// }
+
+export async function getBoards(
+  payload: GetBoardsParams,
+): Promise<Response<TBoard[]>> {
   try {
+    const { userId } = payload;
+
     const boards = await db.board.findMany({
+      where: {
+        OR: [
+          { visibility: "PUBLIC" },
+          { adminId: userId },
+          {
+            AND: [
+              { visibility: "PRIVATE" },
+              {
+                boardMember: {
+                  some: {
+                    userId: userId,
+                  },
+                },
+              },
+            ],
+          },
+        ],
+      },
       include: {
         admin: true,
         boardMember: {
@@ -29,7 +82,9 @@ export async function getBoards(): Promise<Response<TBoard[]>> {
         createdAt: "desc",
       },
     });
+
     const mappedBoards = boards.map((b) => boardDto(b));
+
     return {
       success: true,
       data: mappedBoards,
@@ -42,6 +97,7 @@ export async function getBoards(): Promise<Response<TBoard[]>> {
     };
   }
 }
+
 export async function getBoard(
   boardId: string,
 ): Promise<Response<TBoardDetail>> {
@@ -174,7 +230,7 @@ export async function updateBoard(
       data: {
         boardName: payload?.boardName || targetBoard.boardName,
         description: payload?.description || targetBoard.description,
-        visibility: payload?.visibility === "public" ? "PUBLIC" : "PRIVATE",
+        visibility: payload?.visibility === "PUBLIC" ? "PUBLIC" : "PRIVATE",
       },
       include: {
         admin: true,
@@ -198,8 +254,6 @@ export async function updateBoard(
     };
   }
 }
-
-export async function deleteBoard() {}
 
 export async function addBoardMember(
   payload: AddBoardMemberParams,
@@ -378,6 +432,132 @@ export async function removeMemberFromBoard(
     return {
       success: false,
       data: "Error removing member from board",
+    };
+  }
+}
+
+export async function deleteBoard(
+  payload: DeleteBoardParams,
+): Promise<Response<TBoard>> {
+  try {
+    // Fetch the target board including related entities
+    const targetBoard = await db.board.findUnique({
+      where: {
+        boardId: payload.boardId,
+      },
+      include: {
+        admin: true,
+
+        tasks: {
+          include: {
+            cards: {
+              include: {
+                labels: true,
+                comments: true,
+                attachments: true,
+              },
+            },
+          },
+        },
+        boardMember: {
+          include: {
+            user: true,
+          },
+        },
+        boardInvites: true,
+      },
+    });
+
+    // If board is not found, return an error
+    if (!targetBoard) {
+      return {
+        success: false,
+        data: "Board not found",
+      };
+    }
+
+    // Check if the requesting admin is the actual board admin
+    if (targetBoard.adminId !== payload.adminId) {
+      return {
+        success: false,
+        data: "Unauthorized: You are not the admin of this board",
+      };
+    }
+
+    // Extract all task IDs and card IDs related to the board
+    const taskIds = targetBoard.tasks.map((task) => task.taskId);
+    const cardIds = targetBoard.tasks.flatMap((task) =>
+      task.cards.map((card) => card.cardId),
+    );
+
+    // Delete all labels related to the cards
+    await db.label.deleteMany({
+      where: {
+        cardId: { in: cardIds },
+      },
+    });
+
+    // Delete all comments related to the cards
+    await db.comment.deleteMany({
+      where: {
+        cardId: { in: cardIds },
+      },
+    });
+
+    // Delete all attachments related to the cards
+    await db.attachment.deleteMany({
+      where: {
+        cardId: { in: cardIds },
+      },
+    });
+
+    // Delete all cards related to the tasks
+    await db.card.deleteMany({
+      where: {
+        taskId: { in: taskIds },
+      },
+    });
+
+    // Delete all tasks related to the board
+    await db.task.deleteMany({
+      where: {
+        boardId: payload.boardId,
+      },
+    });
+
+    // Delete all board members related to the board
+    await db.boardMember.deleteMany({
+      where: {
+        boardId: payload.boardId,
+      },
+    });
+
+    // Delete all board invites related to the board
+    await db.boardInvites.deleteMany({
+      where: {
+        boardId: payload.boardId,
+      },
+    });
+
+    // Map the board details for returning after deletion
+    const mappedTargetBoard = boardDetailDto(targetBoard);
+
+    // Delete the board itself
+    await db.board.delete({
+      where: {
+        boardId: payload.boardId,
+      },
+    });
+
+    return {
+      success: true,
+      data: mappedTargetBoard,
+    };
+  } catch (error) {
+    console.log("deleteBoardError:", error);
+    return {
+      success: false,
+      data: "Error deleting board",
     };
   }
 }

@@ -21,7 +21,9 @@ import {
 } from "@/utils/hooks/useBoards";
 import { Avatar } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
-export default function CardMembersForm({ card }: { card: TBoardTaskCard }) {
+import { useCardStore } from "@/lib/store/useCardStore";
+export default function CardMembersForm() {
+  const { card } = useCardStore();
   const [members, setMembers] = useState(card?.cardMembers || []);
 
   useEffect(() => {

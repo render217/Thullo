@@ -2,7 +2,7 @@
 
 import { TBoardTask } from "@/types/t";
 import { Plus } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,9 +19,18 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { createBoardTaskCardSchema } from "@/lib/schemas";
 import { useCreateCard } from "@/utils/hooks/useBoards";
+import { useAuth } from "@clerk/nextjs";
 
-export default function AddCard({ task }: { task: TBoardTask }) {
+export default function AddCard({
+  task,
+  isVisitor,
+}: {
+  task: TBoardTask;
+  isVisitor: boolean;
+}) {
   const [isAdding, setIsAdding] = useState(false);
+
+  const titleInputRef = useRef<HTMLInputElement>(null);
 
   const form = useForm<z.infer<typeof createBoardTaskCardSchema>>({
     resolver: zodResolver(createBoardTaskCardSchema),
@@ -34,21 +43,32 @@ export default function AddCard({ task }: { task: TBoardTask }) {
     useCreateCard();
 
   async function onSubmit(values: z.infer<typeof createBoardTaskCardSchema>) {
-    console.log(values);
-
     const payload = {
       title: values.title,
       taskId: task.taskId,
     };
     const res = await createCardAsync(payload);
     if (res.success) {
-      console.log("Task card created successfully", res.data);
+      // console.log("Task card created successfully", res.data);
       form.reset();
       setIsAdding(false);
     } else {
-      console.log("Error creating task:", res.data);
+      // console.log("Error creating task:", res.data);
     }
   }
+
+  useEffect(() => {
+    if (isAdding && titleInputRef.current) {
+      titleInputRef.current.focus();
+    }
+  }, [isAdding]);
+
+  const handleAdding = () => {
+    setIsAdding(true);
+  };
+
+  if (isVisitor) return null;
+
   return (
     <>
       {isAdding ? (
@@ -59,23 +79,27 @@ export default function AddCard({ task }: { task: TBoardTask }) {
                 <FormField
                   control={form.control}
                   name={"title"}
-                  render={({ field }) => (
-                    <FormItem>
-                      {/* <FormLabel className="block text-xs text-black/80">
+                  render={({ field }) => {
+                    const { ref, ...rest } = field;
+                    return (
+                      <FormItem>
+                        {/* <FormLabel className="block text-xs text-black/80">
                         Card Name
                       </FormLabel> */}
-                      <FormControl>
-                        <Input
-                          className="h-8 border border-gray-300 text-xs focus-visible:outline-gray-300 focus-visible:ring-0"
-                          placeholder="Enter Card Name"
-                          {...field}
-                        />
-                      </FormControl>
-                      <div className="min-h-4">
-                        <FormMessage className="text-[10px] font-light" />
-                      </div>
-                    </FormItem>
-                  )}
+                        <FormControl>
+                          <Input
+                            ref={titleInputRef}
+                            className="h-8 border border-gray-300 text-xs focus-visible:outline-gray-300 focus-visible:ring-0"
+                            placeholder="Enter Card Name"
+                            {...rest}
+                          />
+                        </FormControl>
+                        <div className="min-h-4">
+                          <FormMessage className="text-[10px] font-light" />
+                        </div>
+                      </FormItem>
+                    );
+                  }}
                 />
                 <div className="mt-2 flex items-center gap-2">
                   <Button
@@ -102,7 +126,7 @@ export default function AddCard({ task }: { task: TBoardTask }) {
         </div>
       ) : (
         <button
-          onClick={() => setIsAdding(true)}
+          onClick={handleAdding}
           className="flex w-full items-center gap-2 rounded-md border border-dashed border-slate-200 bg-slate-200 px-2 py-[8px] hover:border-solid hover:border-slate-200 hover:bg-slate-300"
         >
           <Plus className="size-4" />

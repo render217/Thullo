@@ -3,6 +3,7 @@ import db from "@/db/db";
 import {
   AssignMembersParams,
   CreateBoardTaskCardParams,
+  DeleteCardParams,
   GetBoardTaskParams,
   UnAssignMemberParams,
   UpdateBoardTaskCardParams,
@@ -220,6 +221,106 @@ export async function updateBoardTaskCard(
     return {
       success: false,
       data: "Error updating card",
+    };
+  }
+}
+
+export async function deleteBoardTaskCard(
+  payload: DeleteCardParams,
+): Promise<Response<TBoardTaskCard>> {
+  try {
+    if (!payload.cardId) {
+      return {
+        success: false,
+        data: "Card ID is required",
+      };
+    }
+
+    // Find the target card and include related entities
+    const targetCard = await db.card.findUnique({
+      where: {
+        cardId: payload.cardId,
+      },
+
+      include: {
+        task: {
+          include: {
+            board: true,
+          },
+        },
+        labels: true,
+
+        cardMembers: {
+          include: {
+            user: true,
+          },
+        },
+        comments: {
+          include: {
+            author: true,
+          },
+        },
+        attachments: {
+          include: {
+            author: true,
+          },
+        },
+      },
+    });
+
+    if (!targetCard) {
+      return {
+        success: false,
+        data: "Card not found",
+      };
+    }
+
+    // Delete all labels related to the card
+    await db.label.deleteMany({
+      where: {
+        cardId: payload.cardId,
+      },
+    });
+
+    // Delete all comments related to the card
+    await db.comment.deleteMany({
+      where: {
+        cardId: payload.cardId,
+      },
+    });
+
+    // Delete all attachments related to the card
+    await db.attachment.deleteMany({
+      where: {
+        cardId: payload.cardId,
+      },
+    });
+
+    // Delete all card members related to the card
+    await db.cardMember.deleteMany({
+      where: {
+        cardId: payload.cardId,
+      },
+    });
+
+    // Delete the card itself
+    await db.card.delete({
+      where: {
+        cardId: payload.cardId,
+      },
+    });
+
+    const mappedTaskCard = cardDto(targetCard);
+
+    return {
+      success: true,
+      data: mappedTaskCard,
+    };
+  } catch (error) {
+    console.log("deleteCardError:", error);
+    return {
+      success: false,
+      data: "Error deleting card",
     };
   }
 }

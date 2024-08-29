@@ -16,6 +16,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { LABEL_COLORS_OPTION } from "@/lib/constants";
 import { TBoardTaskCard, TLabel } from "@/types/t";
 import { useCreateLabel, useDeleteLabel } from "@/utils/hooks/useBoards";
+import { useCardStore } from "@/lib/store/useCardStore";
 
 type labelFormData = {
   name: string;
@@ -46,7 +47,8 @@ const labelsDefaultData: TLabel[] = [
   },
 ];
 
-export default function CardLabelForm({ card }: { card: TBoardTaskCard }) {
+export default function CardLabelForm() {
+  const { card } = useCardStore();
   const { openAction } = useActionSelector();
   const [labels, setLabels] = useState<TLabel[]>([]);
   const [labelNameError, setLabelNameError] = useState(false);
@@ -93,7 +95,6 @@ export default function CardLabelForm({ card }: { card: TBoardTaskCard }) {
     };
     const res = await createLabelAsync(payload);
     if (res.success) {
-      console.log("success creating label", res.data);
       setLabelData({ name: "", color: "" });
     }
   };
@@ -105,7 +106,6 @@ export default function CardLabelForm({ card }: { card: TBoardTaskCard }) {
     };
     const res = await deleteLabelAsync(payload);
     if (res.success) {
-      console.log("success deleting label", res.data);
     }
   };
 

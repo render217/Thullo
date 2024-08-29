@@ -6,6 +6,8 @@ import { cn } from "@/lib/utils";
 
 import { TBoardTaskCard } from "@/types/t";
 import TaskCard from "../task-card";
+import { useAuth } from "@clerk/nextjs";
+import { useBoardStore } from "@/lib/store/useBoardStore";
 
 export default function SortableCard({ card }: { card: TBoardTaskCard }) {
   const {

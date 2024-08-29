@@ -25,7 +25,13 @@ import { Separator } from "@radix-ui/react-dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { useDeleteBoardTask, useEditBoardTask } from "@/utils/hooks/useBoards";
 
-export default function TaskHeader({ task }: { task: TBoardTask }) {
+export default function TaskHeader({
+  task,
+  isVisitor,
+}: {
+  task: TBoardTask;
+  isVisitor?: boolean;
+}) {
   const [taskTitle, setTaskTitle] = useState(task.title);
 
   const [isEditing, setIsEditing] = useState(false);
@@ -45,9 +51,9 @@ export default function TaskHeader({ task }: { task: TBoardTask }) {
     };
     const res = await editBoardTaskAsync(payload);
     if (res.success) {
-      console.log("Task Updated Successfully", res.data);
+      // console.log("Task Updated Successfully", res.data);
     } else {
-      console.log("Task Update Failed", res.data);
+      // console.log("Task Update Failed", res.data);
     }
   };
   useEffect(() => {
@@ -86,13 +92,22 @@ export default function TaskHeader({ task }: { task: TBoardTask }) {
     const res = await deleteBoardTaskAsync(payload);
     if (res.success) {
       alert("Task Deleted Successfully");
-      console.log(res.data);
     } else {
-      alert("Task Deletion Failed");
-      console.log(res.data);
+      alert("Task Delete Failed");
     }
   };
 
+  if (isVisitor) {
+    return (
+      <div className="flex gap-1">
+        <div className="h-fit w-[200px]">
+          <h2 className="m-0 w-full break-words bg-transparent px-[6px] py-1 text-[14px] font-medium">
+            {taskTitle}
+          </h2>
+        </div>
+      </div>
+    );
+  }
   return (
     <div className="flex gap-1">
       <div className="h-fit w-[200px]">

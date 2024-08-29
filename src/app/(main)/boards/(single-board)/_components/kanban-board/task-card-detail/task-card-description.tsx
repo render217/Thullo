@@ -1,5 +1,6 @@
 import { AutosizeTextarea } from "@/components/ui/autosize-textarea";
 import { Button } from "@/components/ui/button";
+import { useCardStore } from "@/lib/store/useCardStore";
 import { ICard } from "@/types";
 import { TBoardTask, TBoardTaskCard } from "@/types/t";
 import { useUpdateBoardTaskCard } from "@/utils/hooks/useBoards";
@@ -7,10 +8,11 @@ import { CircleCheck, CircleX } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export default function TaskCardDescription({
-  card,
+  isVisitor,
 }: {
-  card: TBoardTaskCard;
+  isVisitor: boolean;
 }) {
+  const { card } = useCardStore();
   const [decription, setDescription] = useState<string | null>(
     card.description || "",
   );
@@ -35,9 +37,6 @@ export default function TaskCardDescription({
 
     const res = await updateCardAsync(payload);
     if (res.success) {
-      console.log("Card description updated successfully", res.data);
-    } else {
-      console.log("Error updating card description:", res.data);
     }
   };
 
@@ -45,35 +44,37 @@ export default function TaskCardDescription({
     <div>
       <div className="flex items-center gap-3 py-2">
         <p className="text-xs font-bold">Description</p>
-        {!isEdit ? (
-          <Button
-            onClick={openEditMode}
-            className="h-5 px-3 text-xs font-medium"
-            size={"sm"}
-            variant={"outline"}
-          >
-            Edit
-          </Button>
-        ) : (
-          <div className="flex items-center gap-3">
+
+        {!isVisitor &&
+          (!isEdit ? (
             <Button
-              onClick={closeEditMode}
-              className="h-5 w-[50px] border-red-500 px-2 text-[10px] font-medium text-red-500 hover:bg-red-100 hover:text-red-500"
+              onClick={openEditMode}
+              className="h-5 px-3 text-xs font-medium"
               size={"sm"}
               variant={"outline"}
             >
-              Cancel
+              Edit
             </Button>
-            <Button
-              onClick={saveAndCloseEditMode}
-              className="t h-5 w-[50px] border-blue-500 px-2 text-[10px] font-medium text-blue-500 hover:bg-blue-100 hover:text-blue-500"
-              size={"sm"}
-              variant={"outline"}
-            >
-              Save
-            </Button>
-          </div>
-        )}
+          ) : (
+            <div className="flex items-center gap-3">
+              <Button
+                onClick={closeEditMode}
+                className="h-5 w-[50px] border-red-500 px-2 text-[10px] font-medium text-red-500 hover:bg-red-100 hover:text-red-500"
+                size={"sm"}
+                variant={"outline"}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={saveAndCloseEditMode}
+                className="t h-5 w-[50px] border-blue-500 px-2 text-[10px] font-medium text-blue-500 hover:bg-blue-100 hover:text-blue-500"
+                size={"sm"}
+                variant={"outline"}
+              >
+                Save
+              </Button>
+            </div>
+          ))}
       </div>
       <div className="">
         {!isEdit ? (

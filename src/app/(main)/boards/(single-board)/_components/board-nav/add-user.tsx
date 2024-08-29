@@ -53,7 +53,6 @@ export default function AddUser({ board }: { board: TBoardDetail }) {
 
     const res = await addMembersAsync(payload);
     if (res.success) {
-      console.log(res.data);
       setSelectedUsers([]);
     }
   };

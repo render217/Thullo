@@ -1,3 +1,4 @@
+import { useCardStore } from "@/lib/store/useCardStore";
 import { usePreviewUnsplashImage } from "@/lib/store/useUnsplashImage";
 import { cn } from "@/lib/utils";
 import { ICard } from "@/types";
@@ -7,8 +8,11 @@ import { LoaderCircle } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
-export default function TaskCardCoverImage({ card }: { card: TBoardTaskCard }) {
+export default function TaskCardCoverImage() {
   const { selectedImage, setSelectedImage } = usePreviewUnsplashImage();
+
+  const { card } = useCardStore();
+
   const [currentImage, setCurrentImage] = useState(card.coverImage);
 
   useEffect(() => {
@@ -26,7 +30,6 @@ export default function TaskCardCoverImage({ card }: { card: TBoardTaskCard }) {
     const res = await updateBoardTaskCard(payload);
     if (res.success) {
       setSelectedImage("");
-      console.log("Image saved successfully");
     }
   };
 

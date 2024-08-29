@@ -14,8 +14,8 @@ export type TCommonUser = Pick<
   "id" | "username" | "email" | "profileImage" | "createdAt"
 >;
 export enum TVisibility {
-  PUBLIC,
-  PRIVATE,
+  PUBLIC = "PUBLIC",
+  PRIVATE = "PRIVATE",
 }
 
 export enum TInviteStatus {

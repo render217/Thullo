@@ -19,6 +19,8 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { TBoardTaskCard } from "@/types/t";
 import { cn, getTailwindColor } from "@/lib/utils";
+import { useAuth } from "@clerk/nextjs";
+import { useBoardStore } from "@/lib/store/useBoardStore";
 export default function TaskCard({
   card: cardData,
   listeners,
@@ -26,6 +28,13 @@ export default function TaskCard({
   card: TBoardTaskCard;
   listeners?: SyntheticListenerMap | undefined;
 }) {
+  const { userId } = useAuth();
+  const { board } = useBoardStore();
+  const isAdmin = userId === board?.admin?.id;
+  const isMember = board?.boardMember?.some((m) => m.id === userId);
+
+  const notVisitor = isAdmin || isMember;
+
   const [card, setCard] = useState<TBoardTaskCard>(cardData);
   const [openDragItem, setOpenDragItem] = useState(false);
 
@@ -44,7 +53,7 @@ export default function TaskCard({
           setOpenDragItem(false);
         }}
       >
-        {openDragItem && (
+        {notVisitor && openDragItem && (
           <div className="absolute right-2 top-2">
             <div
               {...(listeners ? listeners : {})}
@@ -117,7 +126,12 @@ export default function TaskCard({
           )}
         </div>
       </div>
-      <TaskCardDetail cardId={card.cardId} />
+      <DialogContent
+        aria-describedby={undefined}
+        className="h-full max-w-2xl rounded-md pb-10"
+      >
+        <TaskCardDetail cardId={card.cardId} />
+      </DialogContent>
     </Dialog>
   );
 }

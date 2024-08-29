@@ -26,118 +26,244 @@ import {
   Users,
 } from "lucide-react";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { RichTextEditor } from "@/components/shared/rich-text-editor";
-import { cn } from "@/lib/utils";
+import { cn, formatDate } from "@/lib/utils";
 import { TBoardDetail, TBoardMember, TBoardTaskCard } from "@/types/t";
 import BoardDescription from "./board-description";
 import BoardTitle from "./board-title";
-import { useRemoveMemberFromBoard } from "@/utils/hooks/useBoards";
+import {
+  useDeleteBoard,
+  useRemoveMemberFromBoard,
+} from "@/utils/hooks/useBoards";
+import { useAuth } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
+import BlockScreen from "@/components/shared/loaders/block-screen";
+import Spinner from "@/components/shared/loaders/spinner";
 
 export default function BoardSideBarContent({
   board,
 }: {
   board: TBoardDetail;
 }) {
+  const router = useRouter();
+  const { userId } = useAuth();
+  const isAdmin = board?.admin?.id === userId;
+  const [openDialog, setOpenDialog] = useState(false);
+
+  const {
+    mutateAsync: deleteBoardAsync,
+    isPending: isDeletingBoard,
+    isSuccess,
+  } = useDeleteBoard();
+  const handleDeleteBoard = async () => {
+    setOpenDialog(false);
+    const payload = {
+      boardId: board?.boardId,
+      adminId: userId!,
+    };
+    const res = await deleteBoardAsync(payload);
+    if (res.success) {
+      console.log("deleted");
+      router.replace("/boards");
+    }
+  };
+
+  useEffect(() => {
+    if (isSuccess) {
+      router.replace("/boards");
+    }
+  }, [isSuccess]);
+
   return (
-    <div className="h-full overflow-hidden">
-      <ScrollArea className="h-full pr-4">
-        {/* <div className="">
+    <>
+      {isDeletingBoard && (
+        <BlockScreen>
+          <Spinner size={50} />
+        </BlockScreen>
+      )}
+
+      <div
+        className={cn("h-full overflow-hidden", isDeletingBoard && "hidden")}
+      >
+        <ScrollArea
+          className={cn(
+            "h-full pr-4",
+            isDeletingBoard && "pointer-events-none z-50",
+          )}
+        >
+          {/* <div className="">
           <h1 className="pb-1 text-lg font-semibold">{board.boardName}</h1>
           <Separator className="" />
         </div> */}
-        <BoardTitle board={board} />
-        {/* 
+          <BoardTitle board={board} />
+          {/* 
           ------------------------------------
             ADMDIN META
           ------------------------------------
         */}
-        <div className="mt-3 space-y-2">
-          <div className="w-fit rounded-lg border border-slate-300 px-2 py-0.5">
-            <div className="flex items-center gap-2 text-gray-500">
-              <User className="size-3" />
-              <p className="text-[10px]">MadeBy</p>
+          <div className="mt-3 space-y-2">
+            <div className="w-fit rounded-lg border border-slate-300 px-2 py-0.5">
+              <div className="flex items-center gap-2 text-gray-500">
+                <User className="size-3" />
+                <p className="text-[10px]">MadeBy</p>
+              </div>
             </div>
-          </div>
 
-          <div className="flex items-center gap-3">
-            <div className="h-8 w-8 overflow-hidden rounded-md">
-              <img
-                className="size-full object-cover"
-                src={board.admin.profileImage}
-                alt={board.admin.profileImage}
-              />
-            </div>
-            <div className="">
-              <p className="text-xs font-semibold">{board.admin.username}</p>
-              {/* <p className="text-[10px] text-slate-400">{board.createdAt}</p> */}
+            <div className="flex items-center gap-3">
+              <div className="h-8 w-8 overflow-hidden rounded-md">
+                <img
+                  className="size-full object-cover"
+                  src={board.admin.profileImage}
+                  alt={board.admin.username}
+                />
+              </div>
+              <div className="">
+                <p className="text-xs font-semibold">{board.admin.username}</p>
+              </div>
+              <div className="ml-auto">
+                {isAdmin && (
+                  <Dialog
+                    open={openDialog}
+                    onOpenChange={(val) => {
+                      setOpenDialog(val);
+                    }}
+                  >
+                    <DialogTrigger asChild>
+                      <Button
+                        disabled={isDeletingBoard}
+                        className={cn(
+                          "ml-auto h-6 w-20 border border-red-500 py-2 text-[10px] text-red-500 transition-all duration-300 ease-in-out hover:bg-red-500 hover:text-white disabled:pointer-events-auto disabled:cursor-not-allowed",
+                          isDeletingBoard &&
+                            "cursor-not-allowed bg-red-500 text-white opacity-40",
+                        )}
+                        variant={"outline"}
+                        size={"sm"}
+                      >
+                        {isDeletingBoard ? (
+                          <LoaderCircle className="mx-auto size-4 animate-spin" />
+                        ) : (
+                          <p className="text-[10px]">Delete Board</p>
+                        )}
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className={cn("max-w-[400px] gap-2")}>
+                      <DialogTitle>Are you sure to delete?</DialogTitle>
+                      <div>
+                        <DialogDescription className="space-y-1">
+                          <p className="text-xs">
+                            This action cannot be undone.
+                          </p>
+                          <p className="text-xs">
+                            This will permanently delete{" "}
+                            <span className="mr-2 cursor-pointer font-semibold underline">
+                              {board.boardName}
+                            </span>
+                            {""}
+                            and all it's content.
+                          </p>
+                        </DialogDescription>
+                      </div>
+
+                      <DialogFooter>
+                        <div className="mt-3 flex w-full justify-end gap-2">
+                          <DialogClose asChild>
+                            <Button
+                              onClick={() => {}}
+                              className="block h-7 w-20 border border-slate-300 text-xs hover:border-slate-800"
+                              size={"sm"}
+                              variant={"outline"}
+                            >
+                              Cancel
+                            </Button>
+                          </DialogClose>
+                          <Button
+                            onClick={handleDeleteBoard}
+                            className="block h-7 w-20 text-xs"
+                            size={"sm"}
+                          >
+                            {isDeletingBoard ? (
+                              <LoaderCircle className="mx-auto size-4 animate-spin" />
+                            ) : (
+                              <p>Proceed</p>
+                            )}
+                          </Button>
+                        </div>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
+                )}
+              </div>
             </div>
           </div>
-        </div>
-        {/* 
+          {/* 
           ------------------------------------
             DESCRIPTION
           ------------------------------------
         */}
 
-        <div className="mt-3">
-          <BoardDescription board={board} />
-        </div>
-        {/* 
+          <div className="mt-3">
+            <BoardDescription board={board} />
+          </div>
+          {/* 
           ------------------------------------
             MEMBERS
           ------------------------------------
         */}
-        <div className="mt-2">
-          <div className="flex items-center justify-between">
-            <div className="w-fit rounded-lg border border-slate-300 px-2 py-0.5">
-              <div className="flex items-center gap-2 text-gray-500">
-                <Users className="size-3" />
-                <p className="text-[10px]">Teams</p>
+          <div className="mt-2">
+            <div className="flex items-center justify-between">
+              <div className="w-fit rounded-lg border border-slate-300 px-2 py-0.5">
+                <div className="flex items-center gap-2 text-gray-500">
+                  <Users className="size-3" />
+                  <p className="text-[10px]">Teams</p>
+                </div>
               </div>
             </div>
-          </div>
 
-          <div className="mt-2">
-            <ScrollArea className="p-1 pr-4">
-              <div className="flex flex-col gap-2">
-                <TeamMember
-                  isAdmin={true}
-                  member={board.admin}
-                  boardId={board?.boardId}
-                />
-                {board.boardMember.length > 0 ? (
-                  <>
-                    {board.boardMember.map((member) => (
-                      <TeamMember
-                        key={member.id}
-                        member={member}
-                        boardId={board?.boardId}
-                      />
-                    ))}
-                  </>
-                ) : (
-                  <>
-                    <p className="text-center text-xs">No members</p>
-                  </>
-                )}
-              </div>
-            </ScrollArea>
+            <div className="mt-2">
+              <ScrollArea className="p-1 pr-4">
+                <div className="flex flex-col gap-2">
+                  <TeamMember
+                    isAdmin={true}
+                    member={board.admin}
+                    boardId={board?.boardId}
+                  />
+                  {board.boardMember.length > 0 ? (
+                    <>
+                      {board.boardMember.map((member) => (
+                        <TeamMember
+                          key={member.id}
+                          member={member}
+                          allowRemove={isAdmin}
+                          boardId={board?.boardId}
+                        />
+                      ))}
+                    </>
+                  ) : (
+                    <>
+                      <p className="text-center text-xs">No members</p>
+                    </>
+                  )}
+                </div>
+              </ScrollArea>
+            </div>
           </div>
-        </div>
-        <ScrollBar className="block" />
-      </ScrollArea>
-    </div>
+          <ScrollBar className="block" />
+        </ScrollArea>
+      </div>
+    </>
   );
 }
 
 function TeamMember({
   boardId,
   member,
+  allowRemove,
   isAdmin = false,
 }: {
   member: TBoardMember;
+  allowRemove?: Boolean;
   isAdmin?: Boolean;
   boardId: string;
 }) {
@@ -151,7 +277,7 @@ function TeamMember({
     };
     const res = await removeMemberAsync(payload);
     if (res.success) {
-      console.log("Member removed successfully");
+      // console.log("Member removed successfully");
     }
   };
 
@@ -165,7 +291,7 @@ function TeamMember({
         />
       </div>
       <p className="text-[10px] font-medium">{member.username}</p>
-      {isAdmin ? (
+      {isAdmin && (
         <Button
           className="ml-auto h-6 w-20 border py-2 text-[10px] transition-all duration-300 ease-in-out hover:cursor-text hover:bg-transparent"
           variant={"outline"}
@@ -173,7 +299,8 @@ function TeamMember({
         >
           Admin
         </Button>
-      ) : (
+      )}
+      {allowRemove && (
         <Dialog>
           <DialogTrigger asChild>
             <Button

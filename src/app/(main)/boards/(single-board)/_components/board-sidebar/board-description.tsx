@@ -31,16 +31,17 @@ import { RichTextEditor } from "@/components/shared/rich-text-editor";
 import { cn } from "@/lib/utils";
 import { TBoardDetail, TBoardMember, TBoardTaskCard } from "@/types/t";
 import { useUpdateBoard } from "@/utils/hooks/useBoards";
+import { useAuth } from "@clerk/nextjs";
 
 export default function BoardDescription({ board }: { board: TBoardDetail }) {
+  const { userId } = useAuth();
   const [message, setMessage] = useState(board.description);
   const [isEdit, setIsEdit] = useState(false);
   const openEditMode = () => setIsEdit(true);
   const closeEditMode = () => setIsEdit(false);
-
+  const isAdmin = userId === board.admin?.id;
   useEffect(() => {
     setMessage(board.description);
-    console.log("triggered:", board.description);
   }, [board]);
 
   const { mutateAsync: updateBoardAsync, isPending } = useUpdateBoard();
@@ -54,9 +55,6 @@ export default function BoardDescription({ board }: { board: TBoardDetail }) {
 
     const res = await updateBoardAsync(payload);
     if (res.success) {
-      console.log("Board description updated successfully", res.data);
-    } else {
-      console.log("Error updating board description:", res.data);
     }
   };
 
@@ -69,45 +67,50 @@ export default function BoardDescription({ board }: { board: TBoardDetail }) {
             <p className="text-[10px]">Description</p>
           </div>
         </div>
-        {!isEdit ? (
-          <Button
-            onClick={openEditMode}
-            className="rounded-xs h-[22px] px-4 py-1"
-            size={"sm"}
-            variant={"outline"}
-          >
-            <div className="flex items-center gap-2 text-gray-500">
-              <Pencil className="size-3" />
-              <p className="text-xs font-semibold">Edit</p>
+        {isAdmin && !isEdit && (
+          <>
+            <Button
+              onClick={openEditMode}
+              className="rounded-xs h-[22px] px-4 py-1"
+              size={"sm"}
+              variant={"outline"}
+            >
+              <div className="flex items-center gap-2 text-gray-500">
+                <Pencil className="size-3" />
+                <p className="text-xs font-semibold">Edit</p>
+              </div>
+            </Button>
+          </>
+        )}
+        {isAdmin && isEdit && (
+          <>
+            <div className="flex items-center gap-3">
+              <Button
+                disabled={isPending}
+                onClick={closeEditMode}
+                className="rounded-xs h-[22px] border-red-500 px-4 py-1 hover:bg-red-100"
+                size={"sm"}
+                variant={"outline"}
+              >
+                <div className="flex items-center gap-2 text-red-500">
+                  <CircleX className="size-4" />
+                  <p className="text-xs font-semibold">Cancel</p>
+                </div>
+              </Button>
+              <Button
+                disabled={isPending}
+                onClick={saveAndCloseEditMode}
+                className="rounded-xs h-[22px] border-blue-500 hover:bg-blue-100"
+                size={"sm"}
+                variant={"outline"}
+              >
+                <div className="flex items-center gap-2 text-blue-500">
+                  <CircleCheck className="size-4" />
+                  <p className="text-xs font-semibold">Save</p>
+                </div>
+              </Button>
             </div>
-          </Button>
-        ) : (
-          <div className="flex items-center gap-3">
-            <Button
-              disabled={isPending}
-              onClick={closeEditMode}
-              className="rounded-xs h-[22px] border-red-500 px-4 py-1 hover:bg-red-100"
-              size={"sm"}
-              variant={"outline"}
-            >
-              <div className="flex items-center gap-2 text-red-500">
-                <CircleX className="size-4" />
-                <p className="text-xs font-semibold">Cancel</p>
-              </div>
-            </Button>
-            <Button
-              disabled={isPending}
-              onClick={saveAndCloseEditMode}
-              className="rounded-xs h-[22px] border-blue-500 hover:bg-blue-100"
-              size={"sm"}
-              variant={"outline"}
-            >
-              <div className="flex items-center gap-2 text-blue-500">
-                <CircleCheck className="size-4" />
-                <p className="text-xs font-semibold">Save</p>
-              </div>
-            </Button>
-          </div>
+          </>
         )}
       </div>
       <div>

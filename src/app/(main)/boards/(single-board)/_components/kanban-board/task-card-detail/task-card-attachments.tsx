@@ -11,11 +11,13 @@ import {
   useCreateAttachments,
   useDeleteAttachment,
 } from "@/utils/hooks/useBoards";
+import { useCardStore } from "@/lib/store/useCardStore";
 export default function TaskCardAttachments({
-  card,
+  isVisitor,
 }: {
-  card: TBoardTaskCard;
+  isVisitor: boolean;
 }) {
+  const { card } = useCardStore();
   const { userId } = useAuth();
   if (!userId) return null;
 
@@ -79,7 +81,6 @@ export default function TaskCardAttachments({
     const res = await createAttachmentAsync(payload);
     if (res.success) {
       setFile(undefined);
-      console.log("attachment created..", res.data);
     }
   };
 
@@ -112,7 +113,6 @@ export default function TaskCardAttachments({
 
     const res = await deleteAttachmentAsync(payload);
     if (res.success) {
-      console.log("attachment deleted..", res.data);
     }
   };
 
@@ -127,7 +127,7 @@ export default function TaskCardAttachments({
           type="file"
           className="hidden"
         />
-        {!file && (
+        {!isVisitor && !file && (
           <Button
             onClick={handleAddAsset}
             className="h-5 px-3 text-xs font-medium"

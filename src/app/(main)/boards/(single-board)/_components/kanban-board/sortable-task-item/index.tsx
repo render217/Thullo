@@ -22,6 +22,8 @@ import SortableCard from "../sortable-card";
 import TaskHeader from "./task-header";
 import { useState } from "react";
 import AddCard from "./add-card";
+import { useAuth } from "@clerk/nextjs";
+import { useBoardStore } from "@/lib/store/useBoardStore";
 
 export default function SortableTaskItem({
   task,
@@ -30,6 +32,14 @@ export default function SortableTaskItem({
   task: TBoardTask;
   allowGrab?: boolean;
 }) {
+  const { userId } = useAuth();
+  const { board } = useBoardStore();
+  const isAdmin = userId === board?.admin?.id;
+  const isMember = board?.boardMember?.some((m) => m.id === userId);
+
+  const notVisitor = isAdmin || isMember;
+  const isVisitor = !notVisitor;
+
   const {
     attributes,
     listeners,
@@ -95,18 +105,20 @@ export default function SortableTaskItem({
     <li
       ref={setNodeRef}
       style={style}
-      {...attributes}
+      {...(isVisitor ? {} : attributes)}
       className={cn("block h-full shrink-0 cursor-default self-start px-[6px]")}
     >
       <div className="relative box-border flex max-h-full w-[272px] flex-col justify-between rounded-md bg-slate-50 pb-[8px] align-top">
         <div className="relative flex items-center justify-between gap-2 rounded-md border-b border-slate-300 bg-slate-50 py-[8px] pl-[8px] pr-[8px]">
-          <TaskHeader task={task} />
-          <div
-            {...listeners}
-            className="flex w-[23px] cursor-grab items-center self-start rounded p-1 hover:bg-gray-200"
-          >
-            <GripVertical className="h-4 w-4" />
-          </div>
+          <TaskHeader task={task} isVisitor={isVisitor} />
+          {!isVisitor && (
+            <div
+              {...listeners}
+              className="flex w-[23px] cursor-grab items-center self-start rounded p-1 hover:bg-gray-200"
+            >
+              <GripVertical className="h-4 w-4" />
+            </div>
+          )}
         </div>
         <div className="-mb-[2px] h-[8px] flex-shrink-0"></div>
         <div className="my-1 flex flex-shrink flex-grow basis-auto flex-col gap-2 overflow-y-auto overflow-x-hidden py-1 pl-[8px] pr-[4px] scrollbar-stable scrollbar-thin scrollbar-track-transparent scrollbar-thumb-slate-900">
@@ -124,7 +136,7 @@ export default function SortableTaskItem({
           ))} */}
         </div>
         <div className="rounded-md bg-white px-[8px]">
-          <AddCard task={task} />
+          <AddCard task={task} isVisitor={isVisitor} />
         </div>
       </div>
     </li>

@@ -93,9 +93,9 @@ export default function BoardCreateForm() {
 
     const res = await createBoardAsync({ userId: userId!, payload });
     if (res.success) {
-      console.log("Board created successfully", res.data);
+      // console.log("Board created successfully", res.data);
     } else {
-      console.log("Error creating board:", res.data);
+      // console.log("Error creating board:", res.data);
     }
 
     if (!isSubmitting && open) {

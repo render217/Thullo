@@ -1,10 +1,13 @@
 import { Input } from "@/components/ui/input";
 import { TBoardDetail } from "@/types/t";
 import { useUpdateBoard } from "@/utils/hooks/useBoards";
+import { useAuth } from "@clerk/nextjs";
 import { Separator } from "@radix-ui/react-dropdown-menu";
 import { use, useEffect, useState } from "react";
 
 export default function BoardTitle({ board }: { board: TBoardDetail }) {
+  const { userId } = useAuth();
+  const isAdmin = userId === board.admin?.id;
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState(board.boardName);
 
@@ -22,9 +25,9 @@ export default function BoardTitle({ board }: { board: TBoardDetail }) {
 
     const res = await updateBoardTitle(payload);
     if (res.success) {
-      console.log("Board title updated successfully", res.data);
+      // console.log("Board title updated successfully", res.data);
     } else {
-      console.log("Error updating board title:", res.data);
+      // console.log("Error updating board title:", res.data);
     }
   };
 
@@ -45,22 +48,34 @@ export default function BoardTitle({ board }: { board: TBoardDetail }) {
     <>
       {/* make the ui clear */}
       <div className="">
-        {!isEditing ? (
-          <h1
-            onClick={() => setIsEditing(true)}
-            className="cursor-pointer pb-1 text-lg font-semibold"
-          >
-            {title}
-          </h1>
-        ) : (
-          <Input
-            disabled={isPending}
-            value={title}
-            onKeyDown={handleKeyDown}
-            onBlur={handleBlur}
-            onChange={(e) => setTitle(e.target.value)}
-            className="text-lg"
-          />
+        {!isAdmin && (
+          <>
+            <>
+              <h1 className="pb-1 text-lg font-semibold">{title}</h1>
+            </>
+          </>
+        )}
+        {isAdmin && !isEditing && (
+          <>
+            <h1
+              onClick={() => setIsEditing(true)}
+              className="cursor-pointer pb-1 text-lg font-semibold"
+            >
+              {title}
+            </h1>
+          </>
+        )}
+        {isAdmin && isEditing && (
+          <>
+            <Input
+              disabled={isPending}
+              value={title}
+              onKeyDown={handleKeyDown}
+              onBlur={handleBlur}
+              onChange={(e) => setTitle(e.target.value)}
+              className="text-lg"
+            />
+          </>
         )}
         <Separator className="" />
       </div>

@@ -7,6 +7,8 @@ import CardMembersForm from "./card-members-form";
 import { useGetUnsplashImage } from "@/utils/hooks/useUnsplash";
 import React, { useReducer, useState } from "react";
 import { TBoardTaskCard } from "@/types/t";
+import { useAuth } from "@clerk/nextjs";
+import { useBoardStore } from "@/lib/store/useBoardStore";
 
 const intialData = {
   labelSelected: false,
@@ -82,9 +84,10 @@ export const useActionSelector = () => {
   return context;
 };
 
-export default function TaskCardActions({ card }: { card: TBoardTaskCard }) {
+export default function TaskCardActions({ isVisitor }: { isVisitor: boolean }) {
   const _ = useGetUnsplashImage("random");
 
+  if (isVisitor) return null;
   return (
     <div>
       <div className="px-4 text-[10px] font-medium text-gray-500">
@@ -92,9 +95,9 @@ export default function TaskCardActions({ card }: { card: TBoardTaskCard }) {
       </div>
       <SelectorProvider>
         <div className="mt-2 flex flex-col gap-3 px-4">
-          <CardCoverImageForm card={card} />
-          <CardLabelForm card={card} />
-          <CardMembersForm card={card} />
+          <CardCoverImageForm />
+          <CardLabelForm />
+          <CardMembersForm />
         </div>
       </SelectorProvider>
     </div>

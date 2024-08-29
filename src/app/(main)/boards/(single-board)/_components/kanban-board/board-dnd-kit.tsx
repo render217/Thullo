@@ -27,9 +27,13 @@ import AddTaskItem from "./add-task-item";
 import SortableCardOverlay from "./sortable-card/sortable-card-overlay";
 import SortableTaskItemOverlay from "./sortable-task-item/sortable-task-item-overlay";
 import SortableTaskItem from "./sortable-task-item";
+import { useBoardStore } from "@/lib/store/useBoardStore";
 
-export default function BoardDndKit({ board }: { board: TBoardDetail }) {
+export default function BoardDndKit() {
+  const { board } = useBoardStore();
+
   const [tasks, setTasks] = useState(board.tasks);
+
   const [activeTask, setActiveTask] = useState<TBoardTask | null>(null);
   const [activeCard, setActiveCard] = useState<TBoardTaskCard | null>(null);
 
@@ -249,7 +253,7 @@ export default function BoardDndKit({ board }: { board: TBoardDetail }) {
                       allowGrab={tasks.length > 1}
                     />
                   ))}
-                <AddTaskItem boardId={board.boardId} />
+                <AddTaskItem />
               </>
             ) : (
               <>
@@ -262,7 +266,7 @@ export default function BoardDndKit({ board }: { board: TBoardDetail }) {
                       </h1>
                     </div>
                     <div className="grid place-content-center">
-                      <AddTaskItem boardId={board.boardId} />
+                      <AddTaskItem />
                     </div>
                   </div>
                 </div>

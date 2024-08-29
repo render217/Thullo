@@ -18,8 +18,10 @@ import { useActionSelector } from ".";
 import { usePreviewUnsplashImage } from "@/lib/store/useUnsplashImage";
 import { useUpdateBoardTaskCard } from "@/utils/hooks/useBoards";
 import { TBoardTaskCard } from "@/types/t";
+import { useCardStore } from "@/lib/store/useCardStore";
 
-export default function CardCoverImageForm({ card }: { card: TBoardTaskCard }) {
+export default function CardCoverImageForm() {
+  const { card } = useCardStore();
   const { openAction } = useActionSelector();
   const { setSelectedImage, selectedImage } = usePreviewUnsplashImage();
 
@@ -48,7 +50,6 @@ export default function CardCoverImageForm({ card }: { card: TBoardTaskCard }) {
     const res = await updateBoardTaskCard(payload);
     if (res.success) {
       setSelectedImage("");
-      console.log("Image saved successfully");
     }
   };
   const handleCancelImage = async () => {
@@ -128,7 +129,7 @@ export default function CardCoverImageForm({ card }: { card: TBoardTaskCard }) {
                   <div
                     key={img?.thumb}
                     className="h-11 w-11"
-                    onClick={() => handleSelectImage(img?.raw)}
+                    onClick={() => handleSelectImage(img?.small_s3)}
                   >
                     <TooltipProvider>
                       <Tooltip>

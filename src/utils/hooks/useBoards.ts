@@ -3,6 +3,7 @@ import boardsServices from "../services/boards.services";
 import {
   addBoardMember,
   createBoard,
+  deleteBoard,
   getBoard,
   getBoards,
   removeMemberFromBoard,
@@ -17,6 +18,7 @@ import {
   CreateCommentParams,
   CreateLabelParams,
   DeleteAttachmentParams,
+  DeleteBoardParams,
   DeleteCommentParams,
   DeleteLabelParams,
   EditBoardTaskParams,
@@ -35,6 +37,7 @@ import {
 import {
   assignMembersToTaskCard,
   createBoardTaskCard,
+  deleteBoardTaskCard,
   getBoardTaskCard,
   unAssignMemberToTaskCard,
   updateBoardTaskCard,
@@ -56,17 +59,19 @@ import {
   getUsersInBoardNotInCard,
   getUsersNotInBoard,
 } from "../actions/user.actions";
+import { useBoardStore } from "@/lib/store/useBoardStore";
 
 /********
  *
  *  BOARDS
  *
  *******/
-export function useGetBoards() {
+export function useGetBoards(userId: string) {
   return useQuery({
     queryKey: ["boards"],
     // queryFn: () => boardsServices.getBoards(),
-    queryFn: async () => await getBoards(),
+    queryFn: async () => await getBoards({ userId }),
+    enabled: !!userId,
   });
 }
 
@@ -76,6 +81,9 @@ export function useGetBoardById(id: string) {
     // queryFn: () => boardsServices.getBoard(id),
     queryFn: async () => await getBoard(id),
     enabled: !!id,
+    refetchOnWindowFocus: true,
+    refetchOnReconnect: true,
+    refetchOnMount: true,
   });
 }
 
@@ -104,8 +112,25 @@ export function useUpdateBoard() {
     },
     onSuccess: (res) => {
       if (res.success) {
-        console.log("success useUpdateBoard()", res.data);
         const boardId = res.data.boardId;
+        queryClient.invalidateQueries({
+          queryKey: ["boards", { id: boardId }],
+        });
+      }
+    },
+  });
+}
+
+export function useDeleteBoard() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (payload: DeleteBoardParams) => {
+      return await deleteBoard(payload);
+    },
+    onSuccess: (data) => {
+      if (data.success) {
+        const boardId = data.data.boardId;
+        queryClient.invalidateQueries({ queryKey: ["boards"] });
         queryClient.invalidateQueries({
           queryKey: ["boards", { id: boardId }],
         });
@@ -263,6 +288,27 @@ export function useUpdateBoardTaskCard() {
         });
         queryClient.invalidateQueries({
           queryKey: ["boards", { id: boardId }],
+        });
+      }
+    },
+  });
+}
+
+export function useDeleteBoardTaskCard() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (payload: { cardId: string }) => {
+      return await deleteBoardTaskCard(payload);
+    },
+    onSuccess: (res) => {
+      if (res.success) {
+        const boardId = res.data.board.boardId;
+        const cardId = res.data.cardId;
+        queryClient.invalidateQueries({
+          queryKey: ["boards", { id: boardId }],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["cards", { cardId }],
         });
       }
     },

@@ -25,7 +25,16 @@ export async function createBoardTask(
         order: taskLength + 1,
       },
       include: {
-        board: true,
+        board: {
+          include: {
+            admin: true,
+            boardMember: {
+              include: {
+                user: true,
+              },
+            },
+          },
+        },
         cards: true,
       },
     });
@@ -52,8 +61,23 @@ export async function deleteBoardTask(
         taskId: payload.taskId,
       },
       include: {
-        board: true,
-        cards: true,
+        board: {
+          include: {
+            admin: true,
+            boardMember: {
+              include: {
+                user: true,
+              },
+            },
+          },
+        },
+        cards: {
+          include: {
+            labels: true,
+            comments: true,
+            attachments: true,
+          },
+        },
       },
     });
     if (!targetTask) {
@@ -62,6 +86,36 @@ export async function deleteBoardTask(
         data: "Task not found",
       };
     }
+
+    const cardIds = targetTask.cards.map((card) => card.cardId);
+
+    // Delete all labels related to the cards
+    await db.label.deleteMany({
+      where: {
+        cardId: { in: cardIds },
+      },
+    });
+
+    // Delete all comments related to the cards
+    await db.comment.deleteMany({
+      where: {
+        cardId: { in: cardIds },
+      },
+    });
+
+    // Delete all attachments related to the cards
+    await db.attachment.deleteMany({
+      where: {
+        cardId: { in: cardIds },
+      },
+    });
+    // Delete all cards related to the task
+    await db.card.deleteMany({
+      where: {
+        taskId: payload.taskId,
+      },
+    });
+
     const mappedTargetTask = boardTaskDto(targetTask);
     await db.task.delete({
       where: {
@@ -96,7 +150,16 @@ export async function editBoardTask(
         taskId: payload.taskId,
       },
       include: {
-        board: true,
+        board: {
+          include: {
+            admin: true,
+            boardMember: {
+              include: {
+                user: true,
+              },
+            },
+          },
+        },
         cards: true,
       },
     });
@@ -115,7 +178,16 @@ export async function editBoardTask(
         title: payload.title || targetTask.title,
       },
       include: {
-        board: true,
+        board: {
+          include: {
+            admin: true,
+            boardMember: {
+              include: {
+                user: true,
+              },
+            },
+          },
+        },
         cards: true,
       },
     });

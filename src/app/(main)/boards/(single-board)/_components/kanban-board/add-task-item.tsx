@@ -1,6 +1,6 @@
 "use client";
 import { PlusCircle } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import {
   Form,
@@ -18,7 +18,15 @@ import { createBoardTaskSchema } from "@/lib/schemas";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useCreateBoardTask } from "@/utils/hooks/useBoards";
-export default function AddTaskItem({ boardId }: { boardId: string }) {
+import { useAuth } from "@clerk/nextjs";
+import { TBoardDetail } from "@/types/t";
+import { useBoardStore } from "@/lib/store/useBoardStore";
+export default function AddTaskItem() {
+  const { board } = useBoardStore();
+  const { userId } = useAuth();
+  const isAdmin = useAuth().userId === board?.admin?.id;
+  const isMember = board?.boardMember?.some((m) => m.id === userId);
+
   const [open, setOpen] = useState(false);
 
   const form = useForm<z.infer<typeof createBoardTaskSchema>>({
@@ -28,6 +36,14 @@ export default function AddTaskItem({ boardId }: { boardId: string }) {
     },
   });
 
+  const taskTitleRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (open && taskTitleRef.current) {
+      taskTitleRef.current.focus();
+    }
+  }, [open]);
+
   const { mutateAsync: createBoardTaskAsync, isPending: isSubmitting } =
     useCreateBoardTask();
 
@@ -36,19 +52,19 @@ export default function AddTaskItem({ boardId }: { boardId: string }) {
 
     const payload = {
       title: values.title,
-      boardId: boardId,
+      boardId: board.boardId,
     };
     const res = await createBoardTaskAsync(payload);
     if (res.success) {
-      console.log("Task created successfully", res.data);
+      // console.log("Task created successfully", res.data);
 
       setOpen(false);
       form.reset();
     } else {
-      console.log("Error creating task:", res.data);
+      // console.log("Error creating task:", res.data);
     }
   }
-
+  if (!isAdmin && !isMember) return null;
   return (
     <li className="block h-full shrink-0 cursor-default self-start px-[6px]">
       <div className="relative box-border flex max-h-full w-[272px] flex-col justify-between rounded-md bg-transparent pb-[8px] align-top">
@@ -69,23 +85,27 @@ export default function AddTaskItem({ boardId }: { boardId: string }) {
                 <FormField
                   control={form.control}
                   name={"title"}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="block text-xs text-black/80">
-                        Task Name
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          className="h-8 border border-gray-300 text-xs focus-visible:outline-gray-300 focus-visible:ring-0"
-                          placeholder="Enter Task Name"
-                          {...field}
-                        />
-                      </FormControl>
-                      <div className="min-h-4">
-                        <FormMessage className="text-xs font-light" />
-                      </div>
-                    </FormItem>
-                  )}
+                  render={({ field }) => {
+                    const { ref, ...rest } = field;
+                    return (
+                      <FormItem>
+                        <FormLabel className="block text-xs text-black/80">
+                          Task Name
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            ref={taskTitleRef}
+                            className="h-8 border border-gray-300 text-xs focus-visible:outline-gray-300 focus-visible:ring-0"
+                            placeholder="Enter Task Name"
+                            {...rest}
+                          />
+                        </FormControl>
+                        <div className="min-h-4">
+                          <FormMessage className="text-xs font-light" />
+                        </div>
+                      </FormItem>
+                    );
+                  }}
                 />
                 <div className="mt-2 w-full">
                   <Button
