@@ -1,36 +1,85 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+<h1 align="center">Thullo - Trello Clone</h1>
 
-## Getting Started
+<div align="center">
+   Solution for a challenge from  <a href="http://devchallenges.io" target="_blank">Devchallenges.io</a>.
+</div>
 
-First, run the development server:
+<div align="center">
+  <h3>
+    <a href="https://thullo-fawn.vercel.app" target="_blank">
+      Demo
+    </a>
+    <span> | </span>
+    <a href="#" target="_blank">
+      Solution
+    </a>
+    <span> | </span>
+    <a href="https://legacy.devchallenges.io/challenges/wP0LbGgEeKhpFHUpPpDh" target="_blank">
+      Challenge
+    </a>
+  </h3>
+</div>
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+<!-- TABLE OF CONTENTS -->
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Table of Contents
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- [Overview](#overview)
+- [Built With](#built-with)
+- [Features](#features)
+- [Acknowledgements](#acknowledgements)
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+<!-- OVERVIEW -->
 
-## Learn More
+## Overview
 
-To learn more about Next.js, take a look at the following resources:
+![screenshot](./public/images/Screenshot.png)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Built With
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+<!-- This section should list any major frameworks that you built your project using. Here are a few examples.-->
 
-## Deploy on Vercel
+- **Next.js**
+- **Tailwind**
+- **Prisma**
+- **Zustand**
+- **Clerk**
+- **uploadthing**
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Features
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+<!-- List the features of your application or follow the template. Don't share the figma file here :) -->
+
+This application/site was created as a submission to a [DevChallenges](https://devchallenges.io/challenges) challenge. The [challenge](https://devchallenges.io/challenges/wBunSb7FPrIepJZAg0sY) was to build an application to complete the given user stories.
+
+- User story: I can list of available boards
+- User story: I can add a new board with a cover photo, title and visibility options
+- User story: I can see a board with different columns, team members,... according to the design
+- User story: I can add a new list
+- User story: I can add a new card to the existing list
+- User story: I can set the visibility of the board
+- User story: I can add a member to the board (user must exist in the system)
+- User story: I can change the name of the board by selecting it
+- User story: I can change/add the description of the board
+- User story: Given I am an admin, I can remove members from the board
+- User story: I can move a card from a column to another one by drag and drop
+- User story: When a card is selected, I can rename the title by selecting it
+- User story: When a card is selected, I can see which column the card belongs to
+- User story: When a card is selected, I can see and change the description
+- User story: When a card is selected, I can add new attachments and I can download and delete existing attachments
+- User story: When a card is selected, I can add a new comment. Given I am the author, I can edit and delete the comment.
+- User story: When a card is selected, I can change the card cover image by searching from Unsplash
+- User story: When a card is selected, I can add labels with given colors
+
+---
+
+## Features to be added.
+
+- Board Invites,
+
+## Acknowledgements
+
+- [Vercel](https://vercel.com) - For Deployment
+- [Clerk](https://clerk.com) - For Authentication.
+- [Unsplash](https://unsplash.com/) - For Image Api.
+- [UploadThing](https://uploadthing.com/)- For File upload.
