@@ -6,11 +6,12 @@ import {
   DeleteCardParams,
   GetBoardTaskParams,
   UnAssignMemberParams,
+  UpdateBoardTaskCardOrderParams,
   UpdateBoardTaskCardParams,
 } from "./shared.types";
 import { Response } from "@/types/axios.types";
-import { TBoardTaskCard } from "@/types/t";
-import { cardDto } from "./mappers";
+import { TBoardDetail, TBoardTaskCard } from "@/types/t";
+import { boardDetailDto, cardDto } from "./mappers";
 
 export async function createBoardTaskCard(
   payload: CreateBoardTaskCardParams,
@@ -517,6 +518,94 @@ export async function unAssignMemberToTaskCard(
     return {
       success: false,
       data: "Error unassigning members to card",
+    };
+  }
+}
+
+export async function updateBoardTaskCardOrder(
+  payload: UpdateBoardTaskCardOrderParams,
+): Promise<Response<TBoardDetail>> {
+  try {
+    if (!payload.boardId) {
+      return {
+        success: false,
+        data: "Board ID is required",
+      };
+    }
+
+    if (!payload.cards) {
+      return {
+        success: false,
+        data: "Cards are required",
+      };
+    }
+
+    const targetBoard = await db.board.findUnique({
+      where: {
+        boardId: payload.boardId,
+      },
+    });
+
+    if (!targetBoard) {
+      return {
+        success: false,
+        data: "Board not found",
+      };
+    }
+
+    const cards = payload.cards;
+
+    const updateCardsPromise = cards.map((card) =>
+      db.card.update({
+        where: {
+          cardId: card.cardId,
+        },
+        data: {
+          taskId: payload.taskId,
+          order: card.order.new,
+        },
+      }),
+    );
+
+    await Promise.all(updateCardsPromise);
+
+    const updatedBoard = await db.board.findUnique({
+      where: {
+        boardId: targetBoard.boardId,
+      },
+      include: {
+        admin: true,
+        boardMember: {
+          include: {
+            user: true,
+          },
+        },
+        tasks: {
+          include: {
+            board: true,
+            cards: {
+              include: {
+                labels: true,
+                comments: true,
+                attachments: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    const mappedBoard = boardDetailDto(updatedBoard);
+
+    return {
+      success: true,
+      data: mappedBoard,
+    };
+  } catch (error) {
+    console.log("updateBoardTaskCardOrderError:", error);
+    return {
+      success: false,
+      data: "Error updating card order",
     };
   }
 }

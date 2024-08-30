@@ -27,13 +27,16 @@ import {
   GetUsersNotInBoardParams,
   UnAssignMemberParams,
   UpdateBoardParams,
+  UpdateBoardTaskCardOrderParams,
   UpdateBoardTaskCardParams,
+  UpdateBoardTaskOrderParams,
   UpdateCommentParams,
 } from "../actions/shared.types";
 import {
   createBoardTask,
   deleteBoardTask,
   editBoardTask,
+  updateBoardTaskOrder,
 } from "../actions/boardTask.actions";
 import {
   assignMembersToTaskCard,
@@ -42,6 +45,7 @@ import {
   getBoardTaskCard,
   unAssignMemberToTaskCard,
   updateBoardTaskCard,
+  updateBoardTaskCardOrder,
 } from "../actions/boardTaskCard.actions";
 import {
   createComment,
@@ -244,6 +248,23 @@ export function useEditBoardTask() {
   });
 }
 
+export function useUpdateBoardTaskOrder() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (payload: UpdateBoardTaskOrderParams) => {
+      return await updateBoardTaskOrder(payload);
+    },
+    onSuccess: (res) => {
+      if (res.success) {
+        const boardId = res.data.boardId;
+        queryClient.invalidateQueries({
+          queryKey: ["boards", { id: boardId }],
+        });
+      }
+    },
+  });
+}
+
 /********
  *
  *  BOARD_TASK_CARDS
@@ -290,6 +311,23 @@ export function useUpdateBoardTaskCard() {
         queryClient.invalidateQueries({
           queryKey: ["cards", { cardId }],
         });
+        queryClient.invalidateQueries({
+          queryKey: ["boards", { id: boardId }],
+        });
+      }
+    },
+  });
+}
+
+export function useUpdateBoardTaskCardOrder() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (payload: UpdateBoardTaskCardOrderParams) => {
+      return await updateBoardTaskCardOrder(payload);
+    },
+    onSuccess: (res) => {
+      if (res.success) {
+        const boardId = res.data.boardId;
         queryClient.invalidateQueries({
           queryKey: ["boards", { id: boardId }],
         });

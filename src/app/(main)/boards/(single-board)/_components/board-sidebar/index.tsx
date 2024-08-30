@@ -9,11 +9,6 @@ import { useParams } from "next/navigation";
 import { useGetBoardById } from "@/utils/hooks/useBoards";
 
 export default function BoardSideBar() {
-  const params = useParams();
-  const boardId = params.id as string;
-  const { data, isPending } = useGetBoardById(boardId);
-  const isSuccess = data?.success;
-
   return (
     <>
       <Sheet>
@@ -30,11 +25,7 @@ export default function BoardSideBar() {
           </Button>
         </SheetTrigger>
         <SheetContent>
-          {isPending && <div>Loading...</div>}
-          {!isPending && isSuccess && <BoardSideBarContent board={data.data} />}
-          {/* {!isPending && isSuccess && isEdit && (
-            <BoardSideBarForm board={data.data} toggleEdit={toggleEdit} />
-          )} */}
+          <BoardSideBarContent />
         </SheetContent>
       </Sheet>
     </>

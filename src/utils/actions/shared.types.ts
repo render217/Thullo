@@ -66,6 +66,14 @@ export type EditBoardTaskParams = {
   taskId: string;
   title: string;
 };
+export type UpdateBoardTaskOrderParams = {
+  boardId: string;
+  tasks: {
+    taskId: string;
+    title: string;
+    order: { prev: number; new: number };
+  }[];
+};
 
 // BOARD TASK CARDS
 
@@ -87,6 +95,16 @@ export type UpdateBoardTaskCardParams = {
   title?: string;
   description?: string;
   coverImage?: string;
+};
+
+export type UpdateBoardTaskCardOrderParams = {
+  boardId: string;
+  taskId: string;
+  cards: {
+    cardId: string;
+    title: string;
+    order: { new: number };
+  }[];
 };
 
 export type GetUsersInBoardNotInCardParams = {

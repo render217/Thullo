@@ -13,7 +13,6 @@ import {
   DragStartEvent,
   DragOverlay,
   DragMoveEvent,
-  Over,
 } from "@dnd-kit/core";
 import {
   arrayMove,
@@ -39,28 +38,10 @@ export default function BoardDndKit() {
   const { board } = useBoardStore();
 
   const [tasks, setTasks] = useState(
-    board.tasks
-      .sort((a, b) => a.order - b.order)
-      .map((task) => ({
-        ...task,
-        cards: task.cards.sort((a, b) => a.order - b.order),
-      })),
+    board.tasks.sort((a, b) => a.order - b.order),
   );
-
-  useEffect(() => {
-    setTasks(
-      board.tasks
-        .sort((a, b) => a.order - b.order)
-        .map((task) => ({
-          ...task,
-          cards: task.cards.sort((a, b) => a.order - b.order),
-        })),
-    );
-  }, [board]);
-
   const { mutateAsync: updateTaskOrder, isPending } = useUpdateBoardTaskOrder();
   const { mutateAsync: updateCardOrder } = useUpdateBoardTaskCardOrder();
-
   const syncTaskOrder = async (boardId: string, tasks: TBoardTask[]) => {
     const payload = {
       boardId: boardId,
@@ -77,9 +58,10 @@ export default function BoardDndKit() {
       }),
     };
 
+    console.log(payload);
     const res = await updateTaskOrder(payload);
     if (res.success) {
-      console.log("tasks in sync");
+      console.log("task synced");
     }
   };
 
@@ -101,6 +83,8 @@ export default function BoardDndKit() {
       })),
     };
 
+    console.log("syncCardOrder", payload);
+
     const res = await updateCardOrder(payload);
     if (res.success) {
       console.log("cards in sync");
@@ -114,6 +98,9 @@ export default function BoardDndKit() {
     cardIndex: number | null;
   } | null>(null);
   // when ever the board is updated update the tasks
+  useEffect(() => {
+    setTasks(board.tasks.sort((a, b) => a.order - b.order));
+  }, [board]);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -161,15 +148,15 @@ export default function BoardDndKit() {
 
         if (activeTaskIndex === overTaskIndex) {
           // Reorder cards within the same task
-          // const updatedCards = arrayMove(
-          //   tasks[activeTaskIndex].cards,
-          //   activeCardIndex,
-          //   overCardIndex,
-          // );
-          // const updatedTasks = tasks.map((task, index) =>
-          //   index === activeTaskIndex ? { ...task, cards: updatedCards } : task,
-          // );
-          // setTasks(updatedTasks);
+          const updatedCards = arrayMove(
+            tasks[activeTaskIndex].cards,
+            activeCardIndex,
+            overCardIndex,
+          );
+          const updatedTasks = tasks.map((task, index) =>
+            index === activeTaskIndex ? { ...task, cards: updatedCards } : task,
+          );
+          setTasks(updatedTasks);
         } else {
           // Move card to a different task
           const [removedCard] = tasks[activeTaskIndex].cards.splice(
@@ -189,7 +176,6 @@ export default function BoardDndKit() {
 
     // Handle Dragging a Card Into a Different Task
     if (activeData?.type === "card" && overData?.type === "task") {
-      console.log("card-to-task");
       const activeTaskIndex = tasks.findIndex((task) =>
         task.cards.some((card) => card.cardId === active.id),
       );
@@ -309,7 +295,6 @@ export default function BoardDndKit() {
 
     setActiveTask(null);
     setActiveCard(null);
-    // setDraggingItem(null);
   }
 
   return (
@@ -327,13 +312,16 @@ export default function BoardDndKit() {
           <ul className="absolute inset-0 -top-[2px] mb-[8px] flex size-full select-none gap-2 overflow-x-auto overflow-y-hidden px-[10px] pb-[8px] pt-[8px] scrollbar-width-auto scrollbar-track-transparent scrollbar-thumb-white">
             {tasks.length > 0 ? (
               <>
-                {tasks.map((task) => (
-                  <SortableTaskItem
-                    key={task.taskId}
-                    task={task}
-                    allowGrab={tasks.length > 1}
-                  />
-                ))}
+                {tasks
+                  // .slice()
+                  // .sort((a, b) => a.order - b.order)
+                  .map((task) => (
+                    <SortableTaskItem
+                      key={task.taskId}
+                      task={task}
+                      allowGrab={tasks.length > 1}
+                    />
+                  ))}
                 <AddTaskItem />
               </>
             ) : (

@@ -4,10 +4,11 @@ import {
   CreateBoardTaskParams,
   DeleteBoardTaskParams,
   EditBoardTaskParams,
+  UpdateBoardTaskOrderParams,
 } from "./shared.types";
-import { TBoardTask } from "@/types/t";
+import { TBoardDetail, TBoardTask } from "@/types/t";
 import db from "@/db/db";
-import { boardTaskDto } from "./mappers";
+import { boardDetailDto, boardTaskDto } from "./mappers";
 
 export async function createBoardTask(
   payload: CreateBoardTaskParams,
@@ -201,6 +202,82 @@ export async function editBoardTask(
     return {
       success: false,
       data: "Error updating task",
+    };
+  }
+}
+
+export async function updateBoardTaskOrder(
+  payload: UpdateBoardTaskOrderParams,
+): Promise<Response<TBoardDetail>> {
+  try {
+    if (payload.boardId.trim() === "") {
+      return {
+        success: false,
+        data: "Board ID is required",
+      };
+    }
+
+    // Fetch the board and validate existence
+    const targetBoard = await db.board.findUnique({
+      where: { boardId: payload.boardId },
+    });
+
+    if (!targetBoard) {
+      return {
+        success: false,
+        data: "Board not found",
+      };
+    }
+
+    const tasks = payload.tasks;
+
+    // Prepare batch update
+    const updatePromises = tasks.map((task) =>
+      db.task.update({
+        where: { taskId: task.taskId },
+        data: { order: task.order.new },
+      }),
+    );
+
+    await Promise.all(updatePromises);
+
+    const updatedBoard = await db.board.findUnique({
+      where: {
+        boardId: targetBoard.boardId,
+      },
+      include: {
+        admin: true,
+        boardMember: {
+          include: {
+            user: true,
+          },
+        },
+        tasks: {
+          include: {
+            board: true,
+            cards: {
+              include: {
+                labels: true,
+                comments: true,
+                attachments: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    const mappedBoard = boardDetailDto(updatedBoard);
+
+    return {
+      success: true,
+      data: mappedBoard,
+    };
+  } catch (error) {
+    console.log("updateBoardTaskOrderError:", error);
+    return {
+      success: false,
+      data: "Error updating task order",
     };
   }
 }

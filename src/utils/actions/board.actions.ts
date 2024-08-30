@@ -447,9 +447,9 @@ export async function deleteBoard(
       },
       include: {
         admin: true,
-
         tasks: {
           include: {
+            board: true,
             cards: {
               include: {
                 labels: true,

@@ -20,7 +20,7 @@ import { TBoardTask } from "@/types/t";
 
 import SortableCard from "../sortable-card";
 import TaskHeader from "./task-header";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AddCard from "./add-card";
 import { useAuth } from "@clerk/nextjs";
 import { useBoardStore } from "@/lib/store/useBoardStore";
@@ -130,10 +130,6 @@ export default function SortableTaskItem({
               <SortableCard key={card.cardId} card={card} />
             ))}
           </SortableContext>
-          {/* <DemoCardList /> */}
-          {/* {[1, 2, 4, 5, 6].map((x) => (
-            <DemoCard key={x} />
-          ))} */}
         </div>
         <div className="rounded-md bg-white px-[8px]">
           <AddCard task={task} isVisitor={isVisitor} />
