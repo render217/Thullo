@@ -126,7 +126,7 @@ export default function TaskCard({
       </div>
       <DialogContent
         aria-describedby={undefined}
-        className="h-full max-w-2xl rounded-md pb-10"
+        className="h-full rounded-md pb-10 sm:max-w-2xl"
       >
         <TaskCardDetail cardId={card.cardId} />
       </DialogContent>

@@ -134,7 +134,7 @@ export default function BoardCreateForm() {
           </DialogTrigger>
 
           <DialogContent
-            aria-describedby="modal-description"
+            aria-describedby={undefined}
             className="rounded-md sm:max-w-[425px]"
           >
             <DialogHeader>

@@ -34,19 +34,19 @@ export default function NavHeader() {
           </div>
 
           <SignedIn>
-            <div className="ml-[20px] flex items-center gap-4">
+            <div className="ml-[20px] flex items-center gap-4 max-sm:hidden">
               {pathname !== "/boards" && board.boardName && (
                 <div className="flex items-center gap-4">
                   <h2 className="text-sm font-light">
                     {board.boardName} Board
                   </h2>
                   <Separator
-                    className="h-6 w-[1px] bg-slate-300 p-0"
+                    className="h-6 w-[1px] bg-slate-300 p-0 max-sm:hidden"
                     orientation="vertical"
                   />
                 </div>
               )}
-              <div className="cursor-pointer rounded-[5px] bg-gray-200 p-2 duration-300 hover:bg-gray-300/80">
+              <div className="cursor-pointer rounded-[5px] bg-gray-200 p-2 duration-300 hover:bg-gray-300/80 max-sm:hidden">
                 <div className="flex min-w-[16px] items-center gap-1 font-light text-gray-700">
                   <LayoutDashboard className="size-4 text-gray-500" />
                   <Link
@@ -65,11 +65,15 @@ export default function NavHeader() {
             {/* <NavSearchForm /> */}
           </div>
 
-          <div className="mx-5">
+          <div className="mx-5 max-sm:hidden">
             <Invitation />
           </div>
 
-          <div className="">
+          <div className="max-xs:block hidden">
+            {/* <UserProfile /> */}
+            <UserButton showName={false} />
+          </div>
+          <div className="max-xs:hidden block">
             {/* <UserProfile /> */}
             <UserButton showName={true} />
           </div>

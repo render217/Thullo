@@ -55,8 +55,6 @@ export default function AddTaskItem() {
     useCreateBoardTask();
 
   async function onSubmit(values: z.infer<typeof createBoardTaskSchema>) {
-    console.log(values);
-
     const payload = {
       title: values.title,
       boardId: board.boardId,

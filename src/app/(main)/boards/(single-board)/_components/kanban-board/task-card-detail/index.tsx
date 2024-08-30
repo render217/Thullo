@@ -48,20 +48,40 @@ export default function TaskCardDetail({ cardId }: { cardId: string }) {
   if (isLoadingData || isLoading) return <TaskCardDetailLoading />;
   if (response?.success) {
     return (
+      // <div>
+      //   <DialogTitle className="invisible absolute size-0 p-0"></DialogTitle>
+      //   <div className="h-full">
+      //     <div className="h-[150px] w-full overflow-hidden">
+      //       <TaskCardCoverImage />
+      //     </div>
+      //     <div className="mt-4 flex h-full max-h-[calc(100vh-200px)] gap-2 max-sm:h-auto max-sm:flex-col">
+      //       <ScrollArea className="flex pr-5 sm:flex-1">
+      //         <TaskCardMeta isVisitor={isVisitor} />
+      //         <TaskCardDescription isVisitor={isVisitor} />
+      //         <TaskCardAttachments isVisitor={isVisitor} />
+      //         <TaskCardComments isVisitor={isVisitor} />
+      //       </ScrollArea>
+      //       <div className="flex w-[200px] flex-col justify-between">
+      //         <TaskCardActions isVisitor={isVisitor} />
+      //         <TaskCardDeleteAction isVisitor={isVisitor} />
+      //       </div>
+      //     </div>
+      //   </div>
+      // </div>
       <div>
         <DialogTitle className="invisible absolute size-0 p-0"></DialogTitle>
         <div className="h-full">
           <div className="h-[150px] w-full overflow-hidden">
             <TaskCardCoverImage />
           </div>
-          <div className="mt-4 flex h-full max-h-[calc(100vh-200px)] gap-2">
+          <div className="max-xs:flex-col mt-4 flex h-full max-h-[calc(100vh-200px)] gap-2">
             <ScrollArea className="flex flex-1 pr-5">
               <TaskCardMeta isVisitor={isVisitor} />
               <TaskCardDescription isVisitor={isVisitor} />
               <TaskCardAttachments isVisitor={isVisitor} />
               <TaskCardComments isVisitor={isVisitor} />
             </ScrollArea>
-            <div className="flex w-[200px] flex-col justify-between">
+            <div className="xs:w-[200px] flex flex-col justify-between">
               <TaskCardActions isVisitor={isVisitor} />
               <TaskCardDeleteAction isVisitor={isVisitor} />
             </div>

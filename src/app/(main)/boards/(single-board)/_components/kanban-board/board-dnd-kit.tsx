@@ -79,7 +79,7 @@ export default function BoardDndKit() {
 
     const res = await updateTaskOrder(payload);
     if (res.success) {
-      console.log("tasks in sync");
+      // console.log("tasks in sync");
     }
   };
 
@@ -103,7 +103,7 @@ export default function BoardDndKit() {
 
     const res = await updateCardOrder(payload);
     if (res.success) {
-      console.log("cards in sync");
+      // console.log("cards in sync");
     }
   };
 

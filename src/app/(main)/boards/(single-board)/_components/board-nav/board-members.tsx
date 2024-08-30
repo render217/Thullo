@@ -13,7 +13,7 @@ export default function BoardMemebers({
   const displayMembers = members.slice(0, 3);
   return (
     <div>
-      <div className="flex items-center gap-4">
+      <div className="max-xs:hidden flex items-center gap-4">
         {displayMembers.map((member) => {
           return (
             <div key={member.id} className="h-9 w-9 overflow-hidden rounded-md">

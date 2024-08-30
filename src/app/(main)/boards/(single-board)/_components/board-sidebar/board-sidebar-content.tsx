@@ -132,13 +132,15 @@ export default function BoardSideBarContent() {
                         )}
                       </Button>
                     </DialogTrigger>
-                    <DialogContent className={cn("max-w-[400px] gap-2")}>
-                      <DialogTitle>Are you sure to delete?</DialogTitle>
+                    <DialogContent
+                      aria-describedby={undefined}
+                      className={cn("max-w-[400px] gap-2")}
+                    >
+                      <DialogTitle>
+                        Are you sure you want to Delete?
+                      </DialogTitle>
                       <div>
                         <DialogDescription className="space-y-1">
-                          <p className="text-xs">
-                            This action cannot be undone.
-                          </p>
                           <p className="text-xs">
                             This will permanently delete{" "}
                             <span className="mr-2 cursor-pointer font-semibold underline">
@@ -146,6 +148,9 @@ export default function BoardSideBarContent() {
                             </span>
                             {""}
                             and all it's content.
+                          </p>
+                          <p className="text-xs">
+                            This action cannot be undone.
                           </p>
                         </DialogDescription>
                       </div>
@@ -300,11 +305,13 @@ function TeamMember({
               )}
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-[400px] gap-2">
+          <DialogContent
+            aria-describedby={undefined}
+            className="max-w-[400px] gap-2"
+          >
             <DialogTitle>Are you sure you want to remove?</DialogTitle>
             <div>
               <DialogDescription className="space-y-1">
-                <p className="text-xs">This action cannot be undone.</p>
                 <p className="text-xs">
                   This will permanently remove{" "}
                   <span className="mr-2 cursor-pointer font-semibold underline">
@@ -313,6 +320,7 @@ function TeamMember({
                   {""}
                   from the board.
                 </p>
+                <p className="text-xs">This action cannot be undone.</p>
               </DialogDescription>
             </div>
 

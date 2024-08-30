@@ -1,10 +1,13 @@
-import { AutosizeTextarea } from "@/components/ui/autosize-textarea";
+import {
+  AutosizeTextarea,
+  AutosizeTextAreaRef,
+} from "@/components/ui/autosize-textarea";
 import { Button } from "@/components/ui/button";
 import { useCardStore } from "@/lib/store/useCardStore";
 import { TBoardTask, TBoardTaskCard } from "@/types";
 import { useUpdateBoardTaskCard } from "@/utils/hooks/useBoards";
 import { CircleCheck, CircleX } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export default function TaskCardDescription({
   isVisitor,
@@ -23,6 +26,20 @@ export default function TaskCardDescription({
 
   const openEditMode = () => setIsEdit(true);
   const closeEditMode = () => setIsEdit(false);
+
+  const descriptionRef = useRef<AutosizeTextAreaRef>(null);
+
+  useEffect(() => {
+    if (isEdit && descriptionRef.current) {
+      const textAreaElement = descriptionRef.current.textArea;
+      textAreaElement.focus();
+      // Move the cursor to the end of the text
+      textAreaElement.setSelectionRange(
+        textAreaElement.value.length,
+        textAreaElement.value.length,
+      );
+    }
+  }, [isEdit]);
 
   const { mutateAsync: updateCardAsync, isPending: isUpdating } =
     useUpdateBoardTaskCard();
@@ -84,6 +101,7 @@ export default function TaskCardDescription({
           <AutosizeTextarea
             value={decription || ""}
             minHeight={100}
+            ref={descriptionRef}
             onChange={(e) => setDescription(e.target.value)}
             className="m-0 min-h-[102px] resize-none rounded-sm border border-slate-300 px-[6px] py-[3px] text-[14px] text-xs font-medium outline-0 outline-slate-800 focus-visible:ring-0 focus-visible:ring-offset-0"
             placeholder="Add a more detailed description..."

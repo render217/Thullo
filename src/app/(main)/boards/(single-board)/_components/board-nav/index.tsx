@@ -28,7 +28,7 @@ export default function BoardNav() {
         {isAdmin && <AddUser board={board} />}
         {/* <InviteUser /> */}
         {isAdmin && (
-          <div className="ml-6">
+          <div className="ml-6 max-sm:hidden">
             <PreviewInvites />
           </div>
         )}

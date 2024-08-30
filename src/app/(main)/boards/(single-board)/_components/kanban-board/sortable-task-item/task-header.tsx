@@ -170,7 +170,7 @@ export default function TaskHeader({
                 </DialogTrigger>
                 <DialogContent
                   className="max-w-[400px] gap-2"
-                  aria-describedby="modal"
+                  aria-describedby={undefined}
                 >
                   <DialogTitle className="text-center text-xl">
                     Are you sure to delete ?

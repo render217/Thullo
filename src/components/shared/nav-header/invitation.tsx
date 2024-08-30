@@ -8,17 +8,9 @@ import {
   DropdownMenuContent,
 } from "@/components/ui/dropdown-menu";
 
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { IBoard } from "@/types/dd";
 import InvitationItem from "./invitation-item";
+import { TBoard, TVisibility } from "@/types";
+
 export default function Invitation() {
   return (
     <div>
@@ -45,7 +37,7 @@ export default function Invitation() {
             <ScrollArea className="h-[140px]">
               <div className="flex flex-col gap-2 p-1 pr-3">
                 {boards.map((board) => (
-                  <InvitationItem key={board.id} board={board} />
+                  <InvitationItem key={board.boardId} board={board} />
                 ))}
               </div>
             </ScrollArea>
@@ -56,98 +48,56 @@ export default function Invitation() {
   );
 }
 
-const boards: IBoard[] = [
+const boards: TBoard[] = [
   {
-    id: "7f607bd8-b39c-4593-85f6-895d7ab3d3ab",
-    title: "Optimized eco-centric challenge",
+    boardId: "7f607bd8-b39c-4593-85f6-895d7ab3d3ab",
+    boardName: "Optimized eco-centric challenge",
     description: "multi-tasking",
-    coverPhoto: "https://picsum.photos/seed/hCCFglYCZm/640/480",
-    visibility: "private",
+    boardImage: "https://picsum.photos/seed/hCCFglYCZm/640/480",
+    visibility: "PUBLIC" as TVisibility,
     createdAt: "2024-08-15T10:49:32.967Z",
-    members: [
-      {
-        id: "e89e7a06-cb0c-4b71-ad50-fb69fd0280f1",
-        username: "Ona.Nitzsche98",
-        email: "Francisca_Kuhlman90@yahoo.com",
-        profileImage: "https://avatars.githubusercontent.com/u/83412688",
-      },
-      {
-        id: "034b5131-5396-4dce-b31e-e80e876f7527",
-        username: "Brook.VonRueden72",
-        email: "Nicklaus_Williamson32@yahoo.com",
-        profileImage: "https://avatars.githubusercontent.com/u/40334244",
-      },
-      {
-        id: "ddeaee7c-d911-4a05-83ea-951c625aeea2",
-        username: "Koby.Nienow",
-        email: "Marty_OConnell91@hotmail.com",
-        profileImage: "https://avatars.githubusercontent.com/u/63974396",
-      },
-      {
-        id: "e89e7a06-cb0c-4b71-ad50-fb69fd0280f1",
-        username: "Ona.Nitzsche98",
-        email: "Francisca_Kuhlman90@yahoo.com",
-        profileImage: "https://avatars.githubusercontent.com/u/83412688",
-      },
-      {
-        id: "ba1a53c8-3dfa-44d1-82bf-c62817772c40",
-        username: "Pascale85",
-        email: "Tyrese_Kuhic23@gmail.com",
-        profileImage:
-          "https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/441.jpg",
-      },
-      {
-        id: "034b5131-5396-4dce-b31e-e80e876f7527",
-        username: "Brook.VonRueden72",
-        email: "Nicklaus_Williamson32@yahoo.com",
-        profileImage: "https://avatars.githubusercontent.com/u/40334244",
-      },
-      {
-        id: "b2fc4369-a0f9-459d-a9a7-a782fb4e400c",
-        username: "Urban.Braun",
-        email: "Jerrell.Turcotte@yahoo.com",
-        profileImage: "https://avatars.githubusercontent.com/u/24087111",
-      },
-    ],
+    boardMember: [],
     admin: {
       id: "b2fc4369-a0f9-459d-a9a7-a782fb4e400c",
       username: "Urban.Braun",
       email: "Jerrell.Turcotte@yahoo.com",
       profileImage: "https://avatars.githubusercontent.com/u/24087111",
+      createdAt: "2024-08-15T10:49:32.967Z",
     },
-    taskLists: [],
+    updatedAt: "2024-08-15T10:49:32.967Z",
   },
   {
-    id: "329b0f37-085a-40ed-a807-54d0e4da4ee4",
-    title: "Cross-platform next generation alliance",
-    description: "incremental",
-    coverPhoto: "https://picsum.photos/seed/JibomB33V/640/480",
-    visibility: "private",
-    createdAt: "2024-08-15T00:28:23.890Z",
-    members: [],
+    boardId: "7f607bd8-b39c-4593-85f6-895d7ab3d3ab",
+    boardName: "Fullstack challenge",
+    description: "multi-tasking",
+    boardImage: "https://picsum.photos/seed/hCCFglYCZm/640/480",
+    visibility: "PUBLIC" as TVisibility,
+    createdAt: "2024-08-15T10:49:32.967Z",
+    boardMember: [],
     admin: {
-      id: "c771ea62-3524-4c8f-89c3-2c36a04df965",
-      username: "Alphonso.Wisozk",
-      email: "Doug_Bechtelar@hotmail.com",
-      profileImage:
-        "https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/1005.jpg",
+      id: "b2fc4369-a0f9-459d-a9a7-a782fb4e400c",
+      username: "Urban.Braun",
+      email: "Jerrell.Turcotte@yahoo.com",
+      profileImage: "https://avatars.githubusercontent.com/u/24087111",
+      createdAt: "2024-08-15T10:49:32.967Z",
     },
-    taskLists: [],
+    updatedAt: "2024-08-15T10:49:32.967Z",
   },
   {
-    id: "df5a1636-4c71-481e-afea-852b125d5b79",
-    title: "Advanced heuristic toolset",
-    description: "didactic",
-    coverPhoto: "https://picsum.photos/seed/k2LVLZ5a/640/480",
-    visibility: "public",
-    createdAt: "2024-08-15T08:32:31.881Z",
-    members: [],
+    boardId: "7f607bd8-b39c-4593-85f6-895d7ab3d3ab",
+    boardName: "Frontend Challange",
+    description: "multi-tasking",
+    boardImage: "https://picsum.photos/seed/hCCFglYCZm/640/480",
+    visibility: "PUBLIC" as TVisibility,
+    createdAt: "2024-08-15T10:49:32.967Z",
+    boardMember: [],
     admin: {
-      id: "3775cb9b-2852-4aab-9125-473bcada5703",
-      username: "Lempi.Casper21",
-      email: "Carmen_Casper61@gmail.com",
-      profileImage: "https://avatars.githubusercontent.com/u/44307080",
+      id: "b2fc4369-a0f9-459d-a9a7-a782fb4e400c",
+      username: "Urban.Braun",
+      email: "Jerrell.Turcotte@yahoo.com",
+      profileImage: "https://avatars.githubusercontent.com/u/24087111",
+      createdAt: "2024-08-15T10:49:32.967Z",
     },
-    taskLists: [],
+    updatedAt: "2024-08-15T10:49:32.967Z",
   },
 ];

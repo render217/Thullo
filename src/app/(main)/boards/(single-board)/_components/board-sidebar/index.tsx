@@ -1,6 +1,11 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import BoardSideBarContent from "./board-sidebar-content";
 export default function BoardSideBar() {
   return (
@@ -18,7 +23,8 @@ export default function BoardSideBar() {
             </div>
           </Button>
         </SheetTrigger>
-        <SheetContent>
+        <SheetContent className="max-xs:w-full" aria-describedby={undefined}>
+          <SheetTitle className="hidden">Menu</SheetTitle>
           <BoardSideBarContent />
         </SheetContent>
       </Sheet>
