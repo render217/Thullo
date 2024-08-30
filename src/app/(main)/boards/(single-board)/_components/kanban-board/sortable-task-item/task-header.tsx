@@ -24,6 +24,7 @@ import { ChevronDown } from "lucide-react";
 import { Separator } from "@radix-ui/react-dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { useDeleteBoardTask, useEditBoardTask } from "@/utils/hooks/useBoards";
+import toast from "react-hot-toast";
 
 export default function TaskHeader({
   task,
@@ -91,9 +92,9 @@ export default function TaskHeader({
     const payload = { taskId: task.taskId };
     const res = await deleteBoardTaskAsync(payload);
     if (res.success) {
-      alert("Task Deleted Successfully");
+      toast.success("Task Deleted Successfully");
     } else {
-      alert("Task Delete Failed");
+      toast.error("Error Deleting Task");
     }
   };
 

@@ -55,7 +55,7 @@ export default function TaskCardComments({
   };
 
   return (
-    <div>
+    <div className="">
       <div className="py-2 text-xs font-bold">Comments</div>
       {!isVisitor && (
         <div className="px-0.5">
@@ -63,14 +63,16 @@ export default function TaskCardComments({
             <div className="absolute left-2 top-2 h-7 w-7 overflow-hidden rounded-md">
               <img className="size-full object-cover" src={userImage} alt="" />
             </div>
-            <AutosizeTextarea
-              disabled={isCreatingComment}
-              value={commentText}
-              onChange={(e) => setCommentText(e.target.value)}
-              minHeight={80}
-              className="min-h-[80px] resize-none pl-[42px] pt-[10px] text-xs focus-visible:ring-0"
-              placeholder="Write a comment "
-            />
+            <div className="">
+              <AutosizeTextarea
+                disabled={isCreatingComment}
+                value={commentText}
+                onChange={(e) => setCommentText(e.target.value)}
+                minHeight={50}
+                className="min-h-[50px] resize-none pl-[42px] pt-[10px] text-xs focus-visible:ring-0 focus-visible:ring-offset-0"
+                placeholder="Write a comment "
+              />
+            </div>
           </div>
 
           <div className="flex justify-end py-2">

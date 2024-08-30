@@ -59,6 +59,11 @@ export default function CardCoverImageForm() {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(e.target.value);
   };
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      handleSearch();
+    }
+  };
 
   const handleSearch = () => {
     if (query !== previousQueryRef.current) {
@@ -107,6 +112,7 @@ export default function CardCoverImageForm() {
               value={query}
               disabled={isSaving}
               onChange={handleInputChange}
+              onKeyDown={handleKeyPress}
             />
             <Button
               disabled={isFetching || isLoading}

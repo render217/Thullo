@@ -42,6 +42,7 @@ import { useRouter } from "next/navigation";
 import BlockScreen from "@/components/shared/loaders/block-screen";
 import Spinner from "@/components/shared/loaders/spinner";
 import { useBoardStore } from "@/lib/store/useBoardStore";
+import toast from "react-hot-toast";
 
 export default function BoardSideBarContent() {
   const { board } = useBoardStore();
@@ -64,6 +65,7 @@ export default function BoardSideBarContent() {
     const res = await deleteBoardAsync(payload);
     if (res.success) {
       // router.replace("/boards");
+      toast.success("Board deleted successfully");
     }
   };
 
@@ -272,6 +274,7 @@ function TeamMember({
     const res = await removeMemberAsync(payload);
     if (res.success) {
       // console.log("Member removed successfully");
+      toast.success("Member removed successfully");
     }
   };
 

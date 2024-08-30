@@ -63,6 +63,6 @@ export const createBoardTaskSchema = z.object({
 export const createBoardTaskCardSchema = z.object({
   title: z
     .string()
-    .min(2, { message: "Card name is required" })
+    .min(2, { message: "Card name must be between 2 and 30 characters" })
     .max(30, { message: "Card name must be between 2 and 30 characters" }),
 });

@@ -12,16 +12,21 @@ import {
   useDeleteAttachment,
 } from "@/utils/hooks/useBoards";
 import { useCardStore } from "@/lib/store/useCardStore";
+import { useBoardStore } from "@/lib/store/useBoardStore";
 export default function TaskCardAttachments({
   isVisitor,
 }: {
   isVisitor: boolean;
 }) {
   const { card } = useCardStore();
+  const { board } = useBoardStore();
   const { userId } = useAuth();
   if (!userId) return null;
 
   const [attachments, setAttachments] = useState(card.attachments);
+  useEffect(() => {
+    setAttachments(card.attachments);
+  }, [card.attachments]);
 
   const { isUploading, startUpload, routeConfig } =
     useUploadThing("assetUploader");
@@ -37,10 +42,6 @@ export default function TaskCardAttachments({
     mutateAsync: deleteAttachmentAsync,
     isPending: isDeletingAttachment,
   } = useDeleteAttachment();
-
-  useEffect(() => {
-    setAttachments(card.attachments);
-  }, [card.attachments]);
 
   const handleFileChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -179,6 +180,8 @@ export default function TaskCardAttachments({
         {attachments.map((attachment) => {
           const isImage = attachment.contentType.includes("image");
           const firstLetter = attachment.name[0].toUpperCase();
+          const isAllowedToDelete =
+            userId === attachment.author.id || userId === board.admin.id;
           return (
             <div
               key={attachment.attachmentId}
@@ -217,16 +220,18 @@ export default function TaskCardAttachments({
                   >
                     Download
                   </Button>
-                  <Button
-                    onClick={() =>
-                      handleDeleteAttachment(attachment.attachmentId)
-                    }
-                    className="h-4 w-[60px] cursor-pointer border border-gray-400 p-0 text-[10px] font-medium text-gray-400 hover:bg-gray-200 hover:text-gray-500"
-                    size={"sm"}
-                    variant={"outline"}
-                  >
-                    Delete
-                  </Button>
+                  {!isVisitor && isAllowedToDelete && (
+                    <Button
+                      onClick={() =>
+                        handleDeleteAttachment(attachment.attachmentId)
+                      }
+                      className="h-4 w-[60px] cursor-pointer border border-gray-400 p-0 text-[10px] font-medium text-gray-400 hover:bg-gray-200 hover:text-gray-500"
+                      size={"sm"}
+                      variant={"outline"}
+                    >
+                      Delete
+                    </Button>
+                  )}
                 </div>
               </div>
             </div>

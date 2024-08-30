@@ -75,7 +75,6 @@ export default function TaskCardDetail({ cardId }: { cardId: string }) {
     return (
       <div className="grid size-full">
         <DialogTitle className="invisible absolute size-0 p-0"></DialogTitle>
-
         <p className="mt-20">Something went wrong please retry again.</p>
         {JSON.stringify(response?.data)}
       </div>

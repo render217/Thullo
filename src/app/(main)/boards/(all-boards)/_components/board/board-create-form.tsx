@@ -42,6 +42,7 @@ import { useCreateBoard } from "@/utils/hooks/useBoards";
 import { useUploadThing } from "@/lib/uploadthing";
 import { ClientUploadedFileData } from "uploadthing/types";
 import { Lectern } from "lucide-react";
+import toast from "react-hot-toast";
 
 export default function BoardCreateForm() {
   const { userId } = useAuth();
@@ -93,9 +94,9 @@ export default function BoardCreateForm() {
 
     const res = await createBoardAsync({ userId: userId!, payload });
     if (res.success) {
-      // console.log("Board created successfully", res.data);
+      toast.success("Board created successfully");
     } else {
-      // console.log("Error creating board:", res.data);
+      toast.error("Error creating board");
     }
 
     if (!isSubmitting && open) {

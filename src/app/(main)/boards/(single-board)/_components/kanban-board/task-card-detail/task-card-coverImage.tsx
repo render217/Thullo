@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import { ICard } from "@/types";
 import { TBoardTaskCard } from "@/types/t";
 import { useUpdateBoardTaskCard } from "@/utils/hooks/useBoards";
-import { LoaderCircle } from "lucide-react";
+import { ImageOff, LoaderCircle } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
@@ -45,7 +45,7 @@ export default function TaskCardCoverImage() {
 
   return (
     <>
-      {currentImage && (
+      {currentImage ? (
         <img
           className="size-full rounded-lg object-cover"
           src={currentImage}
@@ -53,6 +53,15 @@ export default function TaskCardCoverImage() {
           width={1000}
           alt=""
         />
+      ) : (
+        <>
+          <div className="grid size-full place-content-center rounded-lg border border-slate-300">
+            <div className="flex flex-col items-center justify-center">
+              <ImageOff className="size-20 text-gray-300" />
+              <p className="text-xs text-gray-400">Cover Image Empty</p>
+            </div>
+          </div>
+        </>
       )}
     </>
   );

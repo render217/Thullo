@@ -11,6 +11,7 @@ import {
 import { FILTER_OPTIONS } from "@/lib/constants";
 import { useBoardsFilter } from "@/lib/store/useBoardsFilter";
 import { Filter } from "lucide-react";
+import toast from "react-hot-toast";
 
 export default function BoardFilter() {
   const { filter, setFilter } = useBoardsFilter();
@@ -45,6 +46,15 @@ export default function BoardFilter() {
         </DropdownMenuContent>
       </DropdownMenu>
       <h1 className="font-semibold">{filter}</h1>
+      <Button
+        onClick={() => {
+          toast.success("Successfully deleted.");
+        }}
+        className="h-5 text-xs"
+        variant={"outline"}
+      >
+        Test toast
+      </Button>
     </div>
   );
 }

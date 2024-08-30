@@ -18,6 +18,7 @@ import {
 } from "@/utils/hooks/useBoards";
 import { TBoard, TBoardDetail, TBoardMember, TCommonUser } from "@/types/t";
 import { Avatar } from "@/components/ui/avatar";
+import toast from "react-hot-toast";
 
 export default function AddUser({ board }: { board: TBoardDetail }) {
   const [userName, setUserName] = useState("");
@@ -53,7 +54,14 @@ export default function AddUser({ board }: { board: TBoardDetail }) {
 
     const res = await addMembersAsync(payload);
     if (res.success) {
+      if (selectedUsers.length > 1) {
+        toast.success("Members added successfully");
+      } else {
+        toast.success("Member added successfully");
+      }
       setSelectedUsers([]);
+    } else {
+      toast.error("Error adding members");
     }
   };
 

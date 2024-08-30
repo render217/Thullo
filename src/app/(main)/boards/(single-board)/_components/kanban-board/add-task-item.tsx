@@ -21,6 +21,7 @@ import { useCreateBoardTask } from "@/utils/hooks/useBoards";
 import { useAuth } from "@clerk/nextjs";
 import { TBoardDetail } from "@/types/t";
 import { useBoardStore } from "@/lib/store/useBoardStore";
+import { useOnClickOutside } from "usehooks-ts";
 export default function AddTaskItem() {
   const { board } = useBoardStore();
   const { userId } = useAuth();
@@ -37,12 +38,18 @@ export default function AddTaskItem() {
   });
 
   const taskTitleRef = useRef<HTMLInputElement>(null);
-
   useEffect(() => {
     if (open && taskTitleRef.current) {
       taskTitleRef.current.focus();
     }
   }, [open]);
+
+  const dialogRef = useRef(null);
+  const handleClickOutside = () => {
+    setOpen(false);
+  };
+
+  useOnClickOutside(dialogRef, handleClickOutside);
 
   const { mutateAsync: createBoardTaskAsync, isPending: isSubmitting } =
     useCreateBoardTask();
@@ -79,7 +86,10 @@ export default function AddTaskItem() {
         </div>
 
         {open && (
-          <div className="pointer-events-auto mt-3 rounded-md bg-white p-3">
+          <div
+            ref={dialogRef}
+            className="pointer-events-auto mt-3 rounded-md bg-white p-3"
+          >
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)}>
                 <FormField

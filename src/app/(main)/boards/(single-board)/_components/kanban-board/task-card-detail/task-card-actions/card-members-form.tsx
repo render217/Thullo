@@ -22,7 +22,17 @@ import {
 import { Avatar } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import { useCardStore } from "@/lib/store/useCardStore";
+import { useAuth } from "@clerk/nextjs";
+import { useBoardStore } from "@/lib/store/useBoardStore";
 export default function CardMembersForm() {
+  const { userId } = useAuth();
+  const { board } = useBoardStore();
+  const isAdmin = userId === board?.admin?.id;
+  const isMember = board?.boardMember?.some((m) => m.id === userId);
+
+  const notVisitor = isAdmin || isMember;
+  const isVisitor = !notVisitor;
+
   const { card } = useCardStore();
   const [members, setMembers] = useState(card?.cardMembers || []);
 
@@ -139,21 +149,23 @@ export default function CardMembersForm() {
                         <h2 className="max-w-[140px] overflow-hidden truncate text-[10px] text-black">
                           {member.username}
                         </h2>
-                        <span
-                          onClick={() => handleUnAssignMember(member)}
-                          className={cn(
-                            "absolute bottom-0 block w-[40px] cursor-pointer rounded-sm border border-red-500 text-center text-[8px] text-red-500 hover:bg-red-200",
-                            isUnAssigningMember
-                              ? "cursor-not-allowed bg-red-200 opacity-40"
-                              : "",
-                          )}
-                        >
-                          {isUnAssigningMember ? (
-                            <LoaderCircle className="mx-auto size-3 animate-spin" />
-                          ) : (
-                            "Remove"
-                          )}
-                        </span>
+                        {isAdmin && (
+                          <span
+                            onClick={() => handleUnAssignMember(member)}
+                            className={cn(
+                              "absolute bottom-0 block w-[40px] cursor-pointer rounded-sm border border-red-500 text-center text-[8px] text-red-500 hover:bg-red-200",
+                              isUnAssigningMember
+                                ? "cursor-not-allowed bg-red-200 opacity-40"
+                                : "",
+                            )}
+                          >
+                            {isUnAssigningMember ? (
+                              <LoaderCircle className="mx-auto size-3 animate-spin" />
+                            ) : (
+                              "Remove"
+                            )}
+                          </span>
+                        )}
                       </div>
                     </div>
                   );
@@ -161,135 +173,139 @@ export default function CardMembersForm() {
               </div>
             </ScrollArea>
           )}
-          <DropdownMenu>
-            <DropdownMenuTrigger className="mt-5 w-full">
-              <div className="flex w-full cursor-pointer items-center justify-between gap-2 rounded-md bg-blue-200 p-2 text-xs text-blue-500 shadow-sm hover:bg-blue-300">
-                <p>Assign a member</p>
-                <Plus className="size-4" />
-              </div>
-            </DropdownMenuTrigger>
+          {isAdmin && (
+            <DropdownMenu>
+              <DropdownMenuTrigger className="mt-5 w-full">
+                <div className="flex w-full cursor-pointer items-center justify-between gap-2 rounded-md bg-blue-200 p-2 text-xs text-blue-500 shadow-sm hover:bg-blue-300">
+                  <p>Assign a member</p>
+                  <Plus className="size-4" />
+                </div>
+              </DropdownMenuTrigger>
 
-            <DropdownMenuContent className="w-[220px] p-3">
-              <div>
-                <h3 className="text-sm font-semibold">Members</h3>
-                <p className="text-[10px]">Assign members to this card</p>
-              </div>
-              {/* break to other component */}
-              <div className="relative py-2">
-                <Input
-                  className="h-6 py-0.5 pr-[28px] text-[10px] shadow-sm focus-visible:ring-0"
-                  placeholder="search for member..."
-                  value={searchVal}
-                  onChange={(e) => setSearchVal(e.target.value)}
-                />
-                <Button
-                  onClick={handleSearchClick}
-                  className="absolute right-1 top-2.5 h-5 w-fit p-1"
-                >
-                  <Search className="size-3" />
-                </Button>
-              </div>
-              {/* break to other component */}
-              {/* <div className="grid h-[140px] place-content-center">
+              <DropdownMenuContent className="w-[220px] p-3">
+                <div>
+                  <h3 className="text-sm font-semibold">Members</h3>
+                  <p className="text-[10px]">Assign members to this card</p>
+                </div>
+                {/* break to other component */}
+                <div className="relative py-2">
+                  <Input
+                    className="h-6 py-0.5 pr-[28px] text-[10px] shadow-sm focus-visible:ring-0"
+                    placeholder="search for member..."
+                    value={searchVal}
+                    onChange={(e) => setSearchVal(e.target.value)}
+                  />
+                  <Button
+                    onClick={handleSearchClick}
+                    className="absolute right-1 top-2.5 h-5 w-fit p-1"
+                  >
+                    <Search className="size-3" />
+                  </Button>
+                </div>
+                {/* break to other component */}
+                {/* <div className="grid h-[140px] place-content-center">
                 <p className="text-center text-[10px]"></p>
               </div> */}
 
-              {/* break to other component */}
-              {selectedUsers.length > 0 && (
-                <div className="my-2">
-                  <ScrollArea className="max-w-[200px] rounded-md border border-slate-300">
-                    <div className="flex gap-3 p-2 py-3">
-                      {selectedUsers.map((user) => {
+                {/* break to other component */}
+                {selectedUsers.length > 0 && (
+                  <div className="my-2">
+                    <ScrollArea className="max-w-[200px] rounded-md border border-slate-300">
+                      <div className="flex gap-3 p-2 py-3">
+                        {selectedUsers.map((user) => {
+                          return (
+                            <div
+                              key={user.id}
+                              className={cn(
+                                "relative grid w-fit place-content-center rounded-md border border-slate-400 px-2",
+                              )}
+                            >
+                              <span className="block text-[10px] font-light">
+                                {user.username}
+                              </span>
+                              <span
+                                onClick={() => handleDeSelect(user)}
+                                className="absolute -right-2 -top-1 cursor-pointer rounded-full bg-red-500 text-white hover:scale-x-110"
+                              >
+                                <CircleX className="size-3" />
+                              </span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                      <ScrollBar orientation="horizontal" />
+                    </ScrollArea>
+                  </div>
+                )}
+
+                <div className="h-[140px] overflow-hidden rounded-md border border-slate-300">
+                  <ScrollArea className="h-[140px] pr-2">
+                    {isLoading && (
+                      <div className="grid size-full h-[130px] place-content-center">
+                        <LoaderCircle className="mx-auto size-4 animate-spin" />
+                      </div>
+                    )}
+
+                    {!isLoading && filteredUsers.length === 0 && (
+                      <div className="grid size-full h-[130px] place-content-center">
+                        <p className="text-[12px]">No users avalible</p>
+                      </div>
+                    )}
+                    <div className="flex flex-col gap-2 p-1">
+                      {filteredUsers.map((user) => {
                         return (
                           <div
                             key={user.id}
-                            className={cn(
-                              "relative grid w-fit place-content-center rounded-md border border-slate-400 px-2",
-                            )}
+                            className="relative flex cursor-pointer items-center gap-2 rounded-sm border p-1 hover:bg-slate-100"
                           >
-                            <span className="block text-[10px] font-light">
-                              {user.username}
-                            </span>
+                            <Avatar className="h-4 w-4">
+                              <img
+                                className="size-full object-cover"
+                                src={user.profileImage}
+                                alt={user.username}
+                              />
+                            </Avatar>
+                            <div className="relative">
+                              <h2 className="w-[105px] truncate text-[10px]">
+                                {user.username}
+                              </h2>
+                            </div>
                             <span
-                              onClick={() => handleDeSelect(user)}
-                              className="absolute -right-2 -top-1 cursor-pointer rounded-full bg-red-500 text-white hover:scale-x-110"
+                              onClick={() => handleSelect(user)}
+                              className="absolute right-1 top-1 block rounded-md border bg-blue-500 p-0.5 px-1 text-[8px] text-white"
                             >
-                              <CircleX className="size-3" />
+                              select
                             </span>
                           </div>
                         );
                       })}
                     </div>
-                    <ScrollBar orientation="horizontal" />
                   </ScrollArea>
                 </div>
-              )}
 
-              <div className="h-[140px] overflow-hidden rounded-md border border-slate-300">
-                <ScrollArea className="h-[140px] pr-2">
-                  {isLoading && (
-                    <div className="grid size-full h-[130px] place-content-center">
-                      <LoaderCircle className="mx-auto size-4 animate-spin" />
-                    </div>
-                  )}
-
-                  {!isLoading && filteredUsers.length === 0 && (
-                    <div className="grid size-full h-[130px] place-content-center">
-                      <p className="text-[12px]">No users avalible</p>
-                    </div>
-                  )}
-                  <div className="flex flex-col gap-2 p-1">
-                    {filteredUsers.map((user) => {
-                      return (
-                        <div
-                          key={user.id}
-                          className="relative flex cursor-pointer items-center gap-2 rounded-sm border p-1 hover:bg-slate-100"
-                        >
-                          <Avatar className="h-4 w-4">
-                            <img
-                              className="size-full object-cover"
-                              src={user.profileImage}
-                              alt={user.username}
-                            />
-                          </Avatar>
-                          <div className="relative">
-                            <h2 className="w-[105px] truncate text-[10px]">
-                              {user.username}
-                            </h2>
-                          </div>
-                          <span
-                            onClick={() => handleSelect(user)}
-                            className="absolute right-1 top-1 block rounded-md border bg-blue-500 p-0.5 px-1 text-[8px] text-white"
-                          >
-                            select
-                          </span>
-                        </div>
-                      );
-                    })}
+                {selectedUsers.length > 0 && (
+                  <div className="mt-2">
+                    <Button
+                      onClick={handleAssignMembers}
+                      size={"sm"}
+                      className={cn(
+                        "mx-auto block h-6 w-[100px] text-[10px]",
+                        isAssigingMembers
+                          ? "cursor-not-allowed opacity-40"
+                          : "",
+                      )}
+                    >
+                      {isAssigingMembers ? (
+                        <LoaderCircle className="mx-auto size-4 animate-spin" />
+                      ) : (
+                        <p>Assign Members</p>
+                      )}
+                    </Button>
                   </div>
-                </ScrollArea>
-              </div>
-
-              {selectedUsers.length > 0 && (
-                <div className="mt-2">
-                  <Button
-                    onClick={handleAssignMembers}
-                    size={"sm"}
-                    className={cn(
-                      "mx-auto block h-6 w-[100px] text-[10px]",
-                      isAssigingMembers ? "cursor-not-allowed opacity-40" : "",
-                    )}
-                  >
-                    {isAssigingMembers ? (
-                      <LoaderCircle className="mx-auto size-4 animate-spin" />
-                    ) : (
-                      <p>Assign Members</p>
-                    )}
-                  </Button>
-                </div>
-              )}
-            </DropdownMenuContent>
-          </DropdownMenu>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
         </>
       )}
     </div>

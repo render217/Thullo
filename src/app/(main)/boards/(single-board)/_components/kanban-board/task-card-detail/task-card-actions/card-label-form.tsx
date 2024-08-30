@@ -109,6 +109,12 @@ export default function CardLabelForm() {
     }
   };
 
+  const handleKeyPressed = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && !isBtnDisabled) {
+      handleAddLabel();
+    }
+  };
+
   return (
     <div>
       <DropdownMenu
@@ -132,6 +138,7 @@ export default function CardLabelForm() {
               className="h-6 py-0.5 pr-[28px] text-[10px] shadow-sm focus-visible:ring-0"
               placeholder="Enter label name"
               value={labelData.name}
+              onKeyDown={handleKeyPressed}
               onChange={(e) =>
                 setLabelData({ ...labelData, name: e.target.value })
               }

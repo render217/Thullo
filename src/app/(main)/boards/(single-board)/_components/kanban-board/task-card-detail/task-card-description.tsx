@@ -78,15 +78,15 @@ export default function TaskCardDescription({
       </div>
       <div className="">
         {!isEdit ? (
-          <p className="min-h-[100px] text-xs">
+          <p className="min-h-[102px] text-xs">
             {decription || "No description added."}
           </p>
         ) : (
           <AutosizeTextarea
             value={decription || ""}
-            minHeight={200}
+            minHeight={100}
             onChange={(e) => setDescription(e.target.value)}
-            className="m-0 min-h-[100px] resize-none rounded-sm border border-slate-300 px-[6px] py-[3px] text-[14px] text-xs font-medium outline-0 outline-slate-800 focus-visible:ring-0 focus-visible:ring-offset-0"
+            className="m-0 min-h-[102px] resize-none rounded-sm border border-slate-300 px-[6px] py-[3px] text-[14px] text-xs font-medium outline-0 outline-slate-800 focus-visible:ring-0 focus-visible:ring-offset-0"
             placeholder="Add a more detailed description..."
           />
         )}

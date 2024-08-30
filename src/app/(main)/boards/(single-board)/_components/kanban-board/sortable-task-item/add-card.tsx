@@ -19,8 +19,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { createBoardTaskCardSchema } from "@/lib/schemas";
 import { useCreateCard } from "@/utils/hooks/useBoards";
-import { useAuth } from "@clerk/nextjs";
-
+import { useOnClickOutside } from "usehooks-ts";
 export default function AddCard({
   task,
   isVisitor,
@@ -29,6 +28,12 @@ export default function AddCard({
   isVisitor: boolean;
 }) {
   const [isAdding, setIsAdding] = useState(false);
+
+  const dialogRef = useRef(null);
+  const handleOutsideClick = () => {
+    setIsAdding(false);
+  };
+  useOnClickOutside(dialogRef, handleOutsideClick);
 
   const titleInputRef = useRef<HTMLInputElement>(null);
 
@@ -49,11 +54,9 @@ export default function AddCard({
     };
     const res = await createCardAsync(payload);
     if (res.success) {
-      // console.log("Task card created successfully", res.data);
       form.reset();
       setIsAdding(false);
     } else {
-      // console.log("Error creating task:", res.data);
     }
   }
 
@@ -72,7 +75,10 @@ export default function AddCard({
   return (
     <>
       {isAdding ? (
-        <div className="flex min-h-[100px] flex-col justify-between">
+        <div
+          ref={dialogRef}
+          className="flex min-h-[100px] flex-col justify-between"
+        >
           <div className="pointer-events-auto mt-3 rounded-md border bg-slate-200 p-3 shadow-md">
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)}>
