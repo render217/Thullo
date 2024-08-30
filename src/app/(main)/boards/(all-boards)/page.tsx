@@ -1,13 +1,15 @@
+import { useState } from "react";
 import BoardCreateForm from "./_components/board/board-create-form";
 import BoardFeed from "./_components/board/board-feed";
+import BoardFilter from "./_components/board/board-filter";
 
 export default function page() {
   return (
     <div className="size-full pt-6">
-      <div className="mx-auto max-w-[1160px] px-[20px]">
+      <div className="mx-auto max-w-[1300px] px-[20px]">
         {/*  */}
         <div className="flex items-center justify-between py-2">
-          <h1 className="font-semibold">All Boards</h1>
+          <BoardFilter />
           <BoardCreateForm />
         </div>
 

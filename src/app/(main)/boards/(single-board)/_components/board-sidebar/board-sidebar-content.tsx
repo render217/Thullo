@@ -41,12 +41,10 @@ import { useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import BlockScreen from "@/components/shared/loaders/block-screen";
 import Spinner from "@/components/shared/loaders/spinner";
+import { useBoardStore } from "@/lib/store/useBoardStore";
 
-export default function BoardSideBarContent({
-  board,
-}: {
-  board: TBoardDetail;
-}) {
+export default function BoardSideBarContent() {
+  const { board } = useBoardStore();
   const router = useRouter();
   const { userId } = useAuth();
   const isAdmin = board?.admin?.id === userId;
@@ -60,32 +58,28 @@ export default function BoardSideBarContent({
   const handleDeleteBoard = async () => {
     setOpenDialog(false);
     const payload = {
-      boardId: board?.boardId,
+      boardId: board.boardId,
       adminId: userId!,
     };
     const res = await deleteBoardAsync(payload);
     if (res.success) {
-      console.log("deleted");
-      router.replace("/boards");
+      // router.replace("/boards");
     }
   };
 
-  useEffect(() => {
-    if (isSuccess) {
-      router.replace("/boards");
-    }
-  }, [isSuccess]);
-
   return (
     <>
-      {isDeletingBoard && (
+      {(isDeletingBoard || isSuccess) && (
         <BlockScreen>
           <Spinner size={50} />
         </BlockScreen>
       )}
 
       <div
-        className={cn("h-full overflow-hidden", isDeletingBoard && "hidden")}
+        className={cn(
+          "h-full overflow-hidden",
+          (isDeletingBoard || isSuccess) && "hidden",
+        )}
       >
         <ScrollArea
           className={cn(

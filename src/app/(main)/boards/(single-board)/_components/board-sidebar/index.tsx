@@ -12,7 +12,6 @@ export default function BoardSideBar() {
   const params = useParams();
   const boardId = params.id as string;
   const { data, isPending } = useGetBoardById(boardId);
-
   const isSuccess = data?.success;
 
   return (

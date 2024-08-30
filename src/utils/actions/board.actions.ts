@@ -438,7 +438,7 @@ export async function removeMemberFromBoard(
 
 export async function deleteBoard(
   payload: DeleteBoardParams,
-): Promise<Response<TBoard>> {
+): Promise<Response<TBoardDetail>> {
   try {
     // Fetch the target board including related entities
     const targetBoard = await db.board.findUnique({
@@ -543,11 +543,12 @@ export async function deleteBoard(
     const mappedTargetBoard = boardDetailDto(targetBoard);
 
     // Delete the board itself
-    await db.board.delete({
+    const result = await db.board.delete({
       where: {
-        boardId: payload.boardId,
+        boardId: targetBoard.boardId,
       },
     });
+    console.log(result);
 
     return {
       success: true,

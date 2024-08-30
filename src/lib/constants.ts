@@ -66,3 +66,13 @@ export const LABEL_COLORS_OPTION = [
     tailwindColor: "bg-rose-600",
   },
 ];
+
+export const FILTER_OPTIONS = {
+  ALL: "All Boards",
+  YOURS: "Your Boards",
+  PRIVATE: "Private Boards",
+  PUBLIC: "Public Boards",
+} as const;
+
+export type FilterOptions =
+  (typeof FILTER_OPTIONS)[keyof typeof FILTER_OPTIONS];

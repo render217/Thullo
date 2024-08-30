@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import boardsServices from "../services/boards.services";
+import { useRouter } from "next/navigation";
 import {
   addBoardMember,
   createBoard,
@@ -123,6 +124,7 @@ export function useUpdateBoard() {
 
 export function useDeleteBoard() {
   const queryClient = useQueryClient();
+  const router = useRouter();
   return useMutation({
     mutationFn: async (payload: DeleteBoardParams) => {
       return await deleteBoard(payload);
@@ -134,6 +136,8 @@ export function useDeleteBoard() {
         queryClient.invalidateQueries({
           queryKey: ["boards", { id: boardId }],
         });
+
+        router.replace("/boards");
       }
     },
   });
