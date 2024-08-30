@@ -13,7 +13,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { useActionSelector } from ".";
-import { TBoardTaskCard, TCardMember, TCommonUser } from "@/types/t";
+import { TBoardTaskCard, TCardMember, TCommonUser } from "@/types";
 import {
   useAssignMembers,
   useGetUsersInBoardNotInCard,
@@ -96,7 +96,6 @@ export default function CardMembersForm() {
 
     const res = await assignMembersAsync(payload);
     if (res.success) {
-      // console.log(res.data);
       setSelectedUsers([]);
     }
   };

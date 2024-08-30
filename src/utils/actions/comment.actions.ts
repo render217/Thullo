@@ -7,7 +7,7 @@ import {
   GetCommentsParams,
   UpdateCommentParams,
 } from "./shared.types";
-import { TComment } from "@/types/t";
+import { TComment } from "@/types";
 import { Response } from "@/types/axios.types";
 import { commentDto } from "./mappers";
 

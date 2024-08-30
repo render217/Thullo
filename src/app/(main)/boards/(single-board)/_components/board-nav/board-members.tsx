@@ -1,7 +1,6 @@
 "use client";
 
-import { IUser } from "@/types";
-import { TBoardMember } from "@/types/t";
+import { TBoardMember } from "@/types";
 import Image from "next/image";
 
 export default function BoardMemebers({

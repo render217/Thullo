@@ -1,10 +1,10 @@
 import { api } from "@/lib/axios";
-import { IBoard } from "@/types";
+import { TBoard } from "@/types";
 import { Response } from "@/types/axios.types";
 import { isAxiosError } from "axios";
 
 class BoardsService {
-  async getBoards(): Promise<Response<IBoard[]>> {
+  async getBoards(): Promise<Response<TBoard[]>> {
     try {
       const res = await api.get("/boards");
       return {
@@ -19,7 +19,7 @@ class BoardsService {
     }
   }
 
-  async getBoard(id: string): Promise<Response<IBoard>> {
+  async getBoard(id: string): Promise<Response<TBoard>> {
     try {
       const res = await api.get(`/boards/${id}`);
       return {

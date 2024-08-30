@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import boardsServices from "../services/boards.services";
+// import boardsServices from "../services/boards.services";
 import { useRouter } from "next/navigation";
 import {
   addBoardMember,
@@ -64,7 +64,6 @@ import {
   getUsersInBoardNotInCard,
   getUsersNotInBoard,
 } from "../actions/user.actions";
-import { useBoardStore } from "@/lib/store/useBoardStore";
 
 /********
  *
@@ -155,7 +154,6 @@ export function useAddBoardMember() {
     },
     onSuccess: (res) => {
       if (res.success) {
-        console.log("success useAddBoardMember()", res.data);
         const boardId = res.data.boardId;
         queryClient.invalidateQueries({
           queryKey: ["boards", { id: boardId }],
@@ -176,7 +174,6 @@ export function useRemoveMemberFromBoard() {
     },
     onSuccess: (res) => {
       if (res.success) {
-        console.log("success useRemoveMemberFromBoard()", res.data);
         const boardId = res.data.boardId;
         queryClient.invalidateQueries({
           queryKey: ["boards", { id: boardId }],
@@ -202,7 +199,6 @@ export function useCreateBoardTask() {
     },
     onSuccess: (response) => {
       if (response.success) {
-        console.log("success useCreateBoardTask()", response.data);
         const boardId = response.data.board.boardId;
         queryClient.invalidateQueries({
           queryKey: ["boards", { id: boardId }],
@@ -220,7 +216,6 @@ export function useDeleteBoardTask() {
     },
     onSuccess: (response) => {
       if (response.success) {
-        console.log("success useDeleteBoardTask()", response.data);
         const boardId = response.data.board.boardId;
         queryClient.invalidateQueries({
           queryKey: ["boards", { id: boardId }],
@@ -238,7 +233,6 @@ export function useEditBoardTask() {
     },
     onSuccess: (res) => {
       if (res.success) {
-        console.log("success useEditBoardTask()", res.data);
         const boardId = res.data.board.boardId;
         queryClient.invalidateQueries({
           queryKey: ["boards", { id: boardId }],
@@ -278,7 +272,6 @@ export function useCreateCard() {
     },
     onSuccess: (res) => {
       if (res.success) {
-        console.log("success useCreateCard()", res.data);
         const boardId = res.data.board.boardId;
         queryClient.invalidateQueries({
           queryKey: ["boards", { id: boardId }],
@@ -305,7 +298,6 @@ export function useUpdateBoardTaskCard() {
     },
     onSuccess: (res) => {
       if (res.success) {
-        console.log("success useUpdateBoardTaskCard()", res.data);
         const cardId = res.data.cardId;
         const boardId = res.data.board.boardId;
         queryClient.invalidateQueries({
@@ -365,7 +357,6 @@ export function useAssignMembers() {
     },
     onSuccess: (res) => {
       if (res.success) {
-        console.log("success useAssignMembers()", res.data);
         const cardId = res.data.cardId;
         const boardId = res.data.board.boardId;
         queryClient.invalidateQueries({
@@ -397,7 +388,6 @@ export function useUnassignMember() {
     },
     onSuccess: (res) => {
       if (res.success) {
-        console.log("success useUnassignMember()", res.data);
         const cardId = res.data.cardId;
         const boardId = res.data.board.boardId;
         queryClient.invalidateQueries({
@@ -439,7 +429,6 @@ export function useCreateComment() {
     },
     onSuccess: (res) => {
       if (res.success) {
-        console.log("success useCreateComment()", res.data);
         const cardId = res.data.cardId;
         const boardId = res.data.boardId;
         queryClient.invalidateQueries({
@@ -464,7 +453,6 @@ export function useUpdateComment() {
     },
     onSuccess: (res) => {
       if (res.success) {
-        console.log("success useUpdateComment()", res.data);
         const cardId = res.data.cardId;
         queryClient.invalidateQueries({
           queryKey: ["comments", { cardId }],
@@ -485,7 +473,6 @@ export function useDeleteComment() {
     },
     onSuccess: (res) => {
       if (res.success) {
-        // console.log("success useDeleteComment()", res.data);
         const cardId = res.data.cardId;
         const boardId = res.data.boardId;
         queryClient.invalidateQueries({
@@ -520,7 +507,6 @@ export function useCreateLabel() {
     },
     onSuccess: (res) => {
       if (res.success) {
-        console.log("success useCreateLabel()", res.data);
         const cardId = res.data.cardId;
         const boardId = res.data.boardId;
         queryClient.invalidateQueries({
@@ -545,7 +531,6 @@ export function useDeleteLabel() {
     },
     onSuccess: (res) => {
       if (res.success) {
-        console.log("success useDeleteLabel()", res.data);
         const cardId = res.data.cardId;
         const boardId = res.data.boardId;
         queryClient.invalidateQueries({
@@ -580,7 +565,6 @@ export function useCreateAttachments() {
     },
     onSuccess: (res) => {
       if (res.success) {
-        console.log("success useCreateAttachments()", res.data);
         const cardId = res.data.cardId;
         const boardId = res.data.boardId;
         queryClient.invalidateQueries({
@@ -605,7 +589,6 @@ export function useDeleteAttachment() {
     },
     onSuccess: (res) => {
       if (res.success) {
-        console.log("success useDeleteAttachment()", res.data);
         const cardId = res.data.cardId;
         const boardId = res.data.boardId;
         queryClient.invalidateQueries({

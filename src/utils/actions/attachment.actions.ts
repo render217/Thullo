@@ -1,6 +1,6 @@
 "use server";
 
-import { TAttachment } from "@/types/t";
+import { TAttachment } from "@/types";
 import { CreateAttachmentParams, DeleteAttachmentParams } from "./shared.types";
 import { Response } from "@/types/axios.types";
 import db from "@/db/db";

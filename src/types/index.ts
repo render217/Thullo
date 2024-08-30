@@ -1,60 +1,126 @@
-import { UUID } from "crypto";
-
-export type IUser = {
-  id: UUID | string;
-  username: string;
+export type TUser = {
+  id: string;
   email: string;
+  username: string;
+  firstName: string;
+  lastName: string;
   profileImage: string;
-};
-
-export type TVisibility = "public" | "private";
-
-export type ILabel = {
-  id: UUID | string;
-  tag: string;
-  color: string;
-};
-export type IComment = {
-  id: UUID | string;
-  content: string;
-  author: IUser;
   createdAt: string;
+  updatedAt: string;
 };
 
-export type IAttachment = {
-  id: UUID | string;
-  content: string;
-  downloadUrl: string;
-  author: IUser;
+export type TCommonUser = Pick<
+  TUser,
+  "id" | "username" | "email" | "profileImage" | "createdAt"
+>;
+export enum TVisibility {
+  PUBLIC = "PUBLIC",
+  PRIVATE = "PRIVATE",
+}
+
+export enum TInviteStatus {
+  PENDING,
+  ACCEPTED,
+  REJECTED,
+}
+
+export type TBoardMember = TCommonUser;
+export type TRecipient = TCommonUser;
+export type TAdmin = TCommonUser;
+export type TCardMember = TCommonUser;
+export type TCommentAuthor = TCommonUser;
+export type TAttachmentAuthor = TCommonUser;
+
+export type TBoard = {
+  boardId: string;
+  boardName: string;
+  boardImage: string;
+  description: string;
+  visibility: TVisibility;
+  admin: TAdmin;
+  boardMember: TBoardMember[];
   createdAt: string;
+  updatedAt: string;
 };
-export type ICard = {
-  id: UUID | string;
+
+export type TBoardDetail = {
+  boardId: string;
+  boardName: string;
+  boardImage: string;
+  description: string;
+  visibility: TVisibility;
+  admin: TAdmin;
+  boardMember: TBoardMember[];
+  boardInvites: TBoardInvite[];
+  tasks: TBoardTask[];
+  // boardInvites: Omit<TBoardInvite, "board">[];
+  // tasks: Omit<TBoardTask, "board">[];
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type TBoardInvite = {
+  inviteId: string;
+  board: TBoard;
+  status: TInviteStatus;
+  recipient: TRecipient;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type TBoardTask = {
   taskId: string;
   title: string;
-  description: string;
-  coverPhoto: string;
   order: number;
-  labels: ILabel[];
-  comments: IComment[];
-  attachments: IAttachment[];
+  board: TBoard;
+  cards: TBoardTaskCard[];
   createdAt: string;
+  updatedAt: string;
 };
 
-export type ITask = {
-  id: UUID | string;
+export type TBoardTaskCard = {
+  cardId: string;
+  task: Pick<TBoardTask, "taskId" | "title">;
+  board: Pick<TBoard, "boardId">;
   title: string;
-  cards: ICard[];
+  description: string | null;
+  coverImage: string | null;
+  order: number;
+  labels: TLabel[];
+  cardMembers: TCardMember[];
+  comments: TComment[];
+  attachments: TAttachment[];
   createdAt: string;
+  updatedAt: string;
 };
-export type IBoard = {
-  id: UUID | string;
-  title: string;
-  description: string;
-  coverPhoto: string;
-  visibility: TVisibility;
-  members: IUser[];
-  admin: IUser;
-  taskLists: ITask[];
+
+export type TLabel = {
+  labelId: string;
+  name: string;
+  color: string;
+  cardId: string;
+  boardId: string;
+};
+
+export type TComment = {
+  commentId: string;
+  content: string;
+  cardId: string;
+  boardId: string;
+  author: TCommentAuthor;
   createdAt: string;
+  updatedAt: string;
+};
+
+export type TAttachment = {
+  attachmentId: string;
+  contentType: string;
+  size: number;
+  name: string;
+  url: string;
+  cardId: string;
+  boardId: string;
+  author: TAttachmentAuthor;
+  createdAt: string;
+  updatedAt: string;
 };

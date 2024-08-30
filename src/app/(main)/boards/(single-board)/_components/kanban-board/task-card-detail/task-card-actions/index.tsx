@@ -1,12 +1,12 @@
 "use client";
-import { ICard } from "@/types";
+
 import { ImageIcon, Tag, Users } from "lucide-react";
 import CardCoverImageForm from "./card-cover-image-form";
 import CardLabelForm from "./card-label-form";
 import CardMembersForm from "./card-members-form";
 import { useGetUnsplashImage } from "@/utils/hooks/useUnsplash";
 import React, { useReducer, useState } from "react";
-import { TBoardTaskCard } from "@/types/t";
+import { TBoardTaskCard } from "@/types";
 import { useAuth } from "@clerk/nextjs";
 import { useBoardStore } from "@/lib/store/useBoardStore";
 

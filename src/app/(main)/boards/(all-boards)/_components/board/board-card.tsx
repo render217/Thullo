@@ -1,4 +1,3 @@
-import { IBoard } from "@/types";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -9,7 +8,7 @@ import {
 } from "@/components/ui/card";
 import Image from "next/image";
 import Link from "next/link";
-import { TBoard } from "@/types/t";
+import { TBoard } from "@/types";
 import { useEffect, useState } from "react";
 import { checkImageUrl } from "@/lib/utils";
 

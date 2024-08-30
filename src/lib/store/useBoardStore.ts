@@ -1,4 +1,4 @@
-import { TBoardDetail, TVisibility } from "@/types/t";
+import { TBoardDetail, TVisibility } from "@/types";
 import { create } from "zustand";
 import { shallow } from "zustand/shallow";
 

@@ -1,7 +1,7 @@
 "use client";
-import { IBoard } from "@/types";
+
 import BoardCard from "./board-card";
-import { TBoard } from "@/types/t";
+import { TBoard } from "@/types";
 import { SquareKanban } from "lucide-react";
 import { useAuth } from "@clerk/nextjs";
 

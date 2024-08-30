@@ -1,8 +1,7 @@
 import { AutosizeTextarea } from "@/components/ui/autosize-textarea";
 import { Button } from "@/components/ui/button";
 import { useCardStore } from "@/lib/store/useCardStore";
-import { ICard } from "@/types";
-import { TBoardTask, TBoardTaskCard } from "@/types/t";
+import { TBoardTask, TBoardTaskCard } from "@/types";
 import { useUpdateBoardTaskCard } from "@/utils/hooks/useBoards";
 import { CircleCheck, CircleX } from "lucide-react";
 import { useEffect, useState } from "react";

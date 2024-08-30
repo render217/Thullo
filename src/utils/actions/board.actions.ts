@@ -4,7 +4,7 @@ import db from "@/db/db";
 import { handleError } from "@/lib/utils";
 import { boardDetailDto, boardDto } from "./mappers";
 import { Response } from "@/types/axios.types";
-import { TBoard, TBoardDetail, TVisibility } from "@/types/t";
+import { TBoard, TBoardDetail, TVisibility } from "@/types";
 import {
   AddBoardMemberParams,
   CreateBoardParams,

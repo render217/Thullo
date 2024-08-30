@@ -1,13 +1,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { useEffect, useState } from "react";
 import BoardSideBarContent from "./board-sidebar-content";
-import BoardSideBarForm from "./board-sidebar-form";
-import { IBoard } from "@/types";
-import { useParams } from "next/navigation";
-import { useGetBoardById } from "@/utils/hooks/useBoards";
-
 export default function BoardSideBar() {
   return (
     <>

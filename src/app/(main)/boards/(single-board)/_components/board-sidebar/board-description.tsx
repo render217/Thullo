@@ -3,7 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { SheetHeader, SheetTitle, SheetContent } from "@/components/ui/sheet";
-import { IBoard, IUser } from "@/types";
+
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import {
   Dialog,
@@ -29,7 +29,7 @@ import { useEffect, useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { RichTextEditor } from "@/components/shared/rich-text-editor";
 import { cn } from "@/lib/utils";
-import { TBoardDetail, TBoardMember, TBoardTaskCard } from "@/types/t";
+import { TBoardDetail, TBoardMember, TBoardTaskCard } from "@/types";
 import { useUpdateBoard } from "@/utils/hooks/useBoards";
 import { useAuth } from "@clerk/nextjs";
 

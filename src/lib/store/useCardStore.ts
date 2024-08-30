@@ -1,4 +1,4 @@
-import { TBoardTaskCard } from "@/types/t";
+import { TBoardTaskCard } from "@/types";
 import { create } from "zustand";
 import { shallow } from "zustand/shallow";
 type CardType = {

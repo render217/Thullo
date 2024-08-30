@@ -1,9 +1,7 @@
 "use client";
-import { Badge } from "@/components/ui/badge";
+
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
-import { SheetHeader, SheetTitle, SheetContent } from "@/components/ui/sheet";
-import { IBoard, IUser } from "@/types";
+
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import {
   Dialog,
@@ -11,26 +9,14 @@ import {
   DialogContent,
   DialogDescription,
   DialogFooter,
-  DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import {
-  CircleCheck,
-  CirclePlus,
-  CircleX,
-  LoaderCircle,
-  Pencil,
-  ScrollText,
-  User,
-  Users,
-} from "lucide-react";
+import { LoaderCircle, User, Users } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { Textarea } from "@/components/ui/textarea";
-import { RichTextEditor } from "@/components/shared/rich-text-editor";
-import { cn, formatDate } from "@/lib/utils";
-import { TBoardDetail, TBoardMember, TBoardTaskCard } from "@/types/t";
+import { cn } from "@/lib/utils";
+import { TBoardMember } from "@/types";
 import BoardDescription from "./board-description";
 import BoardTitle from "./board-title";
 import {
@@ -46,9 +32,11 @@ import toast from "react-hot-toast";
 
 export default function BoardSideBarContent() {
   const { board } = useBoardStore();
+
   const router = useRouter();
   const { userId } = useAuth();
   const isAdmin = board?.admin?.id === userId;
+
   const [openDialog, setOpenDialog] = useState(false);
 
   const {

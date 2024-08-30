@@ -1,6 +1,6 @@
 "use server";
 
-import { TLabel } from "@/types/t";
+import { TLabel } from "@/types";
 import {
   CreateLabelParams,
   DeleteLabelParams,

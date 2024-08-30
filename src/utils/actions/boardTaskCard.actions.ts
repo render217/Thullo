@@ -10,7 +10,7 @@ import {
   UpdateBoardTaskCardParams,
 } from "./shared.types";
 import { Response } from "@/types/axios.types";
-import { TBoardDetail, TBoardTaskCard } from "@/types/t";
+import { TBoardDetail, TBoardTaskCard } from "@/types";
 import { boardDetailDto, cardDto } from "./mappers";
 
 export async function createBoardTaskCard(

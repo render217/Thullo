@@ -1,8 +1,8 @@
 "use client";
 import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { ICard } from "@/types";
-import { TAttachment, TBoardTaskCard } from "@/types/t";
+
+import { TAttachment, TBoardTaskCard } from "@/types";
 import { useUploadThing } from "@/lib/uploadthing";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { cn, formatDate } from "@/lib/utils";

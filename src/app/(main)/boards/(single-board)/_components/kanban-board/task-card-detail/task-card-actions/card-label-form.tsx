@@ -14,7 +14,7 @@ import { useActionSelector } from ".";
 import { cn, getTailwindColor } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { LABEL_COLORS_OPTION } from "@/lib/constants";
-import { TBoardTaskCard, TLabel } from "@/types/t";
+import { TBoardTaskCard, TLabel } from "@/types";
 import { useCreateLabel, useDeleteLabel } from "@/utils/hooks/useBoards";
 import { useCardStore } from "@/lib/store/useCardStore";
 

@@ -1,12 +1,12 @@
 "use client";
 
-import { IBoard } from "@/types";
+import { TBoard } from "@/types";
 
 export default function BoardSideBarForm({
   board,
   toggleEdit,
 }: {
-  board: IBoard;
+  board: TBoard;
   toggleEdit: () => void;
 }) {
   return <div>BoardSideBarForm</div>;

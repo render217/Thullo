@@ -1,5 +1,5 @@
 import { Input } from "@/components/ui/input";
-import { TBoardDetail } from "@/types/t";
+import { TBoardDetail } from "@/types";
 import { useUpdateBoard } from "@/utils/hooks/useBoards";
 import { useAuth } from "@clerk/nextjs";
 import { Separator } from "@radix-ui/react-dropdown-menu";

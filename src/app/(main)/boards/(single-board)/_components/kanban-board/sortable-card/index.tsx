@@ -4,7 +4,7 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { cn } from "@/lib/utils";
 
-import { TBoardTaskCard } from "@/types/t";
+import { TBoardTaskCard } from "@/types";
 import TaskCard from "../task-card";
 import { useAuth } from "@clerk/nextjs";
 import { useBoardStore } from "@/lib/store/useBoardStore";

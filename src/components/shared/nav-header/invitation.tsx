@@ -17,7 +17,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { IBoard } from "@/types";
+import { IBoard } from "@/types/dd";
 import InvitationItem from "./invitation-item";
 export default function Invitation() {
   return (

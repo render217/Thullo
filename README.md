@@ -1,7 +1,7 @@
 <h1 align="center">Thullo - Trello Clone</h1>
 
 <div align="center">
-   Solution for a challenge from  <a href="http://devchallenges.io" target="_blank">Devchallenges.io</a>.
+   Solution for a challenge from  <a href="http://legacy.devchallenges.io" target="_blank">Devchallenges.io</a>.
 </div>
 
 <div align="center">
@@ -25,6 +25,7 @@
 ## Table of Contents
 
 - [Overview](#overview)
+- [Installation](#installation)
 - [Built With](#built-with)
 - [Features](#features)
 - [Acknowledgements](#acknowledgements)
@@ -35,13 +36,49 @@
 
 ![screenshot](./public/images/Screenshot.png)
 
+## Installation
+
+1.  Clone the repository:
+
+    ```bash
+    git clone https://github.com/render217/Thullo
+    ```
+
+2.  Create a .env file add the following as key = value
+
+          ```
+            DATABASE_URL=   bash your database url
+            NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY= your clerk_publishable_key
+            CLERK_SECRET_KEY= your clerk_secret_key
+            WEBHOOK_SECRET= your clerk_webhook_key
+            NEXT_PUBLIC_API_URL= next_api_url/api
+            NEXT_PUBLIC_UNSPLASH_APP_ID= your unsplash_app_id
+            NEXT_PUBLIC_UNSPLASH_ACCESS_KEY= your unsplash_access_key
+            NEXT_PUBLIC_UNSPLASH_SECRET_KEY= your unsplash_secret_key
+            UPLOADTHING_SECRET= your uploadthing_secret
+            UPLOADTHING_APP_ID= your uploadthing_app_id
+
+          ```
+
+3.  install dependencies:
+
+    ```bash
+    npm install
+    ```
+
+4.  Start the development
+    ```bash
+    npm run dev
+    ```
+
 ### Built With
 
 <!-- This section should list any major frameworks that you built your project using. Here are a few examples.-->
 
 - **Next.js**
-- **Tailwind**
 - **Prisma**
+- **Shad-cn**
+- **Tailwind**
 - **Zustand**
 - **Clerk**
 - **uploadthing**
@@ -50,7 +87,7 @@
 
 <!-- List the features of your application or follow the template. Don't share the figma file here :) -->
 
-This application/site was created as a submission to a [DevChallenges](https://devchallenges.io/challenges) challenge. The [challenge](https://devchallenges.io/challenges/wBunSb7FPrIepJZAg0sY) was to build an application to complete the given user stories.
+This application/site was created as a submission to a [DevChallenges](https://legacy.devchallenges.io/challenges/wP0LbGgEeKhpFHUpPpDh) challenge. The [challenge](https://legacy.devchallenges.io/challenges/wP0LbGgEeKhpFHUpPpDh) was to build an application to complete the given user stories.
 
 - User story: I can list of available boards
 - User story: I can add a new board with a cover photo, title and visibility options
@@ -75,7 +112,7 @@ This application/site was created as a submission to a [DevChallenges](https://d
 
 ## Features to be added.
 
-- Board Invites,
+- Board Invites,...
 
 ## Acknowledgements
 

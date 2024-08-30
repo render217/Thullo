@@ -1,4 +1,4 @@
-import { TBoard, TBoardDetail } from "@/types/t";
+import { TBoard, TBoardDetail } from "@/types";
 
 export function boardDto(board: any): TBoard {
   return {

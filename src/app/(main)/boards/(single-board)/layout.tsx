@@ -1,6 +1,5 @@
 import NavHeader from "@/components/shared/nav-header";
 import BoardNav from "./_components/board-nav";
-import Image from "next/image";
 
 export default function SingleBoardLayout({
   children,

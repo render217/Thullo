@@ -1,8 +1,7 @@
 import { useCardStore } from "@/lib/store/useCardStore";
 import { usePreviewUnsplashImage } from "@/lib/store/useUnsplashImage";
 import { cn } from "@/lib/utils";
-import { ICard } from "@/types";
-import { TBoardTaskCard } from "@/types/t";
+import { TBoardTaskCard } from "@/types";
 import { useUpdateBoardTaskCard } from "@/utils/hooks/useBoards";
 import { ImageOff, LoaderCircle } from "lucide-react";
 import Image from "next/image";

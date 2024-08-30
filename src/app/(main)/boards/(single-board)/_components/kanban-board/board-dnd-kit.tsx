@@ -22,7 +22,7 @@ import {
   sortableKeyboardCoordinates,
 } from "@dnd-kit/sortable";
 
-import { TBoardDetail, TBoardTask, TBoardTaskCard } from "@/types/t";
+import { TBoardDetail, TBoardTask, TBoardTaskCard } from "@/types";
 
 import AddTaskItem from "./add-task-item";
 import SortableCardOverlay from "./sortable-card/sortable-card-overlay";

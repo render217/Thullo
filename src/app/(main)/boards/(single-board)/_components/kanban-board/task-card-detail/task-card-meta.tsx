@@ -1,7 +1,6 @@
 import { Input } from "@/components/ui/input";
 import { useCardStore } from "@/lib/store/useCardStore";
-import { ICard } from "@/types";
-import { TBoardTaskCard } from "@/types/t";
+import { TBoardTaskCard } from "@/types";
 import { useUpdateBoardTaskCard } from "@/utils/hooks/useBoards";
 
 import { useEffect, useRef, useState } from "react";

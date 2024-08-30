@@ -6,7 +6,7 @@ import {
   EditBoardTaskParams,
   UpdateBoardTaskOrderParams,
 } from "./shared.types";
-import { TBoardDetail, TBoardTask } from "@/types/t";
+import { TBoardDetail, TBoardTask } from "@/types";
 import db from "@/db/db";
 import { boardDetailDto, boardTaskDto } from "./mappers";
 

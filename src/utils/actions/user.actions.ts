@@ -8,7 +8,7 @@ import {
   GetUsersNotInBoardParams,
   UpdateUserParams,
 } from "./shared.types";
-import { TBoardMember, TBoardTaskCard, TCardMember, TUser } from "@/types/t";
+import { TBoardMember, TBoardTaskCard, TCardMember, TUser } from "@/types";
 import { Response } from "@/types/axios.types";
 import { userDto } from "./mappers";
 

@@ -19,7 +19,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useCreateBoardTask } from "@/utils/hooks/useBoards";
 import { useAuth } from "@clerk/nextjs";
-import { TBoardDetail } from "@/types/t";
+import { TBoardDetail } from "@/types";
 import { useBoardStore } from "@/lib/store/useBoardStore";
 import { useOnClickOutside } from "usehooks-ts";
 export default function AddTaskItem() {

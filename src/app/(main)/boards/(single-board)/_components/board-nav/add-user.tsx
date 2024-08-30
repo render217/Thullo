@@ -16,7 +16,7 @@ import {
   useGetUsersNotInBoard,
   useUsersSearch,
 } from "@/utils/hooks/useBoards";
-import { TBoard, TBoardDetail, TBoardMember, TCommonUser } from "@/types/t";
+import { TBoard, TBoardDetail, TBoardMember, TCommonUser } from "@/types";
 import { Avatar } from "@/components/ui/avatar";
 import toast from "react-hot-toast";
 

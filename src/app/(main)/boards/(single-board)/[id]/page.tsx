@@ -1,6 +1,5 @@
 "use client";
 
-import { IBoard } from "@/types";
 import { useGetBoardById } from "@/utils/hooks/useBoards";
 import { useParams } from "next/navigation";
 import KanbanBoard from "../_components/kanban-board";

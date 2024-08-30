@@ -1,4 +1,3 @@
-import { IBoard } from "@/types";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -10,8 +9,9 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { useState } from "react";
+import { TBoard } from "@/types";
 
-export default function InvitationItem({ board }: { board: IBoard }) {
+export default function InvitationItem({ board }: { board: TBoard }) {
   const [open, setOpen] = useState(false);
 
   const handleDecline = () => {
@@ -29,7 +29,7 @@ export default function InvitationItem({ board }: { board: IBoard }) {
               <p className="text-[10px] font-semibold">
                 Invitation received from:{" "}
               </p>
-              <p className="text-[10px]">{board.title}</p>
+              <p className="text-[10px]">{board.boardName}</p>
             </div>
           </div>
         </DialogTrigger>
@@ -43,7 +43,7 @@ export default function InvitationItem({ board }: { board: IBoard }) {
                 </p>
                 <div className="cursor-pointer text-xs font-semibold">
                   <p className="w-fit bg-blue-200 p-2 text-blue-500">
-                    {board.title}
+                    {board.boardName}
                   </p>
                 </div>
               </div>

@@ -2,15 +2,13 @@
 import { Button } from "@/components/ui/button";
 import { DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { ICard } from "@/types";
-import Image from "next/image";
 import TaskCardComments from "./task-card-comments";
 import TaskCardAttachments from "./task-card-attachments";
 import TaskCardDescription from "./task-card-description";
 import TaskCardMeta from "./task-card-meta";
 import TaskCardCoverImage from "./task-card-coverImage";
 import TaskCardActions from "./task-card-actions";
-import { TBoardTaskCard } from "@/types/t";
+import { TBoardTaskCard } from "@/types";
 import { useGetBoardTaskCardById } from "@/utils/hooks/useBoards";
 import { useEffect, useState } from "react";
 import { useCardStore } from "@/lib/store/useCardStore";

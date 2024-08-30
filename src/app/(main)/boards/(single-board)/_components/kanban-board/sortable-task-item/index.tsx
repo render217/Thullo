@@ -16,7 +16,7 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { cn } from "@/lib/utils";
 
-import { TBoardTask } from "@/types/t";
+import { TBoardTask } from "@/types";
 
 import SortableCard from "../sortable-card";
 import TaskHeader from "./task-header";

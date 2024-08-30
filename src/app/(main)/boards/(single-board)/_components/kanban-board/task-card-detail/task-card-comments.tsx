@@ -8,8 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useCardStore } from "@/lib/store/useCardStore";
 import { formatDate } from "@/lib/utils";
-import { ICard, IComment } from "@/types";
-import { TBoardTaskCard, TComment } from "@/types/t";
+
+import { TBoardTaskCard, TComment } from "@/types";
 import {
   useCreateComment,
   useDeleteComment,

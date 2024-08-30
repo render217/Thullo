@@ -17,7 +17,7 @@ import { useGetUnsplashImage } from "@/utils/hooks/useUnsplash";
 import { useActionSelector } from ".";
 import { usePreviewUnsplashImage } from "@/lib/store/useUnsplashImage";
 import { useUpdateBoardTaskCard } from "@/utils/hooks/useBoards";
-import { TBoardTaskCard } from "@/types/t";
+import { TBoardTaskCard } from "@/types";
 import { useCardStore } from "@/lib/store/useCardStore";
 
 export default function CardCoverImageForm() {

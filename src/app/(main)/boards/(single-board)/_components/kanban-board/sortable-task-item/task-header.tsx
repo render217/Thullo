@@ -3,7 +3,7 @@ import {
   AutosizeTextarea,
   AutosizeTextAreaRef,
 } from "@/components/ui/autosize-textarea";
-import { TBoardTask } from "@/types/t";
+import { TBoardTask } from "@/types";
 import { useEffect, useRef, useState } from "react";
 import {
   DropdownMenu,

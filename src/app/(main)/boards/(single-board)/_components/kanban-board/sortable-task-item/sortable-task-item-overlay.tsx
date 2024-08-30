@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { TBoardTask } from "@/types/t";
+import { TBoardTask } from "@/types";
 import {
   SortableContext,
   useSortable,

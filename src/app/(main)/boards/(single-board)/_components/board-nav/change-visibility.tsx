@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { LockOpen, Lock, LoaderCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { TBoard, TVisibility } from "@/types/t";
+import { TBoard, TVisibility } from "@/types";
 import { useUpdateBoard } from "@/utils/hooks/useBoards";
 import { useAuth } from "@clerk/nextjs";
 

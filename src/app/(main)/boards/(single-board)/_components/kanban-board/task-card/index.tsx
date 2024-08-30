@@ -1,5 +1,3 @@
-import { ICard } from "@/types";
-
 import {
   Card,
   CardContent,
@@ -17,7 +15,7 @@ import { useEffect, useState } from "react";
 import TaskCardDetail from "../task-card-detail";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { TBoardTaskCard } from "@/types/t";
+import { TBoardTaskCard } from "@/types";
 import { cn, getTailwindColor } from "@/lib/utils";
 import { useAuth } from "@clerk/nextjs";
 import { useBoardStore } from "@/lib/store/useBoardStore";

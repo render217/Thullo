@@ -1,6 +1,6 @@
 "use client";
 
-import { TBoardTask } from "@/types/t";
+import { TBoardTask } from "@/types";
 import { Plus } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Input } from "@/components/ui/input";
